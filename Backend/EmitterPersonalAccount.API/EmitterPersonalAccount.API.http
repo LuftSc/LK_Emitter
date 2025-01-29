@@ -1,0 +1,6 @@
+@EmitterPersonalAccount.API_HostAddress = http://localhost:5144
+
+GET {{EmitterPersonalAccount.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
