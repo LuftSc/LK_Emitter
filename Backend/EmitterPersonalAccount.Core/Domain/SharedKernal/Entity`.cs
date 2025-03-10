@@ -8,6 +8,10 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
 {
     public abstract class Entity<TKey> : Entity
     {
-        public TKey Id { get; set; }
+        protected Entity(TKey id)
+        {
+            Id = id;
+        }
+        public TKey Id { get; private set; } 
     }
 }

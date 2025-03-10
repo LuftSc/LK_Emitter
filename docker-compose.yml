@@ -1,0 +1,72 @@
+services:
+  auth_postgres_db:
+    image: postgres:latest
+    container_name: auth_postgres_db
+    environment:
+      POSTGRES_DB: "auth_postgres_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+    - postgres-data-service-auth:/var/lib/postgresql/data
+    ports:
+    - "5432:5432"
+    networks:
+      - emitterPersonal
+  documents_postgres_db:
+    image: postgres:latest
+    container_name: documents_postgres_db
+    environment:
+      POSTGRES_DB: "documents_postgres_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+    - postgres-data-service-documents:/var/lib/postgresql/data
+    ports:
+    - "5433:5432"
+    networks:
+      - emitterPersonal
+    #command: postgres -p 5433
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6380:6380"
+    command: redis-server --port 6380
+    networks:
+      - emitterPersonal
+  rabbitmq:
+    restart: unless-stopped
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    environment:
+      RABBIT_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD:-}
+    ports:
+      - "5672:5672" # порт для AMQP (основной протокол RabbitMq)
+      - "15672:15672" # порт для управления через браузер
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - emitterPersonal
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    networks:
+      - emitterPersonal
+
+volumes:
+  postgres-data-service-auth:
+  postgres-data-service-documents:
+
+networks:
+  emitterPersonal:
+    driver: bridge

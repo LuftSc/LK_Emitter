@@ -1,0 +1,16 @@
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\bin\Debug\net8.0\DocumentsService.DataAccess.deps.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\bin\Debug\net8.0\DocumentsService.DataAccess.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\bin\Debug\net8.0\DocumentsService.DataAccess.pdb
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\bin\Debug\net8.0\EmitterPersonalAccount.Core.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\bin\Debug\net8.0\EmitterPersonalAccount.Core.pdb
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\DocumentsService.DataAccess.csproj.AssemblyReference.cache
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\DocumentsService.DataAccess.GeneratedMSBuildEditorConfig.editorconfig
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\DocumentsService.DataAccess.AssemblyInfoInputs.cache
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\DocumentsService.DataAccess.AssemblyInfo.cs
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\DocumentsService.DataAccess.csproj.CoreCompileInputs.cache
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\DocumentsService.DataAccess.sourcelink.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\Document.A69719DF.Up2Date
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\DocumentsService.DataAccess.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\refint\DocumentsService.DataAccess.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\DocumentsService.DataAccess.pdb
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService.DataAccess\obj\Debug\net8.0\ref\DocumentsService.DataAccess.dll
