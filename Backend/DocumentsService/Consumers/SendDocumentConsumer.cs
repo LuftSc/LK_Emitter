@@ -9,10 +9,8 @@ namespace DocumentsService.Consumers
     public class SendDocumentConsumer : BaseRabbitConsumer
     {
         private readonly IServiceProvider provider;
-
-        public SendDocumentConsumer(string rabbitUri, string queueName, 
-            IServiceProvider provider)
-            : base(rabbitUri, queueName)
+        public SendDocumentConsumer(string rabbitUri, IServiceProvider provider)
+            : base(rabbitUri)
         {
             this.provider = provider;
         }
@@ -22,8 +20,6 @@ namespace DocumentsService.Consumers
 
             var sendDocumentEvent = EventDeserializer<SendDocumentEvent>
                 .Deserialize(args);
-
-            Console.WriteLine("Попали в DocumentConsumer");
 
             using (var scope = provider.CreateScope())
             {

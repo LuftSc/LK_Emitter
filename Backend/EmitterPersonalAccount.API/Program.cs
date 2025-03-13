@@ -2,8 +2,11 @@
 using BaseMicroservice;
 using EmitterPersonalAccount.API.Extensions;
 using EmitterPersonalAccount.Application.Features.Documents;
+using EmitterPersonalAccount.Application.Infrastructure.RabbitMq;
+using EmitterPersonalAccount.Application.Infrastructure.Rpc;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Repositories;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using MediatR;
 
@@ -16,6 +19,11 @@ namespace EmitterPersonalAccount.API
             var builder = WebApplication.CreateBuilder(args);
             // Устанаваливаем настройки аутентификации
             builder.Services.AddApiAuthentification(builder.Configuration);
+
+            builder.Services.Configure<RabbitMqInitOptions>
+                (builder.Configuration.GetSection(nameof(RabbitMqInitOptions)));
+
+            builder.Services.AddHostedService<RabbitMqInitializer>();
 
             // Add services to the container.
 
@@ -37,6 +45,9 @@ namespace EmitterPersonalAccount.API
                 var connection = builder.Configuration.GetConnectionString("Redis");
                 options.Configuration = connection;
             });
+            
+            builder.Services.AddSingleton<IRpcClient, RpcClient>();
+            builder.Services.AddHostedService<RpcClientInitializer>();
 
             builder.Services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
 

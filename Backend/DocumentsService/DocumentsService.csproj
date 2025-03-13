@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BaseMicroservice\BaseMicroservice.csproj" />
     <ProjectReference Include="..\DocumentsService.DataAccess\DocumentsService.DataAccess.csproj" />
+    <ProjectReference Include="..\EmitterPersonalAccount.Application\EmitterPersonalAccount.Application.csproj" />
     <ProjectReference Include="..\EmitterPersonalAccount.Core\EmitterPersonalAccount.Core.csproj" />
   </ItemGroup>
 

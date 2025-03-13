@@ -15,5 +15,9 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
         Task<Result> AddRangeToUserByEmail(string email,
             List<DocumentInfo> documentsInfo, CancellationToken cancellationToken,
             bool withDigitalSignature = false);
+
+        Task<Result<List<Document>>> GetByUserId(Guid userId);
+
+        Task<Result> DeleteByIdAsync(Guid documentId, CancellationToken cancellationToken);
     }
 }

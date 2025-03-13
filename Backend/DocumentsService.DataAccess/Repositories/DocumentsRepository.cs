@@ -21,8 +21,8 @@ namespace DocumentsService.DataAccess.Repositories
         private readonly DocumentsDbContext context;
         private readonly IHashService hashService;
 
-        public DocumentsRepository(DocumentsDbContext context, IHashService hashService) 
-            : base(context)
+        public DocumentsRepository(DocumentsDbContext context, 
+            IHashService hashService) : base(context) 
         {
             this.context = context;
             this.hashService = hashService;
@@ -64,6 +64,29 @@ namespace DocumentsService.DataAccess.Repositories
 
             return Result.Success();
         }
+        
+        public async Task<Result<List<Document>>> GetByUserId(Guid userId)
+        {
+            Console.WriteLine("Попали в Docs Repository документов");
+            var userWithDocuments = await context.Users
+                .AsNoTracking()
+                .Include(u => u.Documents)
+                .FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (userWithDocuments == null)
+                return Result<List<Document>>.Error(new UserNotFoundError());
+
+            return Result<List<Document>>.Success(userWithDocuments.Documents);
+        }
+
+        public async Task<Result> DeleteByIdAsync(Guid documentId, CancellationToken cancellationToken)
+        {
+            await context.Documents
+                .Where(d => d.Id == documentId)
+                .ExecuteDeleteAsync(cancellationToken);
+
+            return Result.Success();
+        }
     }
     public class RecipientNotFoundError : Error
     {
@@ -72,5 +95,9 @@ namespace DocumentsService.DataAccess.Repositories
     public class DocumentCreatingError : Error
     {
         public override string Type => nameof(DocumentCreatingError);
+    }
+    public class UserNotFoundError : Error
+    {
+        public override string Type => nameof(UserNotFoundError);
     }
 }

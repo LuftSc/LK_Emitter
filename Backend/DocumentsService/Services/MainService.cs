@@ -1,24 +1,43 @@
 ﻿
 using DocumentsService.Consumers;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 
 namespace DocumentsService.Services
 {
     public class MainService : IHostedService
     {
-        private SendDocumentConsumer consumer;
-        public MainService(string rabbitUri, string queueName, IServiceProvider provider)
+        private GetDocumentsInfoRpcServer getDocInfoRpcServer;
+        private SendDocumentConsumer sendDocsConsumer;
+        private DownloadDocumentRpcServer downloadDocRpcServer;
+        private DeleteDocumentConsumer deleteDocConsumer;
+        public MainService(IConfiguration configuration, IServiceProvider provider)
         {
-            consumer = new SendDocumentConsumer(rabbitUri, queueName, provider);
+            var rabbitUri = configuration.GetConnectionString("RabbitMqUri");
+            ArgumentNullException.ThrowIfNull(rabbitUri, "Rabbit URI can not be null!");
+
+            sendDocsConsumer = new SendDocumentConsumer(rabbitUri, provider);
+
+            getDocInfoRpcServer = new GetDocumentsInfoRpcServer(rabbitUri, provider);
+
+            downloadDocRpcServer = new DownloadDocumentRpcServer(rabbitUri, provider);
+
+            deleteDocConsumer = new DeleteDocumentConsumer(rabbitUri, provider);
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-           await consumer.ExecuteAsync(cancellationToken);
+            await sendDocsConsumer.ExecuteAsync(RabbitMqAction.SendDocument, cancellationToken);
+            await getDocInfoRpcServer.StartAsync(RabbitMqAction.GetDocumentInfo, cancellationToken);
+            await downloadDocRpcServer.StartAsync(RabbitMqAction.DownloadDocument, cancellationToken);
+            await deleteDocConsumer.ExecuteAsync(RabbitMqAction.DeleteDocument, cancellationToken);
         }
-
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            consumer.Dispose();
+            sendDocsConsumer.Dispose();
+            getDocInfoRpcServer.Dispose();
+            downloadDocRpcServer.Dispose();
+            deleteDocConsumer.Dispose();
+
             return Task.CompletedTask;
         }
     }

@@ -137,3 +137,4 @@ D:\Education\ASP_NET_Core\LK_Emitter\Backend\AuthService\bin\Debug\net8.0\System
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\AuthService\bin\Debug\net8.0\RabbitMQ.Client.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\AuthService\bin\Debug\net8.0\BaseMicroservice.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\AuthService\bin\Debug\net8.0\BaseMicroservice.pdb
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\AuthService\bin\Debug\net8.0\Newtonsoft.Json.dll

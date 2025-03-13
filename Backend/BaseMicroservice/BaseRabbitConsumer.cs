@@ -1,4 +1,5 @@
-﻿using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+﻿using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
@@ -11,36 +12,26 @@ namespace BaseMicroservice
 {
     public abstract class BaseRabbitConsumer : IDisposable
     {
+        private readonly string rabbitUri;
         private IConnection connection;
         private IChannel channel;
-        public BaseRabbitConsumer(string rabbitUri, string queueName)
+        public BaseRabbitConsumer(string rabbitUri)
         {
-            RabbitUri = rabbitUri;
-            QueueName = queueName;
+            this.rabbitUri = rabbitUri;
         }
-
-        public string RabbitUri { get; }
-        public string QueueName { get; }
-
-        public async Task ExecuteAsync(CancellationToken cancellationToken)
+        public async Task ExecuteAsync(RabbitMqAction consumedAction, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
-            var factory = new ConnectionFactory { Uri = new Uri(RabbitUri) };
+            var factory = new ConnectionFactory { Uri = new Uri(rabbitUri) };
             connection = await factory.CreateConnectionAsync();
             channel = await connection.CreateChannelAsync();
-
-            await channel.QueueDeclareAsync(
-                    queue: QueueName,
-                    durable: true,
-                    exclusive: false,
-                    autoDelete: false,
-                    arguments: null);
 
             var consumer = new AsyncEventingBasicConsumer(channel);
             consumer.ReceivedAsync += Handler;
 
-            await channel.BasicConsumeAsync(QueueName, autoAck: true, consumer, cancellationToken);
+            await channel
+                .BasicConsumeAsync(consumedAction.QueueName, autoAck: true, consumer, cancellationToken);
         }
         public abstract Task<Result> Handler(object model, BasicDeliverEventArgs args);
         public void Dispose()

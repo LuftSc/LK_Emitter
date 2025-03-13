@@ -14,10 +14,8 @@ namespace EmailSender.Consumers
     public class AuthConfirmationConsumer : BaseRabbitConsumer
     {
         private readonly ISender sender;
-
-        
-        public AuthConfirmationConsumer(string rabbitUri, string queueName, ISender sender)
-            : base(rabbitUri, queueName) 
+        public AuthConfirmationConsumer(string rabbitUri, ISender sender)
+            : base(rabbitUri) 
         {
             this.sender = sender;
         }

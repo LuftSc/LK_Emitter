@@ -1,18 +1,19 @@
 ﻿
 using EmailSender.Consumers;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 
 namespace EmailSender.Services
 {
     public class MainService : IHostedService
     {
         AuthConfirmationConsumer consumer;
-        public MainService(string rabbitUri, string queueName, ISender sender)
+        public MainService(string rabbitUri, ISender sender)
         {
-            consumer = new AuthConfirmationConsumer(rabbitUri, queueName, sender);
+            consumer = new AuthConfirmationConsumer(rabbitUri, sender);
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await consumer.ExecuteAsync(cancellationToken);
+            await consumer.ExecuteAsync(RabbitMqAction.SendEmailConfirmation, cancellationToken);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

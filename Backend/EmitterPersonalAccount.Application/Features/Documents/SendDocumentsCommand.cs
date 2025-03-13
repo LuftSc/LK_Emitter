@@ -1,6 +1,7 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -57,7 +58,8 @@ namespace EmitterPersonalAccount.Application.Features.Documents
 
             var message = JsonSerializer.Serialize(sendingEvent);
 
-            var isSuccessfull = await publisher.SendMessageAsync(message, "send-documents", cancellationToken);
+            var isSuccessfull = await publisher.SendMessageAsync
+                (message, RabbitMqAction.SendDocument, cancellationToken);
 
             if (!isSuccessfull) return Result.Error(new SendingDocumentError());
 

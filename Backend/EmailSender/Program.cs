@@ -38,7 +38,6 @@ namespace EmailSender
 
             builder.Services.AddHostedService<MainService>(provider => new MainService(
                 rabbitUri,
-                queueName,
                 provider.GetService<ISender>()
                 ));
 

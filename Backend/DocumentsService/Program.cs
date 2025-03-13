@@ -36,18 +36,16 @@ namespace DocumentsService
             builder.Services.RegisterRepository<IDocumentRepository, DocumentsRepository>();
             builder.Services.AddScoped<IDocumentsService, DocumentService>();
 
-            var rabbitUri = builder.Configuration.GetConnectionString("RabbitMqUri");
-            ArgumentNullException.ThrowIfNull(rabbitUri, "Rabbit URI can not be null!");
+            /*var rabbitUri = builder.Configuration.GetConnectionString("RabbitMqUri");
+            ArgumentNullException.ThrowIfNull(rabbitUri, "Rabbit URI can not be null!");*/
 
-            var queueName = builder.Configuration.GetConnectionString("RabbitMqQueueName");
-            ArgumentNullException.ThrowIfNull(queueName, "Rabbit Queue name can not be null!");
+            /*var queueName = builder.Configuration.GetConnectionString("RabbitMqQueueName");
+            ArgumentNullException.ThrowIfNull(queueName, "Rabbit Queue name can not be null!");*/
 
             builder.Services.AddHostedService<MainService>(provider => new MainService(
-                rabbitUri,
-                queueName,
+                builder.Configuration,
                 provider
             ));
-
 
             var app = builder.Build();
 

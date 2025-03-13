@@ -1,4 +1,5 @@
-﻿using EmitterPersonalAccount.Core.Abstractions;
+﻿using EmitterPersonalAccount.Application.Features.Documents;
+using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.Repositories;
@@ -6,14 +7,6 @@ using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 
 namespace DocumentsService.Services
 {
-    /* public class RecipientNotFound : Error
-     {
-         public override string Type => nameof(RecipientNotFound);
-     }
-     public class DocumentCreatingError : Error
-     {
-         public override string Type => nameof(DocumentCreatingError);
-     }*/
     public class DocumentService : IDocumentsService
     {
         private readonly IDocumentRepository documentRepository;
@@ -28,11 +21,39 @@ namespace DocumentsService.Services
         public async Task<Result> SendToRecipientAsync(SendDocumentEvent sendDocumentEvent,
             CancellationToken cancellationToken)
         {
-            Console.WriteLine("Попали в сервис документов");
             return await documentRepository
                 .AddRangeToUserByEmail(sendDocumentEvent.RecipientEmail,
                 sendDocumentEvent.Documents, cancellationToken,
                 sendDocumentEvent.WithDigitalSignature);
         }
+        public async Task<Result<List<Document>>> GetDocumentsInfoByUserId(Guid userId)
+        {
+            Console.WriteLine("Попали в DocumentsService документов");
+            return await documentRepository.GetByUserId(userId);    
+        }
+
+        public async Task<Result<Document>> DownloadDocumentById(Guid documentId, 
+            CancellationToken cancellationToken)
+        {
+            var document = await documentRepository
+                .FindAsync([documentId], cancellationToken);
+
+            if (document is null)
+                return Result<Document>.Error(new GettingDocumentError());
+
+            return Result<Document>.Success(document);
+        }
+
+        public async Task<Result> DeleteDocumentById(Guid documentId,  
+            CancellationToken cancellationToken)
+        {
+            return await documentRepository
+                .DeleteByIdAsync(documentId, cancellationToken);
+        }
+    }
+
+    public class GettingDocumentError : Error
+    {
+        public override string Type => nameof(GettingDocumentError);
     }
 }
