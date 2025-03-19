@@ -25,6 +25,19 @@ services:
     - "5433:5432"
     networks:
       - emitterPersonal
+  external_registrator_db:
+    image: postgres:latest
+    container_name: external_registrator_db
+    environment:
+      POSTGRES_DB: "external_registrator_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    volumes:
+    - postgres-data-service-registrator:/var/lib/postgresql/data
+    ports:
+    - "5434:5432"
+    networks:
+      - emitterPersonal
     #command: postgres -p 5433
   redis:
     image: redis
@@ -68,6 +81,7 @@ services:
 volumes:
   postgres-data-service-auth:
   postgres-data-service-documents:
+  postgres-data-service-registrator:
   rabbitmq-data:
 
 networks:

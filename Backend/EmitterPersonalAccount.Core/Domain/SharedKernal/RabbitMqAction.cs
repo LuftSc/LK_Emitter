@@ -20,7 +20,20 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
         public static readonly RabbitMqAction SendEmailConfirmation = 
             new("", "email", "email");
 
-        
+        public static readonly RabbitMqAction RequestListOfShareholders =
+            new("orderReports_exchange", "orderReports.list", "request_list_shareholders_queue");
+        public static readonly RabbitMqAction RequestReeRep =
+            new("orderReports_exchange", "orderReports.ree_rep", "request_ree_rep_queue");
+        public static readonly RabbitMqAction RequestDividendList =
+            new("orderReports_exchange", "orderReports.dividend", "request_dividend_list_queue");
+
+        public static readonly RabbitMqAction ResultListOfShareholders =
+            new("orderReports_exchange", "orderReports.list_result", "result_list_shareholders_queue");
+        public static readonly RabbitMqAction ResultReeRep =
+            new("orderReports_exchange", "orderReports.ree_rep_result", "result_ree_rep_queue");
+        public static readonly RabbitMqAction ResultDividendList =
+            new("orderReports_exchange", "orderReports.dividend_result", "result_dividend_list_queue");
+
         public string ExchangeName { get; }
         public string RoutingKey { get; }
         public string QueueName { get; }

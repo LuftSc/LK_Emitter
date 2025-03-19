@@ -50,7 +50,7 @@ namespace EmitterPersonalAccount.API.Controllers
         }
 
         [HttpGet("download/{documentId:guid}")]
-        public async Task<ActionResult> Download(Guid documentId)
+        public async Task<ActionResult> GetDownloadLink(Guid documentId)
         {
             if (documentId == Guid.Empty)
                 return BadRequest("Document id can not be empty!");
@@ -67,16 +67,12 @@ namespace EmitterPersonalAccount.API.Controllers
                 result.Value.ContentType, 
                 result.Value.FileName);
         }
+
         /* public async Task<ActionResult> VerifyDocumentSignature()
          {// Принимает документ и считает его хэш-сумму
              // а потом сравнивает с той, которая есть в свойствах
              return await Task.FromResult(Ok());
-         }
-
-         public async Task<ActionResult> DeleteDocument()
-         {// Удаляет документ
-             return await Task.FromResult(Ok());
-         }*/
+         } */
 
         [HttpDelete("delete-document/{documentId:guid}")]
         public async Task<ActionResult> DeleteDocument(Guid documentId)

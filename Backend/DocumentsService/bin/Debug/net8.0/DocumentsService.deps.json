@@ -620,7 +620,6 @@
       "System.Threading.RateLimiting/8.0.0": {},
       "BaseMicroservice/1.0.0": {
         "dependencies": {
-          "EmitterPersonalAccount.Application": "1.0.0",
           "EmitterPersonalAccount.Core": "1.0.0",
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
           "RabbitMQ.Client": "7.1.1"
@@ -648,7 +647,9 @@
       },
       "EmitterPersonalAccount.Application/1.0.0": {
         "dependencies": {
+          "BaseMicroservice": "1.0.0",
           "EmitterPersonalAccount.Core": "1.0.0",
+          "ExternalOrderReportsService": "1.0.0",
           "MediatR": "12.4.1",
           "Microsoft.AspNetCore.Http.Features": "5.0.17",
           "Microsoft.Extensions.Configuration.Abstractions": "8.0.0",
@@ -669,6 +670,20 @@
         },
         "runtime": {
           "EmitterPersonalAccount.Core.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "ExternalOrderReportsService/1.0.0": {
+        "dependencies": {
+          "BaseMicroservice": "1.0.0",
+          "EmitterPersonalAccount.Core": "1.0.0",
+          "Microsoft.AspNetCore.OpenApi": "8.0.12",
+          "Swashbuckle.AspNetCore": "6.6.2"
+        },
+        "runtime": {
+          "ExternalOrderReportsService.dll": {
             "assemblyVersion": "1.0.0",
             "fileVersion": "1.0.0.0"
           }
@@ -1097,6 +1112,11 @@
       "sha512": ""
     },
     "EmitterPersonalAccount.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ExternalOrderReportsService/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

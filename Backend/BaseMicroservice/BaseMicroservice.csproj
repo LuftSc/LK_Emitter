@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EmitterPersonalAccount.Application\EmitterPersonalAccount.Application.csproj" />
     <ProjectReference Include="..\EmitterPersonalAccount.Core\EmitterPersonalAccount.Core.csproj" />
   </ItemGroup>
 

@@ -1,0 +1,6 @@
+@ExternalOrderReportsService_HostAddress = http://localhost:5017
+
+GET {{ExternalOrderReportsService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

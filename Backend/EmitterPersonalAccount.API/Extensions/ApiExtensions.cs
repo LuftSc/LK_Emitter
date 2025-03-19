@@ -43,6 +43,8 @@ namespace EmitterPersonalAccount.API.Extensions
                         }
                     };
                 });
+
+            services.AddAuthorization();
         }
     }
 }

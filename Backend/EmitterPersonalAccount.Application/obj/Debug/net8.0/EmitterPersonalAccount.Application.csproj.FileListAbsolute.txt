@@ -14,3 +14,12 @@ D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\EmitterPersonalAccount.Core.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\EmitterPersonalAccount.Core.pdb
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\obj\Debug\net8.0\EmitterP.D98AFEB7.Up2Date
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\ExternalOrderReportsService.deps.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\ExternalOrderReportsService.runtimeconfig.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\appsettings.Reports.Development.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\appsettings.Reports.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\ExternalOrderReportsService.exe
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\BaseMicroservice.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\ExternalOrderReportsService.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\BaseMicroservice.pdb
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\ExternalOrderReportsService.pdb

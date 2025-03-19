@@ -116,3 +116,10 @@ D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\t
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\Newtonsoft.Json.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\ExternalOrderReportsService.deps.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\ExternalOrderReportsService.runtimeconfig.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\appsettings.Reports.Development.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\appsettings.Reports.json
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\ExternalOrderReportsService.exe
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\ExternalOrderReportsService.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\ExternalOrderReportsService.pdb

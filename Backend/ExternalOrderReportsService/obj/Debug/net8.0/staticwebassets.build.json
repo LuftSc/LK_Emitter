@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "j1hllZ9BPPhh6FqDbsz0BzoTSiEXFCjG+D0h7tb+wUE=",
+  "Source": "ExternalOrderReportsService",
+  "BasePath": "_content/ExternalOrderReportsService",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}

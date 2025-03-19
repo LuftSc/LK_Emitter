@@ -89,6 +89,38 @@ namespace AuthService.Controllers
 
             return Ok();
         }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult> RestorePassword([FromBody] RestorePasswordCommand request)
+        {
+            if (request.NewPassword is null || request.UserId == Guid.Empty)
+                return BadRequest("new password and user ID can not be nulL or empty!");
+
+            var result = await mediator.Send(request);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            return Ok();
+        }
+
+        [HttpPost("[action]")]
+        public async Task<ActionResult<string>> LoginWithout2FA([FromBody] LoginUserQuery request)
+        {
+            var loginResult = await mediator.Send(request);
+
+            if (!loginResult.IsSuccessfull)
+            {
+                return BadRequest(loginResult.GetErrors());
+            }
+
+            var token = jwtProvider.GenerateToken(loginResult.Value);
+
+            return Ok(token);
+            //HttpContext.Response.Cookies.Append("tasty-cookies", token);
+
+            //return Ok();
+        }
     }
 
     public record VerifyCodeDTO(string Email, string Code) { }

@@ -1,11 +1,23 @@
 {
   "Version": 1,
-  "Hash": "bXiANGpi5bI4LxmMvQVoz+i+r+x6nWb3Jz0rhEANYyE=",
+  "Hash": "Gq+R7Q1rrK9+oHC+hxZqgQ6YwiZOGKXbXlzGlD3LEmk=",
   "Source": "AuthService",
   "BasePath": "_content/AuthService",
   "Mode": "Default",
   "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "D:\\Education\\ASP_NET_Core\\LK_Emitter\\Backend\\ExternalOrderReportsService\\ExternalOrderReportsService.csproj",
+      "Version": 2,
+      "Source": "ExternalOrderReportsService",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
+    }
+  ],
   "DiscoveryPatterns": [],
   "Assets": []
 }

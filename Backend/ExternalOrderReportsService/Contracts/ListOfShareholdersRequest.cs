@@ -1,0 +1,41 @@
+﻿namespace ExternalOrderReportsService.Contracts
+{
+    public record ListOfShareholdersRequest(
+        string ReportName,
+        bool IsSaveToStorage,
+        int IssuerId,
+        string RegOutInfo,
+        string GeneralReportHeader,
+        string TypKls,
+        DateOnly DtMod,
+        bool NomList,
+        bool IsPodr,
+        bool ViewCb,
+        bool IsCateg,
+        bool IsOneRecAllNomin,
+        bool IsCategMeeting,
+        bool IsRangeMeeting,
+        DateOnly Dt_Begsobr,
+        bool IsSocr,
+        bool IsFillSchNd,
+        bool IsBirthday,
+        bool IsViewPhone,
+        bool IsViewEmail,
+        bool IsViewMeetNotify,
+        bool IsViewGenDirect,
+        bool IsViewInn,
+        bool ViewLs,
+        bool IsSignBox,
+        bool OffNumbers,
+        bool IsExcelFormat,
+        bool PrintDt,
+        string CurrentUser,
+        string Operator,
+        string Controler,
+        bool IsViewDirect,
+        bool IsViewCtrl,
+        bool IsViewElecStamp,
+        string Guid
+    )
+    { }
+}

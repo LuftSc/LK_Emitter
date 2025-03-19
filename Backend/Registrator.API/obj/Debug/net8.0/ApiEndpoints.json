@@ -1,0 +1,105 @@
+[
+  {
+    "ContainingType": "Registrator.API.Endpoints.ApiEndpoints",
+    "Method": "ListOfShareholdersForMeetingNotSign",
+    "RelativePath": "api/ListOfShareholdersForMeetingNotSign",
+    "HttpMethod": "POST",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "r",
+        "Type": "Registrator.API.Extensions.DateTimeWrapper",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "Registrator.API.Endpoints.ListOfShareholdersRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Registrator.API.Endpoints.ApiEndpoints",
+    "Method": "LoadPdfFromStorage",
+    "RelativePath": "api/LoadPdfFromStorage",
+    "HttpMethod": "GET",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "code_doc",
+        "Type": "System.Guid",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Registrator.API.Endpoints.ApiEndpoints",
+    "Method": "ReeRepNotSign",
+    "RelativePath": "api/ReeRepNotSign",
+    "HttpMethod": "POST",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "r",
+        "Type": "Registrator.API.Extensions.DateTimeWrapper",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "Registrator.API.Endpoints.ReeRepNotSignRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "Registrator.API.Endpoints.ApiEndpoints",
+    "Method": "ReportAboutDividendListNotSignController",
+    "RelativePath": "api/ReportAboutDividendListNotSignController",
+    "HttpMethod": "POST",
+    "IsController": false,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "r",
+        "Type": "Registrator.API.Extensions.DateTimeWrapper",
+        "IsRequired": true
+      },
+      {
+        "Name": "request",
+        "Type": "Registrator.API.Endpoints.ReportAboutDividendListNotSignRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Void",
+        "MediaTypes": [],
+        "StatusCode": 200
+      }
+    ]
+  }
+]

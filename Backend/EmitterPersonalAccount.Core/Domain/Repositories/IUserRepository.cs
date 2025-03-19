@@ -1,4 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using System;
 using System.Collections.Generic;
@@ -10,5 +11,6 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
 {
     public interface IUserRepository : IRepository<User>
     {
+        Task<Result> UpdatePassword(Guid userId, string newHashedPassword);
     }
 }

@@ -1,9 +1,7 @@
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\bin\Debug\net8.0\BaseMicroservice.deps.json
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\bin\Debug\net8.0\BaseMicroservice.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\bin\Debug\net8.0\BaseMicroservice.pdb
-D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\bin\Debug\net8.0\EmitterPersonalAccount.Application.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\bin\Debug\net8.0\EmitterPersonalAccount.Core.dll
-D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\bin\Debug\net8.0\EmitterPersonalAccount.Application.pdb
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\bin\Debug\net8.0\EmitterPersonalAccount.Core.pdb
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\obj\Debug\net8.0\BaseMicroservice.csproj.AssemblyReference.cache
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\BaseMicroservice\obj\Debug\net8.0\BaseMicroservice.GeneratedMSBuildEditorConfig.editorconfig
