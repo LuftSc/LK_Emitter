@@ -123,3 +123,12 @@ D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\a
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\ExternalOrderReportsService.exe
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\ExternalOrderReportsService.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\ExternalOrderReportsService.pdb
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\BCrypt.Net-Next.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\Microsoft.Bcl.Memory.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\Microsoft.IdentityModel.Abstractions.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\Microsoft.IdentityModel.Logging.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\Microsoft.IdentityModel.Tokens.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\System.IdentityModel.Tokens.Jwt.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\EmitterPersonalAccount.DataAccess.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\DocumentsService\bin\Debug\net8.0\EmitterPersonalAccount.DataAccess.pdb

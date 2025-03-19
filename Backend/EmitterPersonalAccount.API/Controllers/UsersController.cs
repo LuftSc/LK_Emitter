@@ -1,12 +1,15 @@
-﻿using AuthService.Application.Features.Users;
-using AuthService.Controllers;
+﻿//using AuthService.Application.Features.Users;
+//using AuthService.Controllers;
+using EmitterPersonalAccount.Application.Features.Authentification;
+using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Asn1.Ocsp;
+//using Org.BouncyCastle.Asn1.Ocsp;
 using System.Text;
 using static System.Net.WebRequestMethods;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -17,15 +20,18 @@ namespace EmitterPersonalAccount.API.Controllers
     [Route("users")]
     public class UsersController : ControllerBase
     {
-        private readonly HttpClient httpClient;
-
-        public UsersController(HttpClient httpClient)
+        private readonly IMediator mediator;
+        private readonly IDistributedCache distributedCache;
+        private readonly IJwtProvider jwtProvider;
+        public UsersController(IMediator mediator, 
+            IDistributedCache distributedCache, IJwtProvider jwtProvider)
         {
-            this.httpClient = httpClient;
-            //this.httpClientFactory = httpClientFactory;
+            this.mediator = mediator;
+            this.distributedCache = distributedCache;
+            this.jwtProvider = jwtProvider;
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpGet("get-current-user")]
         public async Task<ActionResult<Guid>> GetCurrentUserId()
         {
@@ -41,101 +47,82 @@ namespace EmitterPersonalAccount.API.Controllers
         [HttpPost("login-user")]
         public async Task<ActionResult> Login([FromBody] LoginUserQuery request)
         {
-            //var client = httpClientFactory.CreateClient();
-            var url = "https://localhost:7034/Users/Login";
+            var loginResult = await mediator.Send(request);
 
-            var jsonContent = new StringContent(
-                JsonConvert.SerializeObject(request),
-                Encoding.UTF8,
-                "application/json"
-            );
+            if (!loginResult.IsSuccessfull)
+                return BadRequest(loginResult.GetErrors());
 
-            var response = await httpClient.PostAsync(url, jsonContent);
+            await distributedCache
+                .SetStringAsync($"id-{request.Email}", loginResult.Value);
 
-            if (!response.IsSuccessStatusCode) return BadRequest();
+            var sendEmailCommand = new SendConfirmationCodeCommand() 
+            { 
+                RecipientEmail = request.Email
+            };
 
-            // Логирование всех клэймов
-            foreach (var claim in HttpContext.User.Claims)
+            var emailSendResult = await mediator.Send(sendEmailCommand);
+
+            if (!emailSendResult.IsSuccessfull)
             {
-                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+                return BadRequest(emailSendResult.GetErrors());
             }
 
             return Ok();
         }
 
         [HttpPost("login-user-without-2fa")]
-        public async Task<ActionResult<string>> LoginWithout2FA([FromBody] LoginUserQuery request)
+        public async Task<ActionResult> LoginWithout2FA([FromBody] LoginUserQuery request)
         {
-            var url = "https://localhost:7034/Users/LoginWithout2FA";
+            var loginResult = await mediator.Send(request);
 
-            var jsonContent = new StringContent(
-                JsonConvert.SerializeObject(request),
-                Encoding.UTF8,
-                "application/json"
-            );
+            if (!loginResult.IsSuccessfull)
+                return BadRequest(loginResult.GetErrors());
 
-            var response = await httpClient.PostAsync(url, jsonContent);
+            var token = jwtProvider.GenerateToken(loginResult.Value);
 
-            if (!response.IsSuccessStatusCode) return BadRequest();
+            HttpContext.Response.Cookies.Append("tasty-cookies", token);
 
-            var token = await response.Content.ReadAsStringAsync();
-
-            return Ok(JsonConvert.SerializeObject(token));
+            return Ok();
         }
 
         [HttpPost("register-new-user")]
         public async Task<ActionResult> Register([FromBody] RegisterUserCommand request)
         {
-            var url = "https://localhost:7034/Users/Register";
+            if (string.IsNullOrEmpty(request.Email)) 
+                return BadRequest("Email can not be empty or null!");
+            if (string.IsNullOrEmpty(request.Password))
+                return BadRequest("Password can not be empty or null!");
 
-            var jsonContent = new StringContent(
-                JsonConvert.SerializeObject(request),
-                Encoding.UTF8,
-                "application/json"
-            );
+            var result = await mediator.Send(request);
 
-            var response = await httpClient.PostAsync(url, jsonContent);
-
-            if (!response.IsSuccessStatusCode) return BadRequest();
+            if (!result.IsSuccessfull) return BadRequest(result.GetErrors());
 
             return Ok();
         }
 
         [HttpPost("verify-code")]
-        public async Task<ActionResult> VerifyCode([FromBody] VerifyCodeDTO request)
+        public async Task<ActionResult> VerifyCode([FromBody] VerifyConfirmationCodeQuery request)
         {
-            var url = "https://localhost:7034/Users/VerifyCode";
+            // Ещё можно как-то запускать таймер(например, 5 минут, и через это время удалять код)
+            var verificationResult = await mediator.Send(request);
 
-            var jsonContent = new StringContent(
-                JsonConvert.SerializeObject(request),
-                Encoding.UTF8,
-                "application/json"
-            );
+            if (!verificationResult.IsSuccessfull)
+                return BadRequest(verificationResult.GetErrors());
 
-            var response = await httpClient.PostAsync(url, jsonContent);
+            var token = verificationResult.Value;
 
-            if (!response.IsSuccessStatusCode) return BadRequest();
+            HttpContext.Response.Cookies.Append("tasty-cookies", token);
 
             return Ok();
         }
 
-        [HttpPost("restore-password/{userId:guid}")]
-        public async Task<ActionResult> RestorePassword(Guid userId, [FromBody] string newPassword)
+        [HttpPost("restore-password")]
+        public async Task<ActionResult> RestorePassword([FromBody] RestorePasswordCommand request)
         {
-            var url = "https://localhost:7034/Users/RestorePassword";
+            var restoreResult = await mediator.Send(request);
 
-            var request = new RestorePasswordCommand() 
-                { UserId = userId, NewPassword = newPassword };
-
-            var jsonContent = new StringContent(
-                JsonConvert.SerializeObject(request),
-                Encoding.UTF8,
-                "application/json"
-            );
-
-            var response = await httpClient.PostAsync(url, jsonContent);
-
-            if (!response.IsSuccessStatusCode) return BadRequest();
+            if (!restoreResult.IsSuccessfull)
+                return BadRequest(restoreResult.GetErrors());
 
             return Ok();
         }

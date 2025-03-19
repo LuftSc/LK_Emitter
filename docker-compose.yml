@@ -1,13 +1,26 @@
 services:
-  auth_postgres_db:
+  #auth_postgres_db:
+    #image: postgres:latest
+   # container_name: auth_postgres_db
+    #environment:
+      #POSTGRES_DB: "auth_postgres_db"
+     # POSTGRES_USER: "postgres"
+      #POSTGRES_PASSWORD: "postgres"
+    #volumes:
+   # - #postgres-data-service-auth:/var/lib/postgresql/data
+    #ports:
+   # - #"5432:5432"
+   # networks:
+      #- #emitterPersonal
+  api_postgres_db:
     image: postgres:latest
-    container_name: auth_postgres_db
+    container_name: api_postgres_db
     environment:
-      POSTGRES_DB: "auth_postgres_db"
+      POSTGRES_DB: "api_postgres_db"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     volumes:
-    - postgres-data-service-auth:/var/lib/postgresql/data
+    - postgres-data-service-api:/var/lib/postgresql/data
     ports:
     - "5432:5432"
     networks:
@@ -79,7 +92,8 @@ services:
       - emitterPersonal
 
 volumes:
-  postgres-data-service-auth:
+  #postgres-data-service-auth:
+  postgres-data-service-api:
   postgres-data-service-documents:
   postgres-data-service-registrator:
   rabbitmq-data:

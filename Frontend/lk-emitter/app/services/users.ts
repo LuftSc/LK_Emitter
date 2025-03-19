@@ -12,10 +12,6 @@ export const loginUser = async (request: LoginUserRequest) => {
         },
         body: JSON.stringify(request)
     })
-    .then(response => response.json())
-    .then(token => {
-        document.cookie = `tasty-cookies=${token}; path=/; secure; samesite=strict`
-    })
     .catch(error => console.error('Login failed: ' + error))
 }
 
