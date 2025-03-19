@@ -11,12 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmitterPersonalAccount.Appl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EmitterPersonalAccount.Microservices", "EmitterPersonalAccount.Microservices", "{CEB1CD07-E22D-4000-9E82-37623430891B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthService", "..\AuthService\AuthService.csproj", "{3A45B183-2337-409C-BD2C-8450AB379674}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AuthMicroservice", "AuthMicroservice", "{1CBAC72A-D235-4FA4-A6C4-05C9E8045E9C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthService.DataAccess", "..\AuthService.DataAccess\AuthService.DataAccess.csproj", "{3B0ABFFD-4628-4A49-BD6E-66C856B2FF08}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EmailSender", "EmailSender", "{63D8D9DD-36CA-48C2-935F-8B576BCDC002}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailSender", "..\EmailSender\EmailSender.csproj", "{30E8844C-36CA-4F8E-9698-D3C3EC8AB2A9}"
@@ -39,7 +33,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Registrator.Core", "..\Regi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalOrderReportsMicroservice", "ExternalOrderReportsMicroservice", "{3858AC46-DDEE-4EC3-BC6E-2A6376935EAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExternalOrderReportsService", "..\ExternalOrderReportsService\ExternalOrderReportsService.csproj", "{B4E0DFD5-9861-4B5F-8D5E-6952E458752B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExternalOrderReportsService", "..\ExternalOrderReportsService\ExternalOrderReportsService.csproj", "{B4E0DFD5-9861-4B5F-8D5E-6952E458752B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmitterPersonalAccount.DataAccess", "..\EmitterPersonalAccount.DataAccess\EmitterPersonalAccount.DataAccess.csproj", "{848C1CB1-2D20-4E97-8E47-6777B7E269AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,14 +55,6 @@ Global
 		{EA6AF590-F4B3-4BFE-81B1-C84A30DF3783}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA6AF590-F4B3-4BFE-81B1-C84A30DF3783}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA6AF590-F4B3-4BFE-81B1-C84A30DF3783}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A45B183-2337-409C-BD2C-8450AB379674}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A45B183-2337-409C-BD2C-8450AB379674}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A45B183-2337-409C-BD2C-8450AB379674}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A45B183-2337-409C-BD2C-8450AB379674}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B0ABFFD-4628-4A49-BD6E-66C856B2FF08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B0ABFFD-4628-4A49-BD6E-66C856B2FF08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B0ABFFD-4628-4A49-BD6E-66C856B2FF08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3B0ABFFD-4628-4A49-BD6E-66C856B2FF08}.Release|Any CPU.Build.0 = Release|Any CPU
 		{30E8844C-36CA-4F8E-9698-D3C3EC8AB2A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30E8844C-36CA-4F8E-9698-D3C3EC8AB2A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30E8844C-36CA-4F8E-9698-D3C3EC8AB2A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -99,14 +87,15 @@ Global
 		{B4E0DFD5-9861-4B5F-8D5E-6952E458752B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4E0DFD5-9861-4B5F-8D5E-6952E458752B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4E0DFD5-9861-4B5F-8D5E-6952E458752B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{848C1CB1-2D20-4E97-8E47-6777B7E269AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{848C1CB1-2D20-4E97-8E47-6777B7E269AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{848C1CB1-2D20-4E97-8E47-6777B7E269AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{848C1CB1-2D20-4E97-8E47-6777B7E269AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3A45B183-2337-409C-BD2C-8450AB379674} = {1CBAC72A-D235-4FA4-A6C4-05C9E8045E9C}
-		{1CBAC72A-D235-4FA4-A6C4-05C9E8045E9C} = {CEB1CD07-E22D-4000-9E82-37623430891B}
-		{3B0ABFFD-4628-4A49-BD6E-66C856B2FF08} = {1CBAC72A-D235-4FA4-A6C4-05C9E8045E9C}
 		{63D8D9DD-36CA-48C2-935F-8B576BCDC002} = {CEB1CD07-E22D-4000-9E82-37623430891B}
 		{30E8844C-36CA-4F8E-9698-D3C3EC8AB2A9} = {63D8D9DD-36CA-48C2-935F-8B576BCDC002}
 		{16157FDA-83EA-40B8-BF8D-8085880AB799} = {CEB1CD07-E22D-4000-9E82-37623430891B}

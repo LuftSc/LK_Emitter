@@ -23,3 +23,5 @@ D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\ExternalOrderReportsService.dll
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\BaseMicroservice.pdb
 D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\ExternalOrderReportsService.pdb
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\EmitterPersonalAccount.DataAccess.dll
+D:\Education\ASP_NET_Core\LK_Emitter\Backend\EmitterPersonalAccount.Application\bin\Debug\net8.0\EmitterPersonalAccount.DataAccess.pdb

@@ -1,6 +1,7 @@
 
 using BaseMicroservice;
 using EmitterPersonalAccount.API.Extensions;
+using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Application.Features.Documents;
 using EmitterPersonalAccount.Application.Hubs;
 using EmitterPersonalAccount.Application.Infrastructure.CacheManagment;
@@ -11,7 +12,11 @@ using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
+using EmitterPersonalAccount.DataAccess;
+using EmitterPersonalAccount.DataAccess.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace EmitterPersonalAccount.API
 {
@@ -26,6 +31,16 @@ namespace EmitterPersonalAccount.API
             builder.Services.Configure<RabbitMqInitOptions>
                 (builder.Configuration.GetSection(nameof(RabbitMqInitOptions)));
 
+            builder.Services.Configure<JwtOptions>
+                (builder.Configuration.GetSection(nameof(JwtOptions)));
+
+            builder.Services.AddDbContext<EmitterPersonalAccountDbContext>(options =>
+                options.UseNpgsql(builder.Configuration
+                    .GetConnectionString(nameof(EmitterPersonalAccountDbContext))
+            ));
+
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+            builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IMemoryCacheService, MemoryCacheService>();
 
             builder.Services.AddHttpContextAccessor();
@@ -47,6 +62,8 @@ namespace EmitterPersonalAccount.API
             });
 
             builder.Services.AddHttpClient();
+
+            builder.Services.RegisterRepository<IUserRepository, UsersRepository>();
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
@@ -81,6 +98,8 @@ namespace EmitterPersonalAccount.API
             builder.Services.AddSignalR();
 
             builder.Services.AddMemoryCache();
+
+            
 
             var app = builder.Build();
 
