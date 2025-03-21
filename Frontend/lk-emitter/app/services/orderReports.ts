@@ -40,8 +40,9 @@ export interface ListOfShareholders {
 }
 
 export const sendRequestListOfShareholders = async (request: RequestListOfShareholders) => {
-    await fetch('https://localhost:7233/OrderReports/list-of-shareholders', {
+    await fetch('http://localhost:5144/OrderReports/list-of-shareholders', {
         method: 'POST',
+        credentials: 'include',
         headers:{
             'Content-Type': 'application/json'
         },

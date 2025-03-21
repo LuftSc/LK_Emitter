@@ -11,16 +11,30 @@ namespace EmitterPersonalAccount.Application.Services
     public class ResultService
     {
         private readonly IHubContext<ResultsHub, IResultClient> hubContext;
-
         public ResultService(IHubContext<ResultsHub, IResultClient> hubContext)
         {
             this.hubContext = hubContext;
         }
-        public async Task SendResultToClient(string clientId, Guid documentId, DateTime sendingDate)
+        public async Task SendListOfShareholdersResultToClient
+            (string connectionId, Guid documentId, DateTime sendingDate)
         {
             await hubContext.Clients
-                .Client(clientId)
+                .Client(connectionId)
                 .SendListOfShareholdersResult(documentId, sendingDate);
+        }
+        public async Task SendReeRepResultToClient
+            (string connectionId, Guid documentId, DateTime sendingDate)
+        {
+            await hubContext.Clients
+                .Client(connectionId)
+                .SendReeRepResult(documentId, sendingDate);
+        }
+        public async Task SendDividendListResultToClient
+            (string connectionId, Guid documentId, DateTime sendingDate)
+        {
+            await hubContext.Clients
+                .Client(connectionId)
+                .SendDividendListResult(documentId, sendingDate);
         }
     }
 }

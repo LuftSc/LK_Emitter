@@ -43,7 +43,7 @@ namespace EmitterPersonalAccount.API
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
             builder.Services.AddScoped<IMemoryCacheService, MemoryCacheService>();
 
-            builder.Services.AddHttpContextAccessor();
+            //builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddSingleton<IRpcClient, RpcClient>();
             
@@ -61,7 +61,7 @@ namespace EmitterPersonalAccount.API
                 x.RegisterServicesFromAssembly(typeof(SendDocumentsCommandHandler).Assembly);
             });
 
-            builder.Services.AddHttpClient();
+            //builder.Services.AddHttpClient();
 
             builder.Services.RegisterRepository<IUserRepository, UsersRepository>();
 
@@ -91,7 +91,8 @@ namespace EmitterPersonalAccount.API
                     policy.WithOrigins("http://localhost:3000")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowCredentials();
+                        .AllowCredentials()
+                        .WithExposedHeaders("Content-Disposition");
                 });
             });
 
@@ -137,16 +138,16 @@ namespace EmitterPersonalAccount.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllers();
-
             app.UseCors(x =>
             {
                 x.WithHeaders().AllowAnyHeader();
                 x.WithOrigins("http://localhost:3000");
                 x.WithMethods().AllowAnyMethod();
                 x.WithOrigins("http://localhost:3000").AllowCredentials();
+                x.WithExposedHeaders("Content-Disposition");
             });
 
+            app.MapControllers();
             app.Run();
         }
     }

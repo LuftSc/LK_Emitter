@@ -1,11 +1,11 @@
 export const getAllDocumentsByUserId = async (userId: string) => {
-    const response = await fetch(`https://localhost:7233/Documents/get-documents-info/${userId}`);
+    const response = await fetch(`http://localhost:5144/Documents/get-documents-info/${userId}`);
 
     return response.json();
 }
 
 export const downloadDocument = async (documentId: string) => {
-    fetch('https://localhost:7233/Documents/download/ac5301c9-6e2c-4050-a6fe-445e3c711e4e')
+    fetch('http://localhost:5144/Documents/download/ac5301c9-6e2c-4050-a6fe-445e3c711e4e')
         .then(response => {
             if (!response.ok) throw new Error('Ошибка загрузки');
             

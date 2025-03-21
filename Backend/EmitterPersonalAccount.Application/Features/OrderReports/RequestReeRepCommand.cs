@@ -12,42 +12,38 @@ using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Application.Features.OrderReports
 {
-    public sealed class RequestListOfShareholdersCommand : Command
+    public sealed class RequestReeRepCommand : Command
     {
         public DateTime? SendingDate { get; set; }
-        public ListOfShareholdersRequest RequestData { get; set; }
+        public ReeRepNotSignRequest RequestData { get; set; }
         public string UserId { get; set; } = string.Empty;
     }
-
-    public sealed class RequestListOfShareholdersCommandHandler 
-        : CommandHandler<RequestListOfShareholdersCommand>
+    public class RequestReeRepCommandHandler : CommandHandler<RequestReeRepCommand>
     {
         private readonly IRabbitMqPublisher publisher;
 
-        public RequestListOfShareholdersCommandHandler(IRabbitMqPublisher publisher)
+        public RequestReeRepCommandHandler(IRabbitMqPublisher publisher)
         {
             this.publisher = publisher;
         }
         public override async Task<Result> Handle
-            (RequestListOfShareholdersCommand request, 
-            CancellationToken cancellationToken)
+            (RequestReeRepCommand request, CancellationToken cancellationToken)
         {
             request.SendingDate = DateTime.Now;
 
             var message = JsonSerializer.Serialize(request);
 
-            var isSuccesfull = await publisher.SendMessageAsync(message, 
-                RabbitMqAction.RequestListOfShareholders, cancellationToken);
+            var isSuccesfull = await publisher.SendMessageAsync(message,
+                RabbitMqAction.RequestReeRep, cancellationToken);
 
             if (!isSuccesfull) return Result
-                    .Error(new SendingListOfShareholdersRequestError());
+                    .Error(new SendingReeRepRequestError());
 
             return Result.Success();
         }
     }
-
-    public class SendingListOfShareholdersRequestError : Error
+    public class SendingReeRepRequestError : Error
     {
-        public override string Type => nameof(SendingListOfShareholdersRequestError);
+        public override string Type => nameof(SendingReeRepRequestError);
     }
 }

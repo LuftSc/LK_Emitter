@@ -12,42 +12,40 @@ using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Application.Features.OrderReports
 {
-    public sealed class RequestListOfShareholdersCommand : Command
+    public sealed class RequestDividendListCommand : Command
     {
         public DateTime? SendingDate { get; set; }
-        public ListOfShareholdersRequest RequestData { get; set; }
+        public ReportAboutDividendListNotSignRequest RequestData { get; set; }
         public string UserId { get; set; } = string.Empty;
     }
-
-    public sealed class RequestListOfShareholdersCommandHandler 
-        : CommandHandler<RequestListOfShareholdersCommand>
+    public sealed class RequestDividendListCommandHandler
+        : CommandHandler<RequestDividendListCommand>
     {
         private readonly IRabbitMqPublisher publisher;
 
-        public RequestListOfShareholdersCommandHandler(IRabbitMqPublisher publisher)
+        public RequestDividendListCommandHandler(IRabbitMqPublisher publisher)
         {
             this.publisher = publisher;
         }
         public override async Task<Result> Handle
-            (RequestListOfShareholdersCommand request, 
+            (RequestDividendListCommand request, 
             CancellationToken cancellationToken)
         {
             request.SendingDate = DateTime.Now;
 
             var message = JsonSerializer.Serialize(request);
 
-            var isSuccesfull = await publisher.SendMessageAsync(message, 
-                RabbitMqAction.RequestListOfShareholders, cancellationToken);
+            var isSuccesfull = await publisher.SendMessageAsync(message,
+                RabbitMqAction.RequestDividendList, cancellationToken);
 
             if (!isSuccesfull) return Result
-                    .Error(new SendingListOfShareholdersRequestError());
+                    .Error(new SendingDividendListRequestError());
 
             return Result.Success();
         }
     }
-
-    public class SendingListOfShareholdersRequestError : Error
+    public class SendingDividendListRequestError : Error
     {
-        public override string Type => nameof(SendingListOfShareholdersRequestError);
+        public override string Type => nameof(SendingDividendListRequestError);
     }
 }

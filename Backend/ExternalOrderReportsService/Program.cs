@@ -1,4 +1,6 @@
 
+using EmitterPersonalAccount.Core.Abstractions;
+using ExternalOrderReportsService.Publishers;
 using ExternalOrderReportsService.Services;
 
 namespace ExternalOrderReportsService
@@ -18,7 +20,8 @@ namespace ExternalOrderReportsService
 
             builder.Services.AddHttpClient();
 
-            builder.Services.AddScoped<OrderReportsService>();
+            builder.Services.AddScoped<IRabbitMqPublisher, ResultPublisher>();
+            builder.Services.AddScoped<IOrderReportsService, OrderReportsService>();
 
             builder.Services.AddHostedService<MainService>(provider => new MainService(
                 builder.Configuration,

@@ -1,5 +1,4 @@
-﻿//using Microsoft.Extensions.Configuration;
-using EmitterPersonalAccount.Core.Abstractions;
+﻿using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using Microsoft.Extensions.Configuration;
 using RabbitMQ.Client;
@@ -8,14 +7,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Collections.Specialized.BitVector32;
 
 namespace BaseMicroservice
 {
-    public class RabbitMqPublisher : IRabbitMqPublisher
+    public abstract class BaseRabbitPublisher : IRabbitMqPublisher
     {
         private readonly ConnectionFactory factory;
-        public RabbitMqPublisher(IConfiguration configuration)
+        public BaseRabbitPublisher(IConfiguration configuration)
         {
             var uri = configuration.GetConnectionString("RabbitMqUri")
                 ?? throw new ArgumentNullException("RabbitMqUri conn str is null");
@@ -25,9 +23,7 @@ namespace BaseMicroservice
                 Uri = new Uri(uri)
             };
         }
-
-
-        public async Task<bool> SendMessageAsync(string message, RabbitMqAction action, 
+        public async Task<bool> SendMessageAsync(string message, RabbitMqAction action,
             CancellationToken cancellation)
         {
             try
@@ -46,7 +42,6 @@ namespace BaseMicroservice
                 return false;
             }
         }
-
         public async Task<bool> SendMessageAsync(string message, string queueName,
             CancellationToken cancellation)
         {
@@ -75,3 +70,4 @@ namespace BaseMicroservice
         }
     }
 }
+

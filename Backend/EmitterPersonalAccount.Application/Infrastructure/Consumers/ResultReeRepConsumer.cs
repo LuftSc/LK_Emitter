@@ -1,10 +1,8 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
-using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Consumers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client.Events;
 using System;
@@ -15,19 +13,18 @@ using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Application.Infrastructure.Consumers
 {
-    public class ResultListOfShareholdersConsumer : BaseRabbitConsumer
+    public class ResultReeRepConsumer : BaseRabbitConsumer
     {
         private readonly IServiceProvider provider;
 
-        public ResultListOfShareholdersConsumer(string rabbitUri, 
+        public ResultReeRepConsumer(string rabbitUri, 
             IServiceProvider provider) : base(rabbitUri)
         {
             this.provider = provider;
         }
-        public override async Task<Result> Handler
-            (object model, BasicDeliverEventArgs args)
+        public override async Task<Result> Handler(object model, BasicDeliverEventArgs args)
         {
-            var orderGeneratingResult = EventDeserializer<ResultListOfShareholsders>
+            var orderGeneratingResult = EventDeserializer<ResultReeRep>
                 .Deserialize(args);
 
             using (var scope = provider.CreateScope())
@@ -37,16 +34,16 @@ namespace EmitterPersonalAccount.Application.Infrastructure.Consumers
 
                 var memoryCacheService = scope.ServiceProvider
                     .GetRequiredService<IMemoryCacheService>();
-                // Где-то тут надо сохранить это всё дело в БД
+
                 var connectionIdFoundResult = memoryCacheService
                     .GetValue<string>(orderGeneratingResult.UserId);
 
                 if (!connectionIdFoundResult.IsSuccessfull)
                     return connectionIdFoundResult;
-                
+
                 //memoryCacheService.RemoveValue(orderGeneratingResult.UserId);
 
-                await resultsService.SendListOfShareholdersResultToClient(
+                await resultsService.SendReeRepResultToClient(
                     connectionIdFoundResult.Value,
                     orderGeneratingResult.DocumentId,
                     orderGeneratingResult.SendingDate);

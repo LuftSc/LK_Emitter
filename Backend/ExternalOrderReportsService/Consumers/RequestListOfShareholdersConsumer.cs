@@ -11,12 +11,14 @@ namespace ExternalOrderReportsService.Consumers
 {
     public record RequestListOfShareholdersEvent(
         DateTime SendingDate,
-        ListOfShareholdersRequest RequestData
+        ListOfShareholdersRequest RequestData,
+        string UserId
         ) { }
 
     public record ResultListOfShareholsders(
         DateTime SendingDate,
-        Guid DocumentId
+        Guid DocumentId,
+        string UserId
         )
     { }
     public class RequestListOfShareholdersConsumer : BaseRabbitConsumer
@@ -36,33 +38,39 @@ namespace ExternalOrderReportsService.Consumers
 
             using (var scope = provider.CreateScope()) 
             {
-                var orderReportService = scope.ServiceProvider
-                    .GetRequiredService<OrderReportsService>();
+                try
+                {
+                    var orderReportService = scope.ServiceProvider
+                        .GetRequiredService<IOrderReportsService>();
 
-                var orderReportResult = await orderReportService
-                    .ListOfShareholdersForMeetingNotSign(ev.SendingDate, ev.RequestData);
+                    var orderReportResult = await orderReportService
+                        .RequestListOfShareholdersForMeetingReport(ev.SendingDate, ev.RequestData);
 
-                if (!orderReportResult.IsSuccessfull)
-                    return Result.Error(new ListOfShareholsdersReportGeneratingError());
+                    if (!orderReportResult.IsSuccessfull)
+                        return Result.Error(new ListOfShareholsdersReportGeneratingError());
 
-                var response = new ResultListOfShareholsders(ev.SendingDate, orderReportResult.Value);
+                    var response = new ResultListOfShareholsders(ev.SendingDate, orderReportResult.Value, ev.UserId);
 
-                var message = JsonSerializer.Serialize(response);
+                    var message = JsonSerializer.Serialize(response);
 
-                var publisher = scope.ServiceProvider
-                    .GetRequiredService<IRabbitMqPublisher>();
+                    var publisher = scope.ServiceProvider
+                        .GetRequiredService<IRabbitMqPublisher>();
 
-                var isSuccessfull = await publisher
-                    .SendMessageAsync(message, RabbitMqAction.ResultListOfShareholders, default);
+                    var isSuccessfull = await publisher
+                        .SendMessageAsync(message, RabbitMqAction.ResultListOfShareholders, default);
 
-                if (!isSuccessfull)
+                    if (!isSuccessfull)
+                        return Result.Error(new ListOfShareholsdersReportQueueDeliveryError());
+
+                    return Result.Success();
+                }
+                catch (InvalidOperationException ex)
+                {
                     return Result.Error(new ListOfShareholsdersReportQueueDeliveryError());
-
-                return Result.Success();
+                }
             }
         }
     }
-
     public class ListOfShareholsdersReportGeneratingError : Error
     {
         public override string Type => nameof(ListOfShareholsdersReportGeneratingError);

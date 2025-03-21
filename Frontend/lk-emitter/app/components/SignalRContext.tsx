@@ -18,9 +18,9 @@ export const SignalRProvider = ({children} : {children: React.ReactNode}) => {
     // Функция для запуска соединения
     const startConnection = async () => {
         if (typeof window === 'undefined') return;
-
+        
         const newConnection = new HubConnectionBuilder()
-            .withUrl("https://localhost:7233/resultsHub")
+            .withUrl("http://localhost:5144/resultsHub")
             .withAutomaticReconnect()
             .build();
 

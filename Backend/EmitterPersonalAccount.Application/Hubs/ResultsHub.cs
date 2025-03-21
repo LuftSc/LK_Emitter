@@ -25,46 +25,18 @@ namespace EmitterPersonalAccount.Application.Hubs
         }
         public async Task SendResult(Guid documentId, DateTime requestDate)
         {
+            Console.WriteLine("Вызвали метод SendResult Хаба результатов");
+
             await Clients
                 .Client(Context.ConnectionId)
                 .SendListOfShareholdersResult(documentId, requestDate);
         }
         public override Task OnConnectedAsync()
         {
-            try
-            {
-                if (Context.User == null)
-                {
-                    Console.WriteLine("Context.User is null.");
-                    throw new InvalidOperationException("User is not authenticated.");
-                }
+            var userId = Context.User.FindFirst(CustomClaims.UserId).Value;
+            memoryCacheService.SetValue(userId, Context.ConnectionId);
 
-                // Логирование всех клэймов
-                foreach (var claim in Context.User.Claims)
-                {
-                    Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
-                }
-
-                var userIdClaim = Context.User.FindFirst(CustomClaims.UserId);
-                if (userIdClaim == null)
-                {
-                    Console.WriteLine("User ID claim is null.");
-                    throw new InvalidOperationException("User ID claim not found.");
-                }
-
-                var userId = userIdClaim.Value;
-                Console.WriteLine($"User {userId} connected.");
-                return base.OnConnectedAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error in OnConnectedAsync: {ex}");
-                throw;
-            }
-            /*var userId = Context.User.FindFirst(CustomClaims.UserId).Value;
-            memoryCacheService.SetValue(userId, Context.ConnectionId);*/
-
-            //return base.OnConnectedAsync();
+            return base.OnConnectedAsync();
         }
         public override Task OnDisconnectedAsync(Exception? exception)
         {

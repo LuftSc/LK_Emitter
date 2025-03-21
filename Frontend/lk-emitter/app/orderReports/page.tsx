@@ -1,15 +1,29 @@
-import { Button } from "antd";
+"use client"
+
+import { Button, List } from "antd";
 import { useSignalR } from "../components/SignalRContext";
 import { ListOfShareholders, RequestListOfShareholders, sendRequestListOfShareholders } from "../services/orderReports";
+import { useState } from "react";
+import { ReportOrderInfo } from "../models/ReportOrderInfo";
+import { ReportOrderDownloadLink } from "../components/ReportOrderDownloadLink";
 
 export default function OrderReports() {
+    const [orderReports, setOrderReports] = useState<ReportOrderInfo[]>([])
+    
     const { connection } = useSignalR();
     
     const requestListOfShareholders = async () => {
         if (connection) {
-            connection.on('SendListOfShareholdersResult', async (documentId, requestDate) => {
-                console.log(documentId)
-                console.log(requestDate)
+            connection.on('SendListOfShareholdersResult', async (documentId, requestDate:string) => {
+                const dateAndTime = requestDate.split('.')
+                
+                setOrderReports(prevOrders => [...prevOrders, 
+                    {
+                        reportOrderId: documentId, 
+                        fileName: `Лист участников собрания акционеров ${dateAndTime[0]}`
+                }]);
+
+                connection.off('SendListOfShareholdersResult');
             })
         }
 
@@ -63,6 +77,20 @@ export default function OrderReports() {
             <Button>Запросить информацию из реестра</Button>
             <br />
             <Button> Запросить дивидендный список</Button>
+            <List
+                size="large"
+                header={<p>Готовые распоряжения появляются здесь</p>}
+                footer={<div>Это все распоряжения с этим эмитентом</div>}
+                bordered
+                dataSource={orderReports}
+                renderItem={(item) => 
+                    <List.Item>
+                        {<ReportOrderDownloadLink
+                            key={item.reportOrderId} // Уникальный ключ
+                            reportOrderInfo={item}   // Передаем объект в компонент
+                        />}
+                    </List.Item>}
+            />
         </div>
     )
 }

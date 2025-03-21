@@ -6,7 +6,7 @@ import { ClientNavigationMenu } from "./components/ClientNavigationMenu";
 
 const items = [
   { key: 'home', label: 'Главная', href: '/' },
-  { key: 'directives', label: 'Запросы/поручения', href: '/directives' }
+  { key: 'orderReports', label: 'Запросы/поручения', href: '/orderReports' }
 ];
 
 export default function RootLayout({
