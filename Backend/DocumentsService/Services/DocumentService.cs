@@ -21,17 +21,18 @@ namespace DocumentsService.Services
         public async Task<Result> SendToRecipientAsync(SendDocumentEvent sendDocumentEvent,
             CancellationToken cancellationToken)
         {
-            return await documentRepository
-                .AddRangeToUserByEmail(sendDocumentEvent.RecipientEmail,
-                sendDocumentEvent.Documents, cancellationToken,
+            return await documentRepository.AddRangeByEmitterId(sendDocumentEvent.SenderId,
+                sendDocumentEvent.EmitterId,sendDocumentEvent.Documents, cancellationToken,
                 sendDocumentEvent.WithDigitalSignature);
         }
         public async Task<Result<List<Document>>> GetDocumentsInfoByUserId(Guid userId)
         {
-            Console.WriteLine("Попали в DocumentsService документов");
             return await documentRepository.GetByUserId(userId);    
         }
-
+        public async Task<Result<List<Document>>> GetDocumentsInfoByEmitterId(Guid emitterId)
+        {
+            return await documentRepository.GetByEmitterId(emitterId);
+        }
         public async Task<Result<Document>> DownloadDocumentById(Guid documentId, 
             CancellationToken cancellationToken)
         {
@@ -51,7 +52,6 @@ namespace DocumentsService.Services
                 .DeleteByIdAsync(documentId, cancellationToken);
         }
     }
-
     public class GettingDocumentError : Error
     {
         public override string Type => nameof(GettingDocumentError);

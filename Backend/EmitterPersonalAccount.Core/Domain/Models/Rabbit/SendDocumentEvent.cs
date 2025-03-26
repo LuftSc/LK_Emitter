@@ -9,7 +9,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Rabbit
     public class SendDocumentEvent
     {
         public required List<DocumentInfo> Documents { get; set; } = [];
-        public required string RecipientEmail { get; set; } = string.Empty;
+        public required Guid SenderId { get; set; }
+        public required Guid EmitterId { get; set; }
         public required bool WithDigitalSignature { get; set; } = false;
     }
 }

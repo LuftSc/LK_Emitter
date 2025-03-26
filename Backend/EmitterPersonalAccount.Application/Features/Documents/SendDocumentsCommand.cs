@@ -15,8 +15,9 @@ namespace EmitterPersonalAccount.Application.Features.Documents
 {
     public sealed class SendDocumentsCommand : Command
     {
+        public Guid SenderId { get; set; }
+        public Guid EmitterId { get; set; }
         public List<IFormFile> Files { get; set; } = [];
-        public string RecipientEmail { get; set; } = string.Empty;
         public bool WithDigitalSignature { get; set; } = false;
     }
 
@@ -51,8 +52,9 @@ namespace EmitterPersonalAccount.Application.Features.Documents
 
             var sendingEvent = new SendDocumentEvent 
             { 
+                SenderId = request.SenderId,
+                EmitterId = request.EmitterId,
                 Documents = documents,
-                RecipientEmail = request.RecipientEmail,
                 WithDigitalSignature = request.WithDigitalSignature
             };
 

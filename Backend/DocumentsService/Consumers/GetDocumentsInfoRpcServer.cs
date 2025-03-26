@@ -31,19 +31,14 @@ namespace DocumentsService.Consumers
                 var documentsService = scope.ServiceProvider
                     .GetRequiredService<IDocumentsService>();
                 serviceResult = await documentsService
-                    .GetDocumentsInfoByUserId(query.UserId);
+                    .GetDocumentsInfoByEmitterId(query.EmitterId);
             }
             if (serviceResult.IsSuccessfull)
             {
                 var documents = serviceResult.Value
                     .Select(d => new DocumentInfoResponse
-                        (d.Id, d.Title, d.Type, d.UploadDate, d.GetSize()))
+                        (d.Id, d.Title, d.Type, d.UploadDate, d.GetSize(), d.IsEmitterSended))
                     .ToList();
-
-                foreach (var document in documents)
-                {
-                    Console.WriteLine($"{document.Title}");
-                }
 
                 return Result<List<DocumentInfoResponse>>.Success(documents);
             }

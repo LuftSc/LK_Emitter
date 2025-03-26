@@ -1,4 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ namespace DocumentsService.DataAccess
         }
         public DbSet<Document> Documents { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Emitter> Emitters { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

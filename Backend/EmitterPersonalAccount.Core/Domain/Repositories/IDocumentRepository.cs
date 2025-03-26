@@ -12,12 +12,11 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
 {
     public interface IDocumentRepository : IRepository<Document>
     {
-        Task<Result> AddRangeToUserByEmail(string email,
+        Task<Result> AddRangeByEmitterId(Guid senderId, Guid emitterId,
             List<DocumentInfo> documentsInfo, CancellationToken cancellationToken,
             bool withDigitalSignature = false);
-
         Task<Result<List<Document>>> GetByUserId(Guid userId);
-
+        Task<Result<List<Document>>> GetByEmitterId(Guid emitterId);
         Task<Result> DeleteByIdAsync(Guid documentId, CancellationToken cancellationToken);
     }
 }

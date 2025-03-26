@@ -17,11 +17,12 @@ namespace EmitterPersonalAccount.Application.Features.Documents
         string Title,
         string FileExtnsion,
         DateTime UploadDate,
-        double Size)
+        double Size,
+        bool IsEmitterSended)
     { }
     public sealed class GetDocumentsInfoQuery : Query<List<DocumentInfoResponse>>
     {
-        public Guid UserId { get; set; }
+        public Guid EmitterId { get; set; }
     }
 
     public sealed class GetDocumentsInfoQueryHandler 

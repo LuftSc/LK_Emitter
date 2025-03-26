@@ -38,8 +38,8 @@ namespace ExternalOrderReportsService.Services
             var documentInfo = new DocumentInfo() 
             { 
                 Content = content, 
-                ContentType=mimeType, 
-                FileName=fileName 
+                ContentType = mimeType, 
+                FileName = fileName 
             };
 
             return Result<DocumentInfo>.Success(documentInfo);

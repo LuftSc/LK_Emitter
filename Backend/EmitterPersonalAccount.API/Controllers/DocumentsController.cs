@@ -32,14 +32,14 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [HttpGet("get-documents-info/{userId:guid}")]
+        [HttpGet("get-documents-info/{emitterId:guid}")]
         public async Task<ActionResult<List<DocumentInfoResponse>>> 
-            GetDocumentsInfo(Guid userId)
+            GetDocumentsInfo(Guid emitterId)
         {// Достаёт информацию по документам из БД
-            if (userId == Guid.Empty)
-                return BadRequest("User Id can not be empty or null!");
+            if (emitterId == Guid.Empty)
+                return BadRequest("Id can not be empty or null!");
 
-            var getDocsInfoQuery = new GetDocumentsInfoQuery() { UserId = userId };
+            var getDocsInfoQuery = new GetDocumentsInfoQuery() { EmitterId = emitterId };
 
             var result = await mediator.Send(getDocsInfoQuery);
 

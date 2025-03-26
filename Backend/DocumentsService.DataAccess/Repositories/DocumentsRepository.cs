@@ -27,22 +27,28 @@ namespace DocumentsService.DataAccess.Repositories
             this.context = context;
             this.hashService = hashService;
         }
-
-        public async Task<Result> AddRangeToUserByEmail(string email, 
+        public async Task<Result> AddRangeByEmitterId(Guid senderId, Guid emitterId, 
             List<DocumentInfo> documentsInfo, CancellationToken cancellationToken,
             bool withDigitalSignature = false)
         {
-            // Можно заменить на FindAsync, но нужно откуда-то взять Id-шник
-            var recipient = await context.Users
-                .FirstOrDefaultAsync(u => u.Email == email);
+            var sender = await context.Users
+                .Include(u => u.Registrator)
+                .FirstOrDefaultAsync(u => u.Id == senderId);
 
-            if (recipient == null) 
-                return Result.Error(new RecipientNotFoundError());
+            if (sender is null)
+                return Result.Error(new DocumentSenderNotFoundError());
+
+            var emitter = await context.Emitters
+                .Include(e => e.Documents)
+                .FirstOrDefaultAsync(e => e.Id == emitterId);
+
+            if (emitter is null)
+                return Result.Error(new EmitterNotFoundError());
 
             var documents = new List<Document>(documentsInfo.Count);
 
             var documentsResults = documentsInfo
-                .Select(d => Document.Create(recipient, d.FileName, 
+                .Select(d => Document.Create(sender, d.FileName,
                     DateTime.Now.ToUniversalTime(), d.Content,
                     withDigitalSignature
                         ? hashService.ComputeHash(d.Content)
@@ -55,28 +61,44 @@ namespace DocumentsService.DataAccess.Repositories
                     documents.Add(documentResult.Value);
                 else return Result.Error(new DocumentCreatingError());
             }
-
             await context.Documents.AddRangeAsync(documents);
 
-            recipient.Documents.AddRange(documents);
+            emitter.Documents.AddRange(documents);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
-            return Result.Success();
+            return Result.Success();    
         }
         
         public async Task<Result<List<Document>>> GetByUserId(Guid userId)
         {
-            Console.WriteLine("Попали в Docs Repository документов");
-            var userWithDocuments = await context.Users
-                .AsNoTracking()
-                .Include(u => u.Documents)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await context.Users.FindAsync(userId);
 
-            if (userWithDocuments == null)
-                return Result<List<Document>>.Error(new UserNotFoundError());
+            if (user is null)
+                return Result<List<Document>>
+                    .Error(new UserNotFoundError());
 
-            return Result<List<Document>>.Success(userWithDocuments.Documents);
+            var documents = await context.Documents
+                .Where(d => d.User == user)
+                .ToListAsync();
+
+            if (documents == null)
+                return Result<List<Document>>
+                    .Error(new EmitterNotFoundError());
+
+            return Result<List<Document>>.Success(documents);
+        }
+        public async Task<Result<List<Document>>> GetByEmitterId(Guid emitterId)
+        {
+            var emitter = await context.Emitters
+                .Include(e => e.Documents)
+                .FirstOrDefaultAsync(e => e.Id == emitterId);
+
+            if (emitter is null)
+                return Result<List<Document>>
+                    .Error(new EmitterNotFoundError());
+
+            return Result<List<Document>>.Success(emitter.Documents);
         }
 
         public async Task<Result> DeleteByIdAsync(Guid documentId, CancellationToken cancellationToken)
@@ -95,6 +117,14 @@ namespace DocumentsService.DataAccess.Repositories
     public class DocumentCreatingError : Error
     {
         public override string Type => nameof(DocumentCreatingError);
+    }
+    public class EmitterNotFoundError : Error
+    {
+        public override string Type => nameof(EmitterNotFoundError);
+    }
+    public class DocumentSenderNotFoundError : Error
+    {
+        public override string Type => nameof(DocumentSenderNotFoundError);
     }
     public class UserNotFoundError : Error
     {

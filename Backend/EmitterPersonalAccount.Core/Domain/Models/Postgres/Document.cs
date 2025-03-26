@@ -23,6 +23,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
             ) : base(Guid.NewGuid())
         {
             User = user;
+            Console.WriteLine(user.Registrator);
+            IsEmitterSended = user.Registrator is not null;
             Title = Path.GetFileNameWithoutExtension(fileName);
             Type = Path.GetExtension(fileName).ToLowerInvariant();
             UploadDate = uploadDate;
