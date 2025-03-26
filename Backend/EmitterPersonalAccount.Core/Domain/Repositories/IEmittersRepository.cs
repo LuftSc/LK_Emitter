@@ -1,0 +1,19 @@
+﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.EmitterVO;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace EmitterPersonalAccount.Core.Domain.Repositories
+{
+    public interface IEmittersRepository : IRepository<Emitter>
+    {
+        Task<Result> BindUser(Guid emitterId, Guid userId);
+        Task<Result<List<Tuple<Guid, EmitterInfo>>>> GetAllByUserId(Guid userId);
+    }
+}

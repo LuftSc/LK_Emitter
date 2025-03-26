@@ -1,4 +1,5 @@
-﻿using EmitterPersonalAccount.Core.Domain.SharedKernal;
+﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using System;
 using System.Collections.Generic;
@@ -29,12 +30,14 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
             Hash = hash;
         }
         public User User { get; private set; } = null!;
+        public bool IsEmitterSended { get; private set; }
         public string Title { get; private set; } = string.Empty;
         public string Type { get; private set; } = string.Empty;
         public DateTime UploadDate { get; private set; }
         public byte[] Content { get; private set; } = [];
         public string Hash { get; private set; } = string.Empty;
         public double GetSize() => Content.Length / 1024;
+        public Emitter Emitter { get; private set; } = null!;
         public static Result<Document> Create(User user,
             string fileName,
             DateTime uploadDate,

@@ -1,65 +1,122 @@
 services:
-  #auth_postgres_db:
-    #image: postgres:latest
-   # container_name: auth_postgres_db
-    #environment:
-      #POSTGRES_DB: "auth_postgres_db"
-     # POSTGRES_USER: "postgres"
-      #POSTGRES_PASSWORD: "postgres"
-    #volumes:
-   # - #postgres-data-service-auth:/var/lib/postgresql/data
-    #ports:
-   # - #"5432:5432"
-   # networks:
-      #- #emitterPersonal
+  api_service:
+    container_name: api_service
+    restart: unless-stopped
+    profiles:
+      - microservices
+    build:
+      context: ./Backend/
+      dockerfile: EmitterPersonalAccount.API/Dockerfile
+    env_file: .env
+    environment:
+      - ASPNETCORE_URLS=http://+:5000
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5000:5000"
+    networks:
+      - emitterPersonal
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      api_postgres_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  email_sender_service:
+    container_name: email_sender_service
+    restart: unless-stopped
+    profiles:
+      - microservices
+    build:
+      context: ./Backend/
+      dockerfile: EmailSender/Dockerfile
+    env_file: .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - emitterPersonal
+    depends_on:
+      api_service:
+        condition: service_healthy
   api_postgres_db:
     image: postgres:latest
     container_name: api_postgres_db
     environment:
-      POSTGRES_DB: "api_postgres_db"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: ${POSTGRES_API_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
     - postgres-data-service-api:/var/lib/postgresql/data
     ports:
     - "5432:5432"
     networks:
       - emitterPersonal
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U $$POSTGRES_USER -d $$POSTGRES_DB -c 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
   documents_postgres_db:
     image: postgres:latest
     container_name: documents_postgres_db
     environment:
-      POSTGRES_DB: "documents_postgres_db"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: ${POSTGRES_DOCUMENTS_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
     - postgres-data-service-documents:/var/lib/postgresql/data
     ports:
     - "5433:5432"
     networks:
       - emitterPersonal
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U $$POSTGRES_USER -d $$POSTGRES_DB -c 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
   external_registrator_db:
     image: postgres:latest
     container_name: external_registrator_db
     environment:
-      POSTGRES_DB: "external_registrator_db"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: ${POSTGRES_REGISTRATOR_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
     - postgres-data-service-registrator:/var/lib/postgresql/data
     ports:
     - "5434:5432"
     networks:
       - emitterPersonal
+    healthcheck:
+      test: ["CMD-SHELL", "psql -U $$POSTGRES_USER -d $$POSTGRES_DB -c 'SELECT 1'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     #command: postgres -p 5433
   redis:
     image: redis
+    container_name: redis
     restart: always
     ports:
       - "6380:6380"
     command: redis-server --port 6380
     networks:
       - emitterPersonal
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6380", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 5
   rabbitmq:
     restart: unless-stopped
     image: rabbitmq:3-management

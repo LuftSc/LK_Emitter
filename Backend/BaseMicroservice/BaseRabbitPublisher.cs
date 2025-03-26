@@ -49,15 +49,16 @@ namespace BaseMicroservice
             {
                 await using var connection = await factory.CreateConnectionAsync(cancellation);
                 await using var channel = await connection.CreateChannelAsync(options: null, cancellation);
-                await channel.QueueDeclareAsync(
+                /*await channel.QueueDeclareAsync(
                     queue: queueName,
                     durable: true,
                     exclusive: false,
                     autoDelete: false,
                     arguments: null,
-                    cancellationToken: cancellation);
+                    cancellationToken: cancellation);*/
 
                 var body = Encoding.UTF8.GetBytes(message);
+
                 await channel
                     .BasicPublishAsync("", queueName, false, body, cancellation);
 

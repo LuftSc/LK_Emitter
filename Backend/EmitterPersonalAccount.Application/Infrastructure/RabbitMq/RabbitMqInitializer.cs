@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,6 +50,13 @@ namespace EmitterPersonalAccount.Application.Infrastructure.RabbitMq
                     );
                 }
             }
+            await channel.QueueDeclareAsync(
+                        queue: "email",
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null
+                    );
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

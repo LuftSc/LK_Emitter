@@ -1,6 +1,7 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
@@ -49,7 +50,10 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
             await distributedCache
                 .SetStringAsync(request.RecipientEmail, confirmationCode);
 
-            await publisher.SendMessageAsync(message, "email", cancellationToken);
+            await publisher
+                .SendMessageAsync(message, 
+                RabbitMqAction.SendEmailConfirmation.QueueName, 
+                cancellationToken);
 
             return Result.Success();
         }

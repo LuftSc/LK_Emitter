@@ -9,11 +9,13 @@ namespace EmailSender
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            
             // Add services to the container.
             builder.Services.AddAuthorization();
+
             builder.Configuration.AddJsonFile("appsettings.EmailSender.json", optional: false, reloadOnChange: true);
 
+            builder.Configuration.AddEnvironmentVariables();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -41,6 +43,8 @@ namespace EmailSender
                 provider.GetService<ISender>()
                 ));
 
+            builder.Services.AddHealthChecks();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -53,6 +57,9 @@ namespace EmailSender
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.MapHealthChecks("/health");
+
             app.Run();
         }
     }

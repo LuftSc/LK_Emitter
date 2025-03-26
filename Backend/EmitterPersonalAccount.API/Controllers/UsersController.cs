@@ -1,7 +1,11 @@
 ﻿//using AuthService.Application.Features.Users;
 //using AuthService.Controllers;
+using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.EmitterVO;
+using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -23,12 +27,17 @@ namespace EmitterPersonalAccount.API.Controllers
         private readonly IMediator mediator;
         private readonly IDistributedCache distributedCache;
         private readonly IJwtProvider jwtProvider;
+        private readonly IEmittersRepository emittersRepository;
+
         public UsersController(IMediator mediator, 
-            IDistributedCache distributedCache, IJwtProvider jwtProvider)
+            IDistributedCache distributedCache, 
+            IJwtProvider jwtProvider,
+            IEmittersRepository emittersRepository)
         {
             this.mediator = mediator;
             this.distributedCache = distributedCache;
             this.jwtProvider = jwtProvider;
+            this.emittersRepository = emittersRepository;
         }
 
         [Authorize]
@@ -38,7 +47,7 @@ namespace EmitterPersonalAccount.API.Controllers
             var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
 
             if (userId == null) return BadRequest("user id can not be null");
-
+            
             Guid.TryParse(userId, out Guid userGuid);
 
             return Ok(JsonConvert.SerializeObject(userGuid));
@@ -127,6 +136,28 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
+        [HttpPost("bind-to-emitter/{emitterId:guid}")]
+        public async Task<ActionResult> BindToEmitterById(Guid emitterId, Guid userId)
+        {
+            var result = await emittersRepository.BindUser(emitterId, userId);
+
+            if (!result.IsSuccessfull) 
+                return BadRequest(result.GetErrors());
+
+            return Ok();
+        }
+        [HttpGet("get-emitters/{userId:guid}")]
+        public async Task<ActionResult<List<EmitterInfoDTO>>> GetAllUserEmitters(Guid userId)
+        {
+            var result = await emittersRepository.GetAllByUserId(userId);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            var response = result.Value.Select(e => new EmitterInfoDTO(e.Item1, e.Item2));
+
+            return Ok(response);
+        }
         /*public async Task<ActionResult> GetUserInfo()
         {// Получается вся информация о пользователе
             // ФИО, др, паспортные данные

@@ -27,6 +27,8 @@ namespace EmitterPersonalAccount.API
             var builder = WebApplication.CreateBuilder(args);
             // Устанаваливаем настройки аутентификации
             builder.Services.AddApiAuthentification(builder.Configuration);
+            // Сначала загружаем переменные окружения
+            builder.Configuration.AddEnvironmentVariables();
 
             builder.Services.Configure<RabbitMqInitOptions>
                 (builder.Configuration.GetSection(nameof(RabbitMqInitOptions)));
@@ -64,6 +66,8 @@ namespace EmitterPersonalAccount.API
             //builder.Services.AddHttpClient();
 
             builder.Services.RegisterRepository<IUserRepository, UsersRepository>();
+            builder.Services.RegisterRepository<IEmittersRepository, EmittersRepository>();
+            builder.Services.RegisterRepository<IRegistratorRepository, RegistratorRepository>();
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
@@ -71,6 +75,7 @@ namespace EmitterPersonalAccount.API
                 options.Configuration = connection;
             });
 
+            builder.Services.AddHostedService<MigrationHostedService>();
             builder.Services.AddHostedService<RabbitMqInitializer>();
             builder.Services.AddHostedService<RpcClientInitializer>();
 
@@ -100,7 +105,7 @@ namespace EmitterPersonalAccount.API
 
             builder.Services.AddMemoryCache();
 
-            
+            builder.Services.AddHealthChecks();
 
             var app = builder.Build();
 
@@ -146,6 +151,8 @@ namespace EmitterPersonalAccount.API
                 x.WithOrigins("http://localhost:3000").AllowCredentials();
                 x.WithExposedHeaders("Content-Disposition");
             });
+
+            app.MapHealthChecks("/health");
 
             app.MapControllers();
             app.Run();
