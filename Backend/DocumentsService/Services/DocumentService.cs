@@ -44,7 +44,6 @@ namespace DocumentsService.Services
 
             return Result<Document>.Success(document);
         }
-
         public async Task<Result> DeleteDocumentById(Guid documentId,  
             CancellationToken cancellationToken)
         {

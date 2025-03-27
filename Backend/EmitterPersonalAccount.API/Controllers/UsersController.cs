@@ -146,15 +146,25 @@ namespace EmitterPersonalAccount.API.Controllers
 
             return Ok();
         }
-        [HttpGet("get-emitters/{userId:guid}")]
-        public async Task<ActionResult<List<EmitterInfoDTO>>> GetAllUserEmitters(Guid userId)
+
+        [Authorize]
+        [HttpGet("get-emitters")]
+        public async Task<ActionResult<List<EmitterInfoDTO>>> GetAllUserEmitters()
         {
-            var result = await emittersRepository.GetAllByUserId(userId);
+            var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
+
+            if (userId == null) return BadRequest("user id can not be null");
+
+            Guid.TryParse(userId, out Guid userGuid);
+
+            var result = await emittersRepository.GetAllByUserId(userGuid);
 
             if (!result.IsSuccessfull)
                 return BadRequest(result.GetErrors());
 
-            var response = result.Value.Select(e => new EmitterInfoDTO(e.Item1, e.Item2));
+            var response = result.Value
+                .Select(e => new EmitterInfoDTO(e.Item1, e.Item2))
+                .ToList();
 
             return Ok(response);
         }
