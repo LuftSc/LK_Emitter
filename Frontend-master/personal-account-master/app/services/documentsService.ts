@@ -1,9 +1,5 @@
 import { Document } from "../models/Document";
 
-export interface UploadDocumentRequest {
-
-}
-
 export const downloadDocument = async (documentInfo: Document) => {
     return await fetch(`http://localhost:5000/Documents/download/${documentInfo.id}`, {
         credentials: 'include'

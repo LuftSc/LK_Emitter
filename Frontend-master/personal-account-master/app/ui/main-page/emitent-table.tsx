@@ -4,9 +4,8 @@ import { Emitter } from "@/app/models/Emitter";
 import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useSimpleStorage } from "@/app/hooks/useLocalStorage";
+// import { useSimpleStorage } from "@/app/hooks/useLocalStorage";
 //import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-const { getItem, setItem } = useSimpleStorage('emitter');
 
 /*interface Props {
     emitentName: string,
@@ -21,6 +20,7 @@ interface Props {
 }
 
 export default function EmitentTable ({userId, emitters, setEmitterName, isTableVisible}: Props) {
+    // const { getItem, setItem } = useSimpleStorage('emitter');
     const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
     //const [emitterId, setEmitterId] = useLocalStorage<{emitterId: string}>('emitterId', {emitterId: ""})
 
@@ -28,7 +28,7 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
         setSelectedRowId(id === selectedRowId ? null : id);
         setEmitterName(emitterName)
         console.log('устанавливаем id: ' + id)
-        setItem({ Id: id, Name: emitterName, AuthPerson: userId });
+        // setItem({ Id: id, Name: emitterName, AuthPerson: userId });
     };
 
     
