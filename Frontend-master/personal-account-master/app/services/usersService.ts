@@ -22,6 +22,18 @@ export const loginUser = async (request: LoginUserRequest) => {
     .catch(error => console.error(error))
 }
 
+export const loginUserWithout2FA = async (request: LoginUserRequest) => {
+    return await fetch('http://localhost:5000/Users/login-user-without-2fa', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(request)
+    })
+    .catch(error => console.error(error))
+}
+
 export const verifyCode = async (request: ConfirmationCodeRequest) => {
     return await fetch('http://localhost:5000/Users/verify-code', {
         method: 'POST',
@@ -39,4 +51,13 @@ export const getUserEmitters = async () => {
         credentials: 'include'
     })
     .catch(error => console.error(error))
+}
+
+export const getCurrentUser = async () => {
+    return await fetch('http://localhost:5000/Users/get-current-user', {
+        credentials: "include"
+    })
+    .catch(error => {
+        console.error(error)
+    })
 }

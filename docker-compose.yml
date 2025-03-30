@@ -44,6 +44,22 @@ services:
     depends_on:
       api_service:
         condition: service_healthy
+  documents_service:
+    container_name: documents_service
+    restart: unless-stopped
+    profiles:
+      - microservices
+    build:
+      context: ./Backend/
+      dockerfile: DocumentsService/Dockerfile
+    env_file: .env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - emitterPersonal
+    depends_on:
+      api_service:
+        condition: service_healthy
   api_postgres_db:
     image: postgres:latest
     container_name: api_postgres_db
@@ -53,6 +69,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
     - postgres-data-service-api:/var/lib/postgresql/data
+    - ./db_dump:/docker-entrypoint-initdb.d
     ports:
     - "5432:5432"
     networks:

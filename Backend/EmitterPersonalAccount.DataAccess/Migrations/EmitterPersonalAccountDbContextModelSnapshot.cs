@@ -63,7 +63,7 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Document");
+                    b.ToTable("Document", (string)null);
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", b =>
@@ -396,7 +396,7 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
 
                     b.HasIndex("RegistratorId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.UserEmitter", b =>
@@ -411,7 +411,7 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
 
                     b.HasIndex("EmitterId");
 
-                    b.ToTable("UserEmitter");
+                    b.ToTable("UserEmitter", (string)null);
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Document", b =>

@@ -31,6 +31,7 @@ namespace DocumentsService.DataAccess.Repositories
             List<DocumentInfo> documentsInfo, CancellationToken cancellationToken,
             bool withDigitalSignature = false)
         {
+            Console.Write("Зашли в репозиторий документов");
             var sender = await context.Users
                 .Include(u => u.Registrator)
                 .FirstOrDefaultAsync(u => u.Id == senderId);
@@ -64,6 +65,24 @@ namespace DocumentsService.DataAccess.Repositories
             await context.Documents.AddRangeAsync(documents);
 
             emitter.Documents.AddRange(documents);
+
+            var entries = context.ChangeTracker.Entries();
+
+            foreach (var entry in entries)
+            {
+                Console.WriteLine($"Entity: {entry.Entity.GetType().Name}");
+                Console.WriteLine($"State: {entry.State}");
+
+                foreach (var property in entry.Properties)
+                {
+                    if (property.IsModified)
+                    {
+                        Console.WriteLine($"{property.Metadata.Name}:");
+                        Console.WriteLine($"  Original: {property.OriginalValue}");
+                        Console.WriteLine($"  Current: {property.CurrentValue}");
+                    }
+                }
+            }
 
             await context.SaveChangesAsync(cancellationToken);
 

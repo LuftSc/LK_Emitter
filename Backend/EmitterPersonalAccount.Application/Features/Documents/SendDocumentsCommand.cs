@@ -33,6 +33,7 @@ namespace EmitterPersonalAccount.Application.Features.Documents
         public override async Task<Result> Handle(SendDocumentsCommand request, 
             CancellationToken cancellationToken)
         {
+            Console.WriteLine("Зашли в обработчик команды документов");
             var documents = new List<DocumentInfo>(request.Files.Count);
 
             foreach (var file in request.Files)

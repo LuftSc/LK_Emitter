@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { InputLogin } from "./login-input";
 import LoginBtn from "./login-btn";
-import { loginUser, LoginUserRequest } from "@/app/services/usersService";
+import { loginUser, LoginUserRequest, loginUserWithout2FA } from "@/app/services/usersService";
 import { errorMessages } from "@/app/services/errorMessages";
 
 interface Props {
@@ -14,9 +14,10 @@ interface Props {
     visLog: boolean,
     setVisLog: React.Dispatch<React.SetStateAction<boolean>>,
     setVisCon: React.Dispatch<React.SetStateAction<boolean>>
+    onLoginSuccess: () => void;
 }
 
-export default function LogInForm ({email, setEmail, password, setPassword, visLog, setVisLog, setVisCon}: Props) {
+export default function LogInForm ({email, setEmail, password, setPassword, visLog, setVisLog, setVisCon, onLoginSuccess}: Props) {
 
     if(!visLog) return null
     
@@ -26,13 +27,20 @@ export default function LogInForm ({email, setEmail, password, setPassword, visL
             password: password
         } as LoginUserRequest
 
-        const response = await loginUser(loginRequest)
+        // ЗАМЕНИТЬ!!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
+        const response = await loginUserWithout2FA(loginRequest)
+        //const response = await loginUser(loginRequest)
 
         if (response?.ok) { // Случай, когда запрос выполнился успешно
             // Если пользователь найден и его пароль верный
             console.log('Всё ОК!')
+            
             setVisLog(false) 
-            setVisCon(true) 
+            // РАСКОММЕНТИРОВАТЬ !!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
+            //setVisCon(true)
+            // ЗАКОММЕНТИРОВАТЬ И УБРАТЬ ИЗ ПРОПСОВ !!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
+            onLoginSuccess()
+            
         } else if (response?.status === 400){ // Какая-то ошибка в процессе выполнения логики
             // Тут можно подсвечивать ошибку на форме
             const error = await response?.json()

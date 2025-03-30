@@ -16,6 +16,7 @@ namespace DocumentsService.Consumers
         }
         public override async Task<Result> Handler(object model, BasicDeliverEventArgs args)
         {
+            Console.WriteLine("Зашли в консьюмер документов");
             Result response;
 
             var sendDocumentEvent = EventDeserializer<SendDocumentEvent>
@@ -34,6 +35,7 @@ namespace DocumentsService.Consumers
                 return Result.Error(new SendingDocumentError());
             }
 
+            Console.Write("отправка прошла успешно");
             return Result.Success();
         }
     }

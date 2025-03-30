@@ -25,7 +25,7 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         public string PasswordHash { get; private set; } = string.Empty;
         //public List<Document> Documents { get; private set; } = [];
         public List<Emitter> Emitters { get; private set; } = [];
-        public Registrator? Registrator { get; private set; } = null!;
+        public Registrator? Registrator { get; set; } = null!;
         public static Result<User> Create(string email, string passwordHash)
         {
             if (string.IsNullOrEmpty(email)) 

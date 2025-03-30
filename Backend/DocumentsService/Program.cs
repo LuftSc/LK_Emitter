@@ -17,6 +17,7 @@ namespace DocumentsService
 
             builder.Configuration.AddJsonFile("appsettings.Documents.json", optional: false, reloadOnChange: true);
 
+            builder.Configuration.AddEnvironmentVariables();
             // Add services to the container.
             builder.Services.AddAuthorization();
 
@@ -41,6 +42,8 @@ namespace DocumentsService
 
             /*var queueName = builder.Configuration.GetConnectionString("RabbitMqQueueName");
             ArgumentNullException.ThrowIfNull(queueName, "Rabbit Queue name can not be null!");*/
+
+            builder.Services.AddHostedService<MigrationHostedService>();
 
             builder.Services.AddHostedService<MainService>(provider => new MainService(
                 builder.Configuration,

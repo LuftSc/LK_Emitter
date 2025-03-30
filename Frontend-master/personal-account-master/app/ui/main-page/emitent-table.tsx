@@ -1,7 +1,12 @@
+"use client"
+
 import { Emitter } from "@/app/models/Emitter";
 import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { useSimpleStorage } from "@/app/hooks/useLocalStorage";
+//import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+const { getItem, setItem } = useSimpleStorage('emitter');
 
 /*interface Props {
     emitentName: string,
@@ -9,17 +14,21 @@ import type { ColumnsType } from 'antd/es/table';
 } */
 
 interface Props {
+    userId: string
     emitters: Emitter[]
     setEmitterName: React.Dispatch<React.SetStateAction<string>>
     isTableVisible: boolean
 }
 
-export default function EmitentTable ({emitters, setEmitterName, isTableVisible}: Props) {
+export default function EmitentTable ({userId, emitters, setEmitterName, isTableVisible}: Props) {
     const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+    //const [emitterId, setEmitterId] = useLocalStorage<{emitterId: string}>('emitterId', {emitterId: ""})
 
     const handleSelect = (id: string, emitterName: string) => {
         setSelectedRowId(id === selectedRowId ? null : id);
         setEmitterName(emitterName)
+        console.log('устанавливаем id: ' + id)
+        setItem({ Id: id, Name: emitterName, AuthPerson: userId });
     };
 
     
@@ -36,11 +45,13 @@ export default function EmitentTable ({emitters, setEmitterName, isTableVisible}
                 {selectedRowId === record.id ? 'Выбрано' : 'Выбрать'}
               </Button>
             ),
+            width: 100
         },
         {
             title: 'Название эмитента',
             dataIndex: ['emitterInfo', 'fullName'],
             key: 'fullName',
+            width: 700
         },
     ]
 
@@ -54,6 +65,11 @@ export default function EmitentTable ({emitters, setEmitterName, isTableVisible}
                     rowClassName={(record) => 
                         record.id === selectedRowId ? 'active-row' : ''
                     }
+                    pagination={{
+                        pageSize: 5, // Количество строк на странице
+                        //showSizeChanger: true, // Показывать выбор количества строк
+                        //pageSizeOptions: ['10', '20', '50', '100'], // Варианты выбора
+                      }}
                 />)
             }
         </div>

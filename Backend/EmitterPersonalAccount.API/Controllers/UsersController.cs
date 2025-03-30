@@ -3,10 +3,12 @@
 using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.EmitterVO;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +17,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 //using Org.BouncyCastle.Asn1.Ocsp;
 using System.Text;
+using System.Threading;
 using static System.Net.WebRequestMethods;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EmitterPersonalAccount.API.Controllers
 {
@@ -28,25 +30,39 @@ namespace EmitterPersonalAccount.API.Controllers
         private readonly IDistributedCache distributedCache;
         private readonly IJwtProvider jwtProvider;
         private readonly IEmittersRepository emittersRepository;
+        private readonly IRegistratorRepository registratorRepository;
+        private readonly IUserRepository userRepository;
+        private readonly IPasswordHasher passwordHasher;
 
         public UsersController(IMediator mediator, 
             IDistributedCache distributedCache, 
             IJwtProvider jwtProvider,
-            IEmittersRepository emittersRepository)
+            IEmittersRepository emittersRepository, 
+            IRegistratorRepository registratorRepository, 
+            IUserRepository userRepository, 
+            IPasswordHasher passwordHasher)
         {
             this.mediator = mediator;
             this.distributedCache = distributedCache;
             this.jwtProvider = jwtProvider;
             this.emittersRepository = emittersRepository;
+            this.registratorRepository = registratorRepository;
+            this.userRepository = userRepository;
+            this.passwordHasher = passwordHasher;
         }
 
-        [Authorize]
         [HttpGet("get-current-user")]
         public async Task<ActionResult<Guid>> GetCurrentUserId()
         {
-            var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
+            var isUserIdExist = HttpContext.User.HasClaim(c => c.Type == CustomClaims.UserId);
 
-            if (userId == null) return BadRequest("user id can not be null");
+            if (!isUserIdExist)
+            {
+                var result = Result.Error(new UserNonAuthentificatedError());
+                return BadRequest(result.GetErrors());
+            } 
+            
+            var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
             
             Guid.TryParse(userId, out Guid userGuid);
 
@@ -146,6 +162,41 @@ namespace EmitterPersonalAccount.API.Controllers
 
             return Ok();
         }
+        [HttpPost("register-and-bind-to-emitter/{emitterId:guid}")]
+        public async Task<ActionResult> RegisterAndBindToEmitter(Guid emitterId, 
+            [FromBody] RegisterUserCommand request)
+        {
+            var passwordHash = passwordHasher.Generate(request.Password);
+
+            var userCreateResult = Core.Domain.Models.Postgres.User
+                .Create(request.Email, passwordHash);
+
+            if (!userCreateResult.IsSuccessfull)
+                return BadRequest(userCreateResult.GetErrors());
+
+            
+
+            await userRepository.AddAsync(userCreateResult.Value, default);
+            await userRepository.UnitOfWork.SaveChangesAsync(default);
+
+            var result = await emittersRepository.BindUser(emitterId, userCreateResult.Value.Id);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            return Ok();
+        }
+
+        [HttpPost("bind-to-registrator/{registratorId:guid}")]
+        public async Task<ActionResult> BindToRegistratorById(Guid registratorId, Guid userId)
+        {
+            var result = await registratorRepository.BindUser(registratorId, userId);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            return Ok();
+        }
 
         [Authorize]
         [HttpGet("get-emitters")]
@@ -180,5 +231,10 @@ namespace EmitterPersonalAccount.API.Controllers
             return await Task.FromResult(Ok());
         }*/
 
+    }
+
+    public class UserNonAuthentificatedError : Error
+    {
+        public override string Type => nameof(UserNonAuthentificatedError);
     }
 }

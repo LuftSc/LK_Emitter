@@ -19,12 +19,12 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [FileUploadOperation.FileContentType]
         [HttpPost("send-documents")]
-        public async Task<ActionResult> SendDocument(SendDocumentsCommand request)
+        public async Task<ActionResult> SendDocument([FromForm] SendDocumentsCommand request)
         {// Сохраняет документ в БД и отправляет его получателю
             // ФЛАГ: С подписью\ без подписи
             if (request == null || request.Files.Count == 0) 
                 return BadRequest("List files null or empty!");
-
+            Console.WriteLine("Зашли в контроллер документов");
             var result = await mediator.Send(request);
 
             if (!result.IsSuccessfull) return BadRequest(result.GetErrors());
@@ -46,7 +46,7 @@ namespace EmitterPersonalAccount.API.Controllers
             if (!result.IsSuccessfull)
                 return BadRequest(result.GetErrors());
 
-            return Ok(result.Value);    
+            return Ok(result.Value.OrderByDescending(d => d.UploadDate).ToList());    
         }
 
         [HttpGet("download/{documentId:guid}")]

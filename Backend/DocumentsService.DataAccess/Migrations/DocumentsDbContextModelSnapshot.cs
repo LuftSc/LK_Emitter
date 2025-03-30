@@ -411,7 +411,7 @@ namespace DocumentsService.DataAccess.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("EmitterUser");
+                    b.ToTable("EmitterUser", (string)null);
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Document", b =>

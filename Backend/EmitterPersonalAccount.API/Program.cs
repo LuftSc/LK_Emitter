@@ -76,6 +76,7 @@ namespace EmitterPersonalAccount.API
             });
 
             builder.Services.AddHostedService<MigrationHostedService>();
+
             builder.Services.AddHostedService<RabbitMqInitializer>();
             builder.Services.AddHostedService<RpcClientInitializer>();
 
