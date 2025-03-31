@@ -28,8 +28,8 @@ export default function LogInForm ({email, setEmail, password, setPassword, visL
         } as LoginUserRequest
 
         // ЗАМЕНИТЬ!!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
-        const response = await loginUserWithout2FA(loginRequest)
-        //const response = await loginUser(loginRequest)
+        //const response = await loginUserWithout2FA(loginRequest)
+        const response = await loginUser(loginRequest)
 
         if (response?.ok) { // Случай, когда запрос выполнился успешно
             // Если пользователь найден и его пароль верный
@@ -37,9 +37,9 @@ export default function LogInForm ({email, setEmail, password, setPassword, visL
             
             setVisLog(false) 
             // РАСКОММЕНТИРОВАТЬ !!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
-            //setVisCon(true)
+            setVisCon(true)
             // ЗАКОММЕНТИРОВАТЬ И УБРАТЬ ИЗ ПРОПСОВ !!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
-            onLoginSuccess()
+            //onLoginSuccess()
             
         } else if (response?.status === 400){ // Какая-то ошибка в процессе выполнения логики
             // Тут можно подсвечивать ошибку на форме

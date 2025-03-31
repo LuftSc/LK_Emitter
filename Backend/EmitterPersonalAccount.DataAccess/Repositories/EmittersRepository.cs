@@ -55,6 +55,7 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
         {
             var user = await context.Users
                 .Include(u => u.Emitters)
+                .Include(u => u.Registrator)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (user is null)
@@ -64,6 +65,7 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
             var emittersInfo = new List<Tuple<Guid, EmitterInfo>>();
 
             // Пользователь - сотрудник регистратора
+            Console.WriteLine(user.Registrator);
             if (user.Registrator is null)
             {
                 emittersInfo = context.Emitters

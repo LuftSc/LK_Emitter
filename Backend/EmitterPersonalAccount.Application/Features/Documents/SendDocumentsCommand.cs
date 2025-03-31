@@ -15,7 +15,7 @@ namespace EmitterPersonalAccount.Application.Features.Documents
 {
     public sealed class SendDocumentsCommand : Command
     {
-        public Guid SenderId { get; set; }
+        public Guid SenderId { get; set; } = Guid.Empty;
         public Guid EmitterId { get; set; }
         public List<IFormFile> Files { get; set; } = [];
         public bool WithDigitalSignature { get; set; } = false;

@@ -1,6 +1,7 @@
 "use client"
+
 import { Button, Pagination, Table } from "antd";
-import { useSimpleStorage } from "../hooks/useLocalStorage";
+//import { useSimpleStorage } from "../hooks/useLocalStorage";
 import DocumentsTable from "../ui/documents-page/documents-table";
 import { ColumnsType } from "antd/es/table";
 import { Document } from "../models/Document";
@@ -21,33 +22,32 @@ export default function Page() {
     const [uploadTableVis, setUploadTableVis] = useState<boolean>(false);
 
     useEffect(() => {
-        const getEmitterDocuments = async () => {
-            await onDocumentsUpdate()
-        }
-        getEmitterDocuments()
-
-        const emitter = localStorage.getItem('emitter');
-        setEmitterInfo(emitter)
+        onDocumentsUpdate()
     }, [])
 
     const onDocumentsUpdate = async () => {
-        const emitter = localStorage.getItem('emitter');
-        setEmitterInfo(emitter)
+        const emitterJSON = localStorage.getItem('emitter')
 
-        const documentsResponse = await getDocuments(emitter.Id)  
+        if (emitterJSON) {
+            const emitter = JSON.parse(emitterJSON)
+            setEmitterInfo(emitter)
+
+            const documentsResponse = await getDocuments(emitter.Id)  
         
-        if (documentsResponse?.ok) { // Если успешно получили все документы
-            const documentsJson = await documentsResponse.json();
-            setDocuments(documentsJson)
-            console.log(documentsJson)
-        } else if (documentsResponse?.status === 400) { 
-            // если произошла ошибка при получении списка документов
-            const error = await documentsResponse.json()
-            //console.log(errorMessages[error[0].type])
-            console.log(error)
-        } else {
-            console.error('Неизвестная ошибка при полуении списка документов по эмитенту')
+            if (documentsResponse?.ok) { // Если успешно получили все документы
+                const documentsJson = await documentsResponse.json();
+                setDocuments(documentsJson)
+                console.log(documentsJson)
+            } else if (documentsResponse?.status === 400) { 
+                // если произошла ошибка при получении списка документов
+                const error = await documentsResponse.json()
+                //console.log(errorMessages[error[0].type])
+                console.log(error)
+            } else {
+                console.error('Неизвестная ошибка при полуении списка документов по эмитенту')
+            }
         }
+        
     }
 
     const formatDate = (dateTime: string) : string => {

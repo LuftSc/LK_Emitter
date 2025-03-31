@@ -4,8 +4,9 @@ import { Emitter } from "@/app/models/Emitter";
 import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { useSimpleStorage } from "@/app/hooks/useLocalStorage";
+//import { useSimpleStorage } from "@/app/hooks/useLocalStorage";
 //import { useLocalStorage } from "@/app/hooks/useLocalStorage";
+
 
 /*interface Props {
     emitentName: string,
@@ -23,15 +24,26 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
     const { getItem, setItem } = useSimpleStorage('emitter');
     const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
     //const [emitterId, setEmitterId] = useLocalStorage<{emitterId: string}>('emitterId', {emitterId: ""})
+    useEffect(() => {
+        const emitter = localStorage.getItem('emitter')
+        const emitterData = emitter ? JSON.parse(emitter) : null
+
+            setSelectedRowId(emitterData.Id);
+            setEmitterName(emitterData.Name)
+
+    }, [])
+    //const { getItem, setItem } = useSimpleStorage('emitter');
 
     const handleSelect = (id: string, emitterName: string) => {
         setSelectedRowId(id === selectedRowId ? null : id);
         setEmitterName(emitterName)
         console.log('устанавливаем id: ' + id)
-        localStorage.setItem('emitter', JSON.stringify({ Id: id, Name: emitterName, AuthPerson: userId }));
-    };
+        
+        localStorage.setItem('emitter', JSON.stringify({ Id: id, Name: emitterName, AuthPerson: userId }))
 
-    
+        //console.log(localStorage.getItem('emitter'))
+        //setItem({ Id: id, Name: emitterName, AuthPerson: userId });
+    };
 
     const columns : ColumnsType<Emitter> = [
         {

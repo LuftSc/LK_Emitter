@@ -1,5 +1,6 @@
 ﻿using EmitterPersonalAccount.API.Swagger;
 using EmitterPersonalAccount.Application.Features.Documents;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +25,21 @@ namespace EmitterPersonalAccount.API.Controllers
             // ФЛАГ: С подписью\ без подписи
             if (request == null || request.Files.Count == 0) 
                 return BadRequest("List files null or empty!");
-            Console.WriteLine("Зашли в контроллер документов");
+
+            var isUserIdExist = HttpContext.User.HasClaim(c => c.Type == CustomClaims.UserId);
+
+            if (!isUserIdExist)
+            {
+                var resultError = Result.Error(new UserNonAuthentificatedError());
+                return BadRequest(resultError.GetErrors());
+            }
+
+            var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
+
+            Guid.TryParse(userId, out Guid userGuid);
+
+            request.SenderId = userGuid;
+
             var result = await mediator.Send(request);
 
             if (!result.IsSuccessfull) return BadRequest(result.GetErrors());
