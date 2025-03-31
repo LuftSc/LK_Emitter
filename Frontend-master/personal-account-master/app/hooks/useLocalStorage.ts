@@ -1,4 +1,4 @@
-'use client';
+/*'use client';
 
 export function useSimpleStorage(key: string) {
   const setItem = (value: any) => {
@@ -10,5 +10,21 @@ export function useSimpleStorage(key: string) {
     return data ? JSON.parse(data) : null;
   };
 
-  return { setItem, getItem };
-}
+  const removeItem = () => {
+    try {
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error('Error removing from localStorage', error);
+    }
+  };
+
+  const clearAll = () => {
+    try {
+      localStorage.clear();
+    } catch (error) {
+      //console.error('Error clearing localStorage', error);
+    }
+  };
+
+  return { setItem, getItem, removeItem, clearAll };
+} */

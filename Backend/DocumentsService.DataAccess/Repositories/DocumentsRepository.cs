@@ -50,7 +50,7 @@ namespace DocumentsService.DataAccess.Repositories
 
             var documentsResults = documentsInfo
                 .Select(d => Document.Create(sender, d.FileName,
-                    DateTime.Now.ToUniversalTime(), d.Content,
+                    DateTime.Now.ToUniversalTime().AddHours(5), d.Content,
                     withDigitalSignature
                         ? hashService.ComputeHash(d.Content)
                         : string.Empty

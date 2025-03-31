@@ -8,11 +8,20 @@ import { Emitter } from "./models/Emitter";
 import { getCurrentUser, getUserEmitters } from "./services/usersService";
 import { errorMessages } from "./services/errorMessages";
 import { tree } from "next/dist/build/templates/app-page";
-import { useSimpleStorage } from "./hooks/useLocalStorage";
 
-const { getItem } = useSimpleStorage('emitter');
+
 
 export default function Home() {
+
+  
+  //const emitter = getItem()
+  //ВМЕСТО ЭТОГО setItem({ Id: id, Name: emitterName, AuthPerson: userId });
+  //ВТСАВИТЬ ЭТО: localStorage.setItem('emitter', JSON.stringify({ Id: id, Name: emitterName, AuthPerson: userId }));
+
+  
+  //ЭТО УДАЛИТЬ const { getItem } = useSimpleStorage('emitter');
+  //ВМСЕТО ЭТОГО const emitter = getItem()
+  //ВТСАВИТЬ ВОТ ЭТО: const emitter = localStorage.getItem('emitter'); */
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -32,8 +41,8 @@ export default function Home() {
     ({Id: "", Name: "", AuthPerson: ""})
 
   useEffect(() => {
-    const emitter = getItem()
-    console.log(emitter)
+    const emitter = localStorage.getItem('emitter');
+    if (emitter) setEmitterInfo(JSON.parse(emitter))
 
     const getUser = async () => {
       const userIdResponse = await getCurrentUser();
@@ -89,7 +98,7 @@ export default function Home() {
           <LogInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} visLog={visLog} setVisLog={setVisLog} setVisCon={setVisCon} onLoginSuccess={onAuthSucces}/>
           <p className="max-w-[900px] text-[34px]/[44px] mb-[24px]">{emitentName}</p>
           {/*<EmitentTable emitentName={emitentName} setEmitentName={setEmitentName}/> */}
-          <EmitentTable userId={userId} emitters={emitters} setEmitterName={setEmitentName} isTableVisible={visEmitTable}/>
+          <EmitentTable userId={userId} emitters={emitters} setEmitterName={setEmitentName} isTableVisible={visEmitTable} currentEmitter={emitterInfo}/>
         </div>
      </div>
     </main>

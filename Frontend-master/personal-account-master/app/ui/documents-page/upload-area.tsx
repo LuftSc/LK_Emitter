@@ -6,7 +6,6 @@ import { Button, message, Upload } from 'antd';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { uploadDocuments } from '@/app/services/documentsService';
 import Dragger from 'antd/es/upload/Dragger';
-import { useSimpleStorage } from '@/app/hooks/useLocalStorage';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -16,15 +15,18 @@ export const UploadDocumentArea = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [willSign, setWillSign] = useState(false);
-  const [emitterInfo, setEmitterInfo] = useState<{
+/*const [emitterInfo, setEmitterInfo] = useState<{
     Id: string, 
     Name: string, 
     AuthPerson: string}>
-    ({Id: "", Name: "", AuthPerson: ""})
+    ({Id: "", Name: "", AuthPerson: ""}) */
 
   const handleUpload = async () => {
-    const { getItem } = useSimpleStorage('emitter');
-    setEmitterInfo(getItem())
+
+    const emitter = localStorage.getItem('emitter');
+    const emitterData = emitter ? JSON.parse(emitter) : null;
+    //const emitter = localStorage.getItem('emitter')
+    //if (emitter) setEmitterInfo(JSON.parse(emitter))
 
     const formData = new FormData();
     fileList.forEach((file) => {
@@ -32,8 +34,8 @@ export const UploadDocumentArea = () => {
     });
       // 2. Добавляем остальные параметры в FormData (не в URL!)
     
-    formData.append('SenderId', emitterInfo.AuthPerson );
-    formData.append('EmitterId', emitterInfo.Id);
+    //formData.append('SenderId', emitterInfo.AuthPerson );
+    formData.append('EmitterId', emitterData.Id);
     formData.append('WithDigitalSignature', String(willSign));
     
 
