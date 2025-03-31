@@ -68,6 +68,7 @@ namespace EmitterPersonalAccount.API
             builder.Services.RegisterRepository<IUserRepository, UsersRepository>();
             builder.Services.RegisterRepository<IEmittersRepository, EmittersRepository>();
             builder.Services.RegisterRepository<IRegistratorRepository, RegistratorRepository>();
+            builder.Services.RegisterRepository<IOrderReportsRepository, OrderReportsRepository>();
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {

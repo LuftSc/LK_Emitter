@@ -1,6 +1,7 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Consumers;
@@ -43,13 +44,19 @@ namespace EmitterPersonalAccount.Application.Infrastructure.Consumers
 
                 if (!connectionIdFoundResult.IsSuccessfull)
                     return connectionIdFoundResult;
-                
                 //memoryCacheService.RemoveValue(orderGeneratingResult.UserId);
 
                 await resultsService.SendListOfShareholdersResultToClient(
                     connectionIdFoundResult.Value,
                     orderGeneratingResult.DocumentId,
                     orderGeneratingResult.SendingDate);
+
+                var orderReportsRepository = scope.ServiceProvider
+                    .GetRequiredService<IOrderReportsRepository>();
+
+                await orderReportsRepository
+                    .ChangeProcessingStatusOk(orderGeneratingResult.DocumentId,
+                    orderGeneratingResult.ExternalDocumentId);
             }
 
             return Result.Success();

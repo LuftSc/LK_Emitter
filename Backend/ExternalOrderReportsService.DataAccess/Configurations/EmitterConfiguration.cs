@@ -7,9 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml.Serialization;
 
-namespace EmitterPersonalAccount.DataAccess.Configurations
+namespace ExternalOrderReportsService.DataAccess.Configurations
 {
     public class EmitterConfiguration : IEntityTypeConfiguration<Emitter>
     {
@@ -17,11 +16,6 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
         {
             builder.ToTable("Emitters").HasKey(e => e.Id);
             builder.Property(e => e.Id).HasColumnName("EMIT_ID");
-
-            builder.HasOne(e => e.Registrator).WithMany(r => r.Emitters);
-            builder.HasMany(e => e.Documents)
-                .WithOne(d => d.Emitter)
-                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(e => e.OrderReports).WithOne(o => o.Emitter);
 

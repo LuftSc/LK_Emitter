@@ -12,13 +12,15 @@ namespace ExternalOrderReportsService.Consumers
     public record RequestListOfShareholdersEvent(
         DateTime SendingDate,
         ListOfShareholdersRequest RequestData,
-        string UserId
+        string UserId,
+        Guid DocumentId
         ) { }
 
     public record ResultListOfShareholsders(
         DateTime SendingDate,
-        Guid DocumentId,
-        string UserId
+        Guid ExternalDocumentId,
+        string UserId,
+        Guid DocumentId
         )
     { }
     public class RequestListOfShareholdersConsumer : BaseRabbitConsumer
@@ -49,7 +51,11 @@ namespace ExternalOrderReportsService.Consumers
                     if (!orderReportResult.IsSuccessfull)
                         return Result.Error(new ListOfShareholsdersReportGeneratingError());
 
-                    var response = new ResultListOfShareholsders(ev.SendingDate, orderReportResult.Value, ev.UserId);
+                    var response = new ResultListOfShareholsders
+                        (ev.SendingDate, 
+                        orderReportResult.Value, 
+                        ev.UserId,
+                        ev.DocumentId);
 
                     var message = JsonSerializer.Serialize(response);
 

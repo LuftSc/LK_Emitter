@@ -1,5 +1,7 @@
 ﻿//using EmitterPersonalAccount.Application.Features.Documents;
+using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.Application.Features.OrderReports;
+using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using ExternalOrderReportsService.Contracts;
 using MediatR;
@@ -16,10 +18,29 @@ namespace EmitterPersonalAccount.API.Controllers
     public class OrderReportsController : ControllerBase
     {
         private readonly IMediator mediator;
+        private readonly IOrderReportsRepository orderReportsRepository;
 
-        public OrderReportsController(IMediator mediator)
+        public OrderReportsController(IMediator mediator, 
+            IOrderReportsRepository orderReportsRepository)
         {
             this.mediator = mediator;
+            this.orderReportsRepository = orderReportsRepository;
+        }
+
+        [Authorize]
+        [HttpGet("get-report-orders/{emitterId:guid}")]
+        public async Task<ActionResult<List<OrderReportDTO>>> GetReportOrders(Guid emitterId)
+        {
+            var result = await orderReportsRepository.GetAllByEmitterId(emitterId);
+
+            if (!result.IsSuccessfull) 
+                return BadRequest(result.GetErrors());
+
+            var response = result.Value.Select(o =>
+            new OrderReportDTO(o.Id, o.FileName, o.Status.ToString(), o.RequestDate, o.ExternalStorageId))
+                .ToList();
+
+            return Ok(response);  
         }
 
         [Authorize]

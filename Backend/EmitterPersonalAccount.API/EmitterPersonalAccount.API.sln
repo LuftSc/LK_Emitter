@@ -35,7 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ExternalOrderReportsMicrose
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExternalOrderReportsService", "..\ExternalOrderReportsService\ExternalOrderReportsService.csproj", "{B4E0DFD5-9861-4B5F-8D5E-6952E458752B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmitterPersonalAccount.DataAccess", "..\EmitterPersonalAccount.DataAccess\EmitterPersonalAccount.DataAccess.csproj", "{848C1CB1-2D20-4E97-8E47-6777B7E269AF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmitterPersonalAccount.DataAccess", "..\EmitterPersonalAccount.DataAccess\EmitterPersonalAccount.DataAccess.csproj", "{848C1CB1-2D20-4E97-8E47-6777B7E269AF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -8,28 +8,11 @@ import { Emitter } from "./models/Emitter";
 import { getCurrentUser, getUserEmitters } from "./services/usersService";
 import { errorMessages } from "./services/errorMessages";
 import { tree } from "next/dist/build/templates/app-page";
-<<<<<<< HEAD
-
-
-
-export default function Home() {
-
-  
-  //const emitter = getItem()
-  //ВМЕСТО ЭТОГО setItem({ Id: id, Name: emitterName, AuthPerson: userId });
-  //ВТСАВИТЬ ЭТО: localStorage.setItem('emitter', JSON.stringify({ Id: id, Name: emitterName, AuthPerson: userId }));
-
-  
-  //ЭТО УДАЛИТЬ const { getItem } = useSimpleStorage('emitter');
-  //ВМСЕТО ЭТОГО const emitter = getItem()
-  //ВТСАВИТЬ ВОТ ЭТО: const emitter = localStorage.getItem('emitter'); */
-=======
 // import { useSimpleStorage } from "./hooks/useLocalStorage";
 
 export default function Home() {
 
   // const { getItem } = useSimpleStorage('emitter');
->>>>>>> d939e3e381b8e0520a712e781a0cb18840b4a5d7
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -49,13 +32,8 @@ export default function Home() {
     ({Id: "", Name: "", AuthPerson: ""})
 
   useEffect(() => {
-<<<<<<< HEAD
-    const emitter = localStorage.getItem('emitter');
-    if (emitter) setEmitterInfo(JSON.parse(emitter))
-=======
     // const emitter = getItem()
     // console.log(emitter)
->>>>>>> d939e3e381b8e0520a712e781a0cb18840b4a5d7
 
     const getUser = async () => {
       const userIdResponse = await getCurrentUser();
@@ -111,7 +89,7 @@ export default function Home() {
           <LogInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} visLog={visLog} setVisLog={setVisLog} setVisCon={setVisCon} onLoginSuccess={onAuthSucces}/>
           <p className="max-w-[900px] text-[34px]/[44px] mb-[24px]">{emitentName}</p>
           {/*<EmitentTable emitentName={emitentName} setEmitentName={setEmitentName}/> */}
-          <EmitentTable userId={userId} emitters={emitters} setEmitterName={setEmitentName} isTableVisible={visEmitTable} currentEmitter={emitterInfo}/>
+          <EmitentTable userId={userId} emitters={emitters} setEmitterName={setEmitentName} isTableVisible={visEmitTable}/>
         </div>
      </div>
     </main>
