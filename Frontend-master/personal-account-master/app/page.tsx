@@ -8,11 +8,8 @@ import { Emitter } from "./models/Emitter";
 import { getCurrentUser, getUserEmitters } from "./services/usersService";
 import { errorMessages } from "./services/errorMessages";
 import { tree } from "next/dist/build/templates/app-page";
-// import { useSimpleStorage } from "./hooks/useLocalStorage";
 
 export default function Home() {
-
-  // const { getItem } = useSimpleStorage('emitter');
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -32,8 +29,8 @@ export default function Home() {
     ({Id: "", Name: "", AuthPerson: ""})
 
   useEffect(() => {
-    // const emitter = getItem()
-    // console.log(emitter)
+    const emitter = localStorage.getItem('emitter');
+    console.log(emitter)
 
     const getUser = async () => {
       const userIdResponse = await getCurrentUser();

@@ -6,7 +6,6 @@ import { Button, message, Upload } from 'antd';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { uploadDocuments } from '@/app/services/documentsService';
 import Dragger from 'antd/es/upload/Dragger';
-// import { useSimpleStorage } from '@/app/hooks/useLocalStorage';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
@@ -20,8 +19,6 @@ export const UploadDocumentArea = () => {
     Name: string, 
     AuthPerson: string}>
     ({Id: "", Name: "", AuthPerson: ""});
-  // const { getItem } = useSimpleStorage('emitter');
-  // setEmitterInfo(getItem())
 
   const handleUpload = async () => {
     

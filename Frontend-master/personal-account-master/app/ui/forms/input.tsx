@@ -10,7 +10,7 @@ export const InputForm = ({
   placeholder,
 }: InputProps) => {
 
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState<string>('');
 
   useEffect(() => {
       let storedValue = localStorage.getItem('inputText');
