@@ -9,9 +9,8 @@ import Dragger from 'antd/es/upload/Dragger';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-
-
 export const UploadDocumentArea = () => {
+
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [willSign, setWillSign] = useState(false);

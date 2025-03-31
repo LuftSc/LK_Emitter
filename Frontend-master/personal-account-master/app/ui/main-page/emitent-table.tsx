@@ -21,6 +21,7 @@ interface Props {
 }
 
 export default function EmitentTable ({userId, emitters, setEmitterName, isTableVisible}: Props) {
+    // const { getItem, setItem } = useSimpleStorage('emitter');
     const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
     //const [emitterId, setEmitterId] = useLocalStorage<{emitterId: string}>('emitterId', {emitterId: ""})
     useEffect(() => {

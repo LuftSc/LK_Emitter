@@ -12,6 +12,8 @@ import { errorMessages } from "../services/errorMessages";
 import { UploadDocumentArea } from "../ui/documents-page/upload-area";
 
 export default function Page() {
+
+    // const { getItem } = useSimpleStorage('emitter');
     const [documents, setDocuments] = useState<Document[]>([])
     const [emitterInfo, setEmitterInfo] = useState<{
         Id: string, 
@@ -110,7 +112,7 @@ export default function Page() {
             <div className="w-[1104px] h-[1500px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] py-[45px] px-[80px]" >
                 <p className="text-[34px]/[44px] mb-[25px]">Документы по эмитенту {emitterInfo.Name}</p>
                 <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <Button type="primary" onClick={onDocumentsUpdate}>Обновить таблицу</Button>
+                    {/* <Button type="primary" onClick={onDocumentsUpdate}>Обновить таблицу</Button> */}
                 </div>
                 <Table 
                     rowKey="id" 
