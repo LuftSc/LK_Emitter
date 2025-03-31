@@ -170,6 +170,7 @@ volumes:
   postgres-data-service-api:
   postgres-data-service-documents:
   postgres-data-service-registrator:
+  postgres-data-order-reports:
   rabbitmq-data:
 
 networks:

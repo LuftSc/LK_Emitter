@@ -56,6 +56,7 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel
         public List<User> Users { get; private set; } = [];
         public List<Document> Documents { get; private set; } = [];
         public Registrator Registrator { get; private set; } = null!;
+        public List<OrderReport> OrderReports { get; private set; } = [];
         public static Result<Emitter> Create(
             EmitterInfo emitterInfo,
             Location location,

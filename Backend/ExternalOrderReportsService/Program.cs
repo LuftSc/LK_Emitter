@@ -1,7 +1,10 @@
 
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Repositories;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using ExternalOrderReportsService.Publishers;
 using ExternalOrderReportsService.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace ExternalOrderReportsService
 {
@@ -14,11 +17,15 @@ namespace ExternalOrderReportsService
             // Add services to the container.
             builder.Services.AddAuthorization();
 
+            builder.Configuration.AddEnvironmentVariables();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddHttpClient();
+
+            //builder.Services.RegisterRepository<IOrderReportsRepository, OrderReportsRepository>();
 
             builder.Services.AddScoped<IRabbitMqPublisher, ResultPublisher>();
             builder.Services.AddScoped<IOrderReportsService, OrderReportsService>();
@@ -27,6 +34,12 @@ namespace ExternalOrderReportsService
                 builder.Configuration,
                 provider
             ));
+
+            /*builder.Services.AddDbContext<ExternalOrderReportsServiceDbContext>(options =>
+            {
+                options.UseNpgsql(builder.Configuration
+                    .GetConnectionString(nameof(ExternalOrderReportsServiceDbContext)));
+            });*/
 
             var app = builder.Build();
 

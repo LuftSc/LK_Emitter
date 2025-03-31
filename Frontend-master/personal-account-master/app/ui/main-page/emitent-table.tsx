@@ -21,15 +21,17 @@ interface Props {
 }
 
 export default function EmitentTable ({userId, emitters, setEmitterName, isTableVisible}: Props) {
-    const { getItem, setItem } = useSimpleStorage('emitter');
-    const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+    // const { getItem, setItem } = useSimpleStorage('emitter');
+    const [selectedRowId, setSelectedRowId] = useState<string | null>();
     //const [emitterId, setEmitterId] = useLocalStorage<{emitterId: string}>('emitterId', {emitterId: ""})
     useEffect(() => {
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
 
-            setSelectedRowId(emitterData.Id);
-            setEmitterName(emitterData.Name)
+            if (emitterData) {
+                setSelectedRowId(emitterData.Id);
+                setEmitterName(emitterData.Name)
+            }
 
     }, [])
     //const { getItem, setItem } = useSimpleStorage('emitter');

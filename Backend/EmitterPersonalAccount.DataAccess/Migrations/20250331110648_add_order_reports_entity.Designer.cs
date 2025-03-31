@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using EmitterPersonalAccount.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EmitterPersonalAccount.DataAccess.Migrations
 {
     [DbContext(typeof(EmitterPersonalAccountDbContext))]
-    partial class EmitterPersonalAccountDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250331110648_add_order_reports_entity")]
+    partial class add_order_reports_entity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -324,9 +327,6 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                     b.Property<Guid>("EmitterId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ExternalStorageId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("FileName")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -335,12 +335,14 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
+                    b.Property<long>("StatusId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("EmitterId");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("OrderReports", (string)null);
                 });
@@ -444,6 +446,23 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                     b.ToTable("UserEmitter");
                 });
 
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.SharedKernal.ReportOrderStatus", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReportOrderStatus");
+                });
+
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Document", b =>
                 {
                     b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", "Emitter")
@@ -482,7 +501,15 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("EmitterPersonalAccount.Core.Domain.SharedKernal.ReportOrderStatus", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Emitter");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", b =>

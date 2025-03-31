@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { sans } from "./ui/fonts";
 import '@/app/ui/global.css'
 import Header from "./ui/header";
+import { SignalRProvider } from './signalR/SignalRContext';
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,8 +15,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${sans.className} antialiased bg-white text-black items-center`}>
-        <Header />
-        {children}
+        <SignalRProvider>
+          <Header />
+          {children}
+        </SignalRProvider>
       </body>
     </html>
   );
