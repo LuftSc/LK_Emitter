@@ -25,13 +25,18 @@ export default function FormsMain () {
 
     const [emitterName, setEmitterName] = useState<string>("")
     
+    
 
     useEffect(() => {
+        
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
+        
 
-        setEmitterName(emitterData.Name)
-        onReportOrdersTableUpdate(emitterData.Id)
+        if (emitterData) {
+            setEmitterName(emitterData.Name)
+            onReportOrdersTableUpdate(emitterData.Id)
+        }
     }, [])
 
     const onReportOrdersTableUpdate = async (emitterId: string) => {

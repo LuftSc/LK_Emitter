@@ -5,14 +5,14 @@ type StepProps = {
   children: ReactNode
   back: string
   next: string
-  home?: boolean
+  show?: boolean
 }
 
-export const Step = ({ children, back, next, home }: StepProps) => {
+export const Step = ({ children, back, next, show }: StepProps) => {
   return (
     <div className='flex flex-col justify-between min-w-[500px] h-full'>
       <div>{children}</div>
-      <NavigationButtons back={back} next={next} home={home} />
+      <NavigationButtons back={back} next={next} />
     </div>
   )
 }

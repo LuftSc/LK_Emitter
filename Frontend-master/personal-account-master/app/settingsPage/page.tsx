@@ -42,17 +42,6 @@ export default function Page () {
                 </div>
                 <div className="flex w-[950px] justify-between">
                     <div>
-                        <p className="text-center bold text-[24px] mb-[20px]">Адрес регистрации</p>
-                        <div className="w-[620px] flex justify-between">
-                            <div className="w-[290px]">
-                                <SettingsSelect placeholder="Город / населенный пункт*" />
-                            </div>
-                            <div className="w-[290px]">
-                                <SettingsSelect placeholder="Улица*" />
-                            </div>
-                        </div>
-                    </div>
-                    <div>
                         <p className="text-center bold text-[24px] mb-[20px]">Пароль от аккаунта</p>
                         <div className="w-[290px] justify-between">
                             <SettingsInputPassword placeholder="Пароль*" />
