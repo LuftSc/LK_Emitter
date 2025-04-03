@@ -1,11 +1,10 @@
-import { Step } from "@/app/ui/forms/step"
 import { InputForm } from "@/app/ui/forms/input";
 import { RadioButton } from "@/app/ui/forms/radiobtn";
+import { NavigationButtons } from "@/app/ui/forms/nav-btn";
 
 export default function Page () {
   return (
     <div className="w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]">
-      <Step back='/forms/first/step-one' next='' >
         <div>
           <p className="text-[#B82116] text-[15px]/[19px] font-bold text-center mb-[31px]">Распоряжение Эмитента на список к ОСА</p>
           <div className="border-[0.5px] border-black rounded-[28px] pt-[26px] pl-[26px] pb-[25px] mb-[45px]">
@@ -41,7 +40,7 @@ export default function Page () {
             </div>
           </div>
          </div>
-      </Step>
+      <NavigationButtons  back='/forms/first/step-one' next='' />
     </div>
   );
 }
