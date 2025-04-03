@@ -2,6 +2,7 @@
 //using AuthService.Controllers;
 using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.Application.Features.Authentification;
+using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
@@ -54,17 +55,12 @@ namespace EmitterPersonalAccount.API.Controllers
         [HttpGet("get-current-user")]
         public async Task<ActionResult<Guid>> GetCurrentUserId()
         {
-            var isUserIdExist = HttpContext.User.HasClaim(c => c.Type == CustomClaims.UserId);
+            var userIdResult = ClaimService.Get(HttpContext, CustomClaims.UserId);
 
-            if (!isUserIdExist)
-            {
-                var result = Result.Error(new UserNonAuthentificatedError());
-                return BadRequest(result.GetErrors());
-            } 
+            if (!userIdResult.IsSuccessfull)
+                return BadRequest(userIdResult.GetErrors());
             
-            var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
-            
-            Guid.TryParse(userId, out Guid userGuid);
+            Guid.TryParse(userIdResult.Value, out Guid userGuid);
 
             return Ok(JsonConvert.SerializeObject(userGuid));
         }

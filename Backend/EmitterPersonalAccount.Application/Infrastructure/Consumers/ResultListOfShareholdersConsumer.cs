@@ -33,30 +33,35 @@ namespace EmitterPersonalAccount.Application.Infrastructure.Consumers
 
             using (var scope = provider.CreateScope())
             {
-                var resultsService = scope.ServiceProvider
-                    .GetRequiredService<ResultService>();
-
-                var memoryCacheService = scope.ServiceProvider
-                    .GetRequiredService<IMemoryCacheService>();
-                // Где-то тут надо сохранить это всё дело в БД
-                var connectionIdFoundResult = memoryCacheService
-                    .GetValue<string>(orderGeneratingResult.UserId);
-
-                if (!connectionIdFoundResult.IsSuccessfull)
-                    return connectionIdFoundResult;
-                //memoryCacheService.RemoveValue(orderGeneratingResult.UserId);
-
-                await resultsService.SendListOfShareholdersResultToClient(
-                    connectionIdFoundResult.Value,
-                    orderGeneratingResult.DocumentId,
-                    orderGeneratingResult.SendingDate);
-
                 var orderReportsRepository = scope.ServiceProvider
                     .GetRequiredService<IOrderReportsRepository>();
 
-                await orderReportsRepository
+                var resultsService = scope.ServiceProvider
+                    .GetRequiredService<ResultService>();
+
+                var changeResult = await orderReportsRepository
                     .ChangeProcessingStatusOk(orderGeneratingResult.DocumentId,
                     orderGeneratingResult.ExternalDocumentId);
+
+                if (!changeResult.IsSuccessfull)
+                {
+                    await resultsService.SendListOfShareholdersResultToClient(
+                        orderGeneratingResult.ExternalDocumentId,
+                        orderGeneratingResult.SendingDate,
+                        orderGeneratingResult.UserId,
+                        orderGeneratingResult.DocumentId,
+                        ReportOrderStatus.Failed);
+
+                    return changeResult;
+                }
+
+                await resultsService.SendListOfShareholdersResultToClient(
+                    orderGeneratingResult.ExternalDocumentId,
+                    orderGeneratingResult.SendingDate,
+                    orderGeneratingResult.UserId,
+                    orderGeneratingResult.DocumentId,
+                    ReportOrderStatus.Successfull
+                );
             }
 
             return Result.Success();

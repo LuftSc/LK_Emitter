@@ -28,7 +28,7 @@ namespace EmitterPersonalAccount.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("get-report-orders/{emitterId:guid}")]
+        [HttpGet("get-all-report-orders/{emitterId:guid}")]
         public async Task<ActionResult<List<OrderReportDTO>>> GetReportOrders(Guid emitterId)
         {
             var result = await orderReportsRepository.GetAllByEmitterId(emitterId);
@@ -41,6 +41,28 @@ namespace EmitterPersonalAccount.API.Controllers
                 .ToList();
 
             return Ok(response);  
+        }
+
+        [Authorize]
+        [HttpGet("get-report-orders/{emitterId:guid}/")]
+        public async Task<ActionResult<OrderReportPaginationList>> GetReportOrdersByPage
+            (Guid emitterId, [FromQuery] PaginationInfo pagination)
+        {
+            var result = await orderReportsRepository
+                .GetByPage(emitterId, pagination.Page, pagination.PageSize);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            var response = new OrderReportPaginationList(
+                result.Value.Item1, 
+                result.Value.Item2
+                    .Select(o => new OrderReportDTO
+                        (o.Id, o.FileName, o.Status.ToString(), 
+                        o.RequestDate, o.ExternalStorageId))
+                    .ToList());
+
+            return Ok(response);
         }
 
         [Authorize]
