@@ -14,5 +14,7 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
         Task<Result> SaveAsync(Guid emitterId, OrderReport orderReport);
         Task<Result<List<OrderReport>>> GetAllByEmitterId(Guid emitterId);
         Task<Result> ChangeProcessingStatusOk(Guid id, Guid externalStorageId);
+        Task<Result<Tuple<int, List<OrderReport>>>> GetByPage
+            (Guid emitterId, int page, int pageSize);
     }
 }

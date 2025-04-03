@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from 'clsx';
-import { getOrderReportsByEmitterId, ListOfShareholders, RequestListOfShareholders, sendRequestListOfShareholders } from "@/app/services/orderReportsService";
+import { getAllOrderReportsByEmitterId, getOrderReportsByEmitterId, ListOfShareholders, RequestListOfShareholders, sendRequestListOfShareholders } from "@/app/services/orderReportsService";
 import { Button, List } from "antd";
-import { ReportOrder } from "@/app/models/ReportOrder";
+import { ReportOrder, ReportOrderStatus } from "@/app/models/ReportOrder";
 import { useEffect, useState } from "react";
 import { ReportOrderDownloadLink } from "./reportOrder-dwn-btn";
 import { useSignalR } from "@/app/signalR/SignalRContext";
@@ -18,36 +18,63 @@ const links = [
 ];
 
 export default function FormsMain () {
-    const [orderReports, setOrderReports] = useState<ReportOrder[]>([])
-    
+    //const [orderReports, setOrderReports] = useState<ReportOrder[]>([])
+    const [orderReports, setOrderReports] = useState<{
+        totalSize: number, 
+        orderReports:ReportOrder[]
+    }>({totalSize: 0, orderReports:[]})
+
     const { connection } = useSignalR();
     const { startConnection } = useSignalR();
 
     const [emitterName, setEmitterName] = useState<string>("")
-    
+    const [emitterId, setEmitterId] = useState<string>("");
+
+    const [loading, setLoading] = useState(false);
+    const [pagination, setPagination] = useState({
+        current: 1,
+        pageSize: 5
+    });
 
     useEffect(() => {
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
 
-        setEmitterName(emitterData.Name)
-        onReportOrdersTableUpdate(emitterData.Id)
+        if (emitterData) {
+            setEmitterName(emitterData.Name)
+            //onReportOrdersTableUpdate(emitterData.Id)
+            getOrderReportsByPage(emitterData.Id, pagination)
+            setEmitterId(emitterData.Id)
+        }
     }, [])
 
-    const onReportOrdersTableUpdate = async (emitterId: string) => {
-        console.log('зашли в обновление')
-        const orderReportsResponse = await getOrderReportsByEmitterId(emitterId)
+    useEffect(() => {
+        setPagination(prev => ({...prev, total: orderReports.totalSize}))
+        console.log('обновился размер')
+    }, [orderReports])
+
+    const getOrderReportsByPage = async (emitterId: string, pagination: any) => {
+        setLoading(true)
+        //console.log('зашли в обновление')
+        setPagination(pagination)
+        const orderReportsResponse = await 
+            getOrderReportsByEmitterId(emitterId, pagination.current, pagination.pageSize)
 
         if (orderReportsResponse?.ok) {
             const reports = await orderReportsResponse.json()
             console.log(reports)
-            setOrderReports(reports)
+            setOrderReports({
+                totalSize: reports.totalSize,
+                orderReports: reports.orderReports
+            })
         } else if (orderReportsResponse?.status === 400) {
             console.error('контролируемая ошибка')
         } else {
             console.error('НЕконтролируемая ошибка')
         }
-    }
+
+        setLoading(false)
+    } 
 
     const formatDate = (dateTime: string) : string => {
         const splitDate = dateTime.split('T');
@@ -64,22 +91,57 @@ export default function FormsMain () {
         const emitterData = emitter ? JSON.parse(emitter) : null
 
         const currentConnection = connection ? connection : await startConnection()
-            
-        currentConnection?.on('SendListOfShareholdersResult', async (documentId: string, requestDate:string) => {
-            console.log('Мы зашли в подписанный метод!')
-            const dateAndTime = requestDate.split('.')
-            
-            /*setOrderReports(prevOrders => [...prevOrders, 
-                {
-                    Id: documentId, 
-                    fileName: `Лист участников собрания акционеров ${dateAndTime[0]}`,
-                    status: 'Выполнено',
-                    requestDate: requestDate
-            }]); */ 
-            await onReportOrdersTableUpdate(emitterData.Id);
 
-            currentConnection.off('SendListOfShareholdersResult');
+        currentConnection?.on('ReceiveListOfShareholdersResult', 
+            (documentId: string, status: string, requestDate: string, idForDownload: string) => {
+
+            if (status === ReportOrderStatus.Successfull) {
+                updateReportOrder(documentId, {status: status, idForDownload: idForDownload} )
+                currentConnection.off('ReceiveListOfShareholdersResult');
+            } else {
+                addReportOrder(documentId, status, requestDate, idForDownload, 'Лист участников собрания акционеров')
+            }
         })
+
+        const updateReportOrder = (id: string, updatedData: Partial<ReportOrder>) => {
+            setOrderReports(prevState => ({
+                ...prevState,
+                orderReports: prevState.orderReports.map(report => 
+                  report.id === id ? { ...report, ...updatedData } : report
+                )
+              }));
+          };
+    
+        const addReportOrder = (documentId: string, status: string, requestDate: string, idForDownload: string, fileName: string) => {
+            setOrderReports(prev => {
+            // Если мы на первой странице
+            if (pagination.current === 1) {
+                const newReports = [{
+                id: documentId, 
+                fileName: fileName,
+                status: status,
+                requestTime: requestDate,
+                idForDownload: idForDownload
+            }, ...prev.orderReports];
+                
+                // Обрезаем массив, если превысили pageSize
+                if (newReports.length > pagination.pageSize) {
+                    newReports.pop();
+                }
+                
+                return {
+                    totalSize: prev.totalSize + 1,
+                    orderReports: newReports
+                };
+            }
+            
+            // Если не на первой странице, просто увеличиваем totalSize
+            return {
+                ...prev,
+                totalSize: prev.totalSize + 1
+            };
+            });
+        }
         
         const defaultListOSRequest = {
             requestData: {
@@ -123,8 +185,6 @@ export default function FormsMain () {
         } as RequestListOfShareholders
     
         await sendRequestListOfShareholders(defaultListOSRequest)
-
-        await onReportOrdersTableUpdate(emitterData.Id);
     }
 
     const columns : ColumnsType<ReportOrder> = [
@@ -201,12 +261,10 @@ export default function FormsMain () {
                 <br />
                 <Button> Запросить дивидендный список</Button>
 
-                <Table rowKey="id" columns={columns} dataSource={orderReports}
-                    pagination={{
-                        pageSize: 5, // Количество строк на странице
-                        //showSizeChanger: true, // Показывать выбор количества строк
-                        //pageSizeOptions: ['10', '20', '50', '100'], // Варианты выбора
-                      }}
+                <Table rowKey="id" columns={columns} dataSource={orderReports.orderReports}
+                    pagination={pagination}
+                    loading={loading}
+                    onChange={(newPagination, filters, sorter) => getOrderReportsByPage(emitterId, newPagination)}
                 />
                 
             </div>

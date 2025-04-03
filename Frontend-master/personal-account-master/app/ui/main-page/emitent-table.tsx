@@ -4,6 +4,7 @@ import { Emitter } from "@/app/models/Emitter";
 import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
+import { useSignalR } from "@/app/signalR/SignalRContext";
 //import { useSimpleStorage } from "@/app/hooks/useLocalStorage";
 //import { useLocalStorage } from "@/app/hooks/useLocalStorage";
 
@@ -23,6 +24,9 @@ interface Props {
 export default function EmitentTable ({userId, emitters, setEmitterName, isTableVisible}: Props) {
     // const { getItem, setItem } = useSimpleStorage('emitter');
     const [selectedRowId, setSelectedRowId] = useState<string | null>();
+
+    const { connection } = useSignalR();
+    const { startConnection } = useSignalR();
     //const [emitterId, setEmitterId] = useLocalStorage<{emitterId: string}>('emitterId', {emitterId: ""})
     useEffect(() => {
         const emitter = localStorage.getItem('emitter')
@@ -36,11 +40,18 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
     }, [])
     //const { getItem, setItem } = useSimpleStorage('emitter');
 
-    const handleSelect = (id: string, emitterName: string) => {
+    const handleSelect = async (id: string, emitterName: string) => {
+        
+        const currentConnection = connection ? connection : await startConnection()
+        
         setSelectedRowId(id === selectedRowId ? null : id);
         setEmitterName(emitterName)
         console.log('устанавливаем id: ' + id)
         
+        const response = await currentConnection?.invoke('EmitterSelected', id)
+        console.log('подключили пользователя в группу')
+        console.log(response)
+
         localStorage.setItem('emitter', JSON.stringify({ Id: id, Name: emitterName, AuthPerson: userId }))
 
         //console.log(localStorage.getItem('emitter'))

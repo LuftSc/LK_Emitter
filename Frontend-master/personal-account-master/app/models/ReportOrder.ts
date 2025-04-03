@@ -6,6 +6,11 @@ export interface ReportOrder {
     idForDownload: string
 }
 
+export enum ReportOrderStatus {
+    Successfull = 'Successfull',
+    Processing = 'Processing',
+    Failed = 'Failed'
+}
 /*Guid Id,
 string FileName,
 string Status,

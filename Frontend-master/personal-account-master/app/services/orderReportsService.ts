@@ -61,8 +61,16 @@ export const sendRequestListOfShareholders = async (request: RequestListOfShareh
     })
 }
 
-export const getOrderReportsByEmitterId = async (emitterId: string) => {
-    return await fetch(`http://localhost:5000/OrderReports/get-report-orders/${emitterId}`, {
+export const getAllOrderReportsByEmitterId = async (emitterId: string) => {
+    return await fetch(`http://localhost:5000/OrderReports/get-all-report-orders/${emitterId}`, {
+        method: "GET",
+        credentials: 'include'
+    })
+    .catch(error => console.error(error))
+}
+//http://localhost:5000/OrderReports/get-report-orders/3fa85f64-5717-4562-b3fc-2c963f66afa6?Page=1&PageSize=10
+export const getOrderReportsByEmitterId = async (emitterId: string, page:number, pageSize: number) => {
+    return await fetch(`http://localhost:5000/OrderReports/get-report-orders/${emitterId}?Page=${page}&PageSize=${pageSize}`, {
         method: "GET",
         credentials: 'include'
     })

@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { getDocuments } from "../services/documentsService";
 import { errorMessages } from "../services/errorMessages";
 import { UploadDocumentArea } from "../ui/documents-page/upload-area";
+import { useSignalR } from "../signalR/SignalRContext";
 
 export default function Page() {
     const [documents, setDocuments] = useState<Document[]>([])
@@ -19,11 +20,20 @@ export default function Page() {
         AuthPerson: string}>
         ({Id: "", Name: "", AuthPerson: ""})
 
+    //const { connection } = useSignalR();
+    //const { startConnection } = useSignalR();
+
     const [uploadTableVis, setUploadTableVis] = useState<boolean>(false);
 
     useEffect(() => {
         onDocumentsUpdate()
     }, [])
+
+    /*const subscribeOnDocumentsTableUpdate = async () => {
+        const currentConnection = connection ? connection : await startConnection()
+
+        currentConnection?.on('')
+    } */
 
     const onDocumentsUpdate = async () => {
         const emitterJSON = localStorage.getItem('emitter')

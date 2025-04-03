@@ -43,6 +43,25 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
 
             return Result<List<OrderReport>>.Success(listOrderReports);
         }
+        public async Task<Result<Tuple<int, List<OrderReport>>>> GetByPage
+            (Guid emitterId, int page, int pageSize)
+        {
+            var query = context.OrderReports
+                .AsNoTracking()
+                .AsQueryable()
+                .Where(o => o.Emitter.Id == emitterId)
+                .OrderByDescending(o => o.RequestDate);
+
+            var totalSize = await query.CountAsync();
+
+            var listOrderReports = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Result<Tuple<int, List<OrderReport>>>
+                .Success(Tuple.Create(totalSize, listOrderReports));
+        }
         public async Task<Result> SaveAsync(Guid emitterId, OrderReport orderReport)
         {
             var emitter = await context.Emitters
