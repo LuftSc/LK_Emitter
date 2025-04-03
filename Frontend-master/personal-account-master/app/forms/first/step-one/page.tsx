@@ -13,7 +13,6 @@ import dayjs, { Dayjs } from 'dayjs';
 export default function Page () {
 
   const [showLists, setShowLists] = useState<boolean>(false)
-  const [example, setExample] = useState<boolean>(false)
   const [isRangeMeeting, setisRangeMeeting] = useState<boolean>(false)
   const [Dt_Begsobr, setDt_Begsobr] = useState<string>('')
 
@@ -32,7 +31,7 @@ export default function Page () {
   }
 
   return (
-    <div className="w-[1104px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
+    <div className="relative w-[1104px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
           <p className="text-[#B82116] text-[15px]/[19px] font-bold text-center mb-[31px]">Распоряжение Эмитента на список к ОСА</p>
           <button onClick={onInfoUpdate} className=" border border-black p-[15px]">Обновить</button>
           <Calendar  setState={setDt_Begsobr}/>
@@ -53,9 +52,9 @@ export default function Page () {
             <div className="flex mb-[20px]">
               <p className="w-[229px] text-[14px]/[18px] mr-[16px]">Решение о проведении общего собрания акционеров принято:</p>
               <div className="flex flex-col gap-[10px]">
-                <RadioButton state={true} setState={setExample} name="decisionMadeBy" text="Советом директоров"/>
+                <RadioButton name="decisionMadeBy" text="Советом директоров"/>
                 <div className="flex w-[457px]">
-                  <RadioButton state={true} setState={setExample} name="decisionMadeBy" text=""/>
+                  <RadioButton name="decisionMadeBy" text=""/>
                   <InputForm placeholder="Введите наименование" />
                 </div>
                 <div className="flex">
@@ -70,10 +69,10 @@ export default function Page () {
             </div>
             <div className="flex mb-[15px]">
               <p className="text-[14px]/[18px] mr-[65px]">Вид и форма проведения собрания</p>
-              <div className="mr-[45px]"><RadioButton  state={true} setState={setisRangeMeeting} name="typeOfMeeting" text="Годовое"/></div>
-              <div className="mr-[65px]"><RadioButton  state={false} setState={setisRangeMeeting} name="typeOfMeeting" text="Внеочередное"/></div>
-              <div className="mr-[45px]"><RadioButton  state={true} setState={setExample} name="formOfMeeting" text="Совместное присутствие"/></div>
-              <div><RadioButton state={true} setState={setExample} name="formOfMeeting" text="Заочное голосование"/></div>
+              <div className="mr-[45px]"><RadioButton  name="typeOfMeeting" text="Годовое"/></div>
+              <div className="mr-[65px]"><RadioButton  name="typeOfMeeting" text="Внеочередное"/></div>
+              <div className="mr-[45px]"><RadioButton  name="formOfMeeting" text="Совместное присутствие"/></div>
+              <div><RadioButton name="formOfMeeting" text="Заочное голосование"/></div>
             </div>
             <div className="flex">
               <p className="text-[14px]/[18px] mr-[30px]">Дата проведения собрания</p>

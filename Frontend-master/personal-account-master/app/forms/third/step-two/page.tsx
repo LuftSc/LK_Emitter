@@ -1,12 +1,11 @@
-import { Step } from "@/app/ui/forms/step"
+import { NavigationButtons } from "@/app/ui/forms/nav-btn";
 import { InputForm } from "@/app/ui/forms/input"
 import CalendarInput from "@/app/ui/forms/calendar";
 import { CheckBox } from "@/app/ui/forms/checkbox";
 
 export default function Page () {
   return (
-    <div className="w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
-      <Step back='/forms/third/step-one' next='/forms/third/step-three' >
+    <div className="relative w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
           <p className="text-[#B82116] text-[15px]/[19px] font-bold text-center mb-[31px]">Распоряжение Эмитента о предоставлении Списка лиц , имеющих право на получение доходов по ценным бумагам</p>
           <div className="border-[0.5px] border-black rounded-[28px] py-[26px] px-[40px] mb-[23px]">
             <div className="flex items-center mb-[14px]">
@@ -46,7 +45,7 @@ export default function Page () {
             <p className="text-[16px]/[21px]">Включить информацию о расчете налога</p>
           </div>
           <p className="text-[13px] ml-[64px]">Делая отметку о включении информации о расчете налога в Список лиц, имеющих право на получение доходов по ценным бумагам, эмитент подтверждает согласие на оплату данной услуги</p>
-      </Step>
+          <NavigationButtons back="/forms/third/step-one" next="/forms/third/step-three"/>
      </div>
   );
 }

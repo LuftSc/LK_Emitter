@@ -32,8 +32,6 @@ export default function Home() {
     ({Id: "", Name: "", AuthPerson: ""})
 
   useEffect(() => {
-    // const emitter = getItem()
-    // console.log(emitter)
 
     const getUser = async () => {
       const userIdResponse = await getCurrentUser();

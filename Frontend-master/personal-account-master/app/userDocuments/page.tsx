@@ -109,7 +109,7 @@ export default function Page() {
             {/* <div className="w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] py-[45px] px-[80px]" > */}
             <div className="w-[1104px] h-[1500px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] py-[45px] px-[80px]" >
                 <p className="text-[34px]/[44px] mb-[25px]">Документы по эмитенту {emitterInfo.Name}</p>
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div className="mb-[10px]" style={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Button type="primary" onClick={onDocumentsUpdate}>Обновить таблицу</Button>
                 </div>
                 <Table 
@@ -122,7 +122,7 @@ export default function Page() {
                 {
                     uploadTableVis && ( */}
                         <div>
-                            <p className="text-[34px]/[44px] mb-[25px]">Загруженные документы</p>
+                            <p className="text-[34px]/[44px] my-[25px]">Загруженные документы</p>
                             <UploadDocumentArea/>
                         </div>
                     

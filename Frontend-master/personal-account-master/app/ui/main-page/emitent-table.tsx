@@ -4,14 +4,6 @@ import { Emitter } from "@/app/models/Emitter";
 import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-//import { useSimpleStorage } from "@/app/hooks/useLocalStorage";
-//import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-
-
-/*interface Props {
-    emitentName: string,
-    setEmitentName: React.Dispatch<React.SetStateAction<string>>
-} */
 
 interface Props {
     userId: string
@@ -34,7 +26,6 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
             }
 
     }, [])
-    //const { getItem, setItem } = useSimpleStorage('emitter');
 
     const handleSelect = (id: string, emitterName: string) => {
         setSelectedRowId(id === selectedRowId ? null : id);
@@ -42,9 +33,6 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
         console.log('устанавливаем id: ' + id)
         
         localStorage.setItem('emitter', JSON.stringify({ Id: id, Name: emitterName, AuthPerson: userId }))
-
-        //console.log(localStorage.getItem('emitter'))
-        //setItem({ Id: id, Name: emitterName, AuthPerson: userId });
     };
 
     const columns : ColumnsType<Emitter> = [
@@ -89,26 +77,4 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
         </div>
     )
     
-    /*return (
-        <table className="border-collapse border-[2px] border-black">
-            <thead>
-              <tr className="">
-                <th className="w-[240px] text-[24px]/[35px] bg-[#D9D9D9] border-[2px] border-black">Действие</th>
-                <th className="w-[600px] text-[24px]/[35px] bg-[#D9D9D9] border-[2px] border-black">Название эмитента</th>
-              </tr>
-            </thead>
-            <tbody>
-              {emitents.map((emitent) => {
-                    return (
-                        <EmitentTableRow
-                            key={emitent.email}
-                            emitentName={emitentName} 
-                            setEmitentName={setEmitentName} 
-                            name={emitent.name}
-                        />
-                    );
-                })}
-            </tbody>
-        </table>
-    ) */
 }

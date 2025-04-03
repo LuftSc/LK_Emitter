@@ -6,7 +6,7 @@ import TimePicker from "@/app/ui/forms/time-picker";
 
 export default function Page () {
   return (
-    <div className="w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
+    <div className="relative w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
           <p className="text-[#B82116] text-[15px]/[19px] font-bold text-center mb-[31px]">Распоряжение Эмитента на список к ОСА</p>
           <div className="border-[0.5px] border-black rounded-[28px] pt-[17px] pl-[26px] pb-[28px]">
             <div className="flex items-center mb-[5px]">
