@@ -26,8 +26,6 @@ export default function Home() {
   const [userId, setUserId] = useState<string>("");
 
   useEffect(() => {
-    // const emitter = getItem()
-    // console.log(emitter)
 
     const getUser = async () => {
       const userIdResponse = await getCurrentUser();

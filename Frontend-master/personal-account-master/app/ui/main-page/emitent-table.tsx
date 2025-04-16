@@ -97,26 +97,4 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
         </div>
     )
     
-    /*return (
-        <table className="border-collapse border-[2px] border-black">
-            <thead>
-              <tr className="">
-                <th className="w-[240px] text-[24px]/[35px] bg-[#D9D9D9] border-[2px] border-black">Действие</th>
-                <th className="w-[600px] text-[24px]/[35px] bg-[#D9D9D9] border-[2px] border-black">Название эмитента</th>
-              </tr>
-            </thead>
-            <tbody>
-              {emitents.map((emitent) => {
-                    return (
-                        <EmitentTableRow
-                            key={emitent.email}
-                            emitentName={emitentName} 
-                            setEmitentName={setEmitentName} 
-                            name={emitent.name}
-                        />
-                    );
-                })}
-            </tbody>
-        </table>
-    ) */
 }

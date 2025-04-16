@@ -27,8 +27,6 @@ export default function LogInForm ({email, setEmail, password, setPassword, visL
             password: password
         } as LoginUserRequest
 
-        // ЗАМЕНИТЬ!!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
-        //const response = await loginUserWithout2FA(loginRequest)
         const response = await loginUser(loginRequest)
 
         if (response?.ok) { // Случай, когда запрос выполнился успешно
@@ -36,13 +34,9 @@ export default function LogInForm ({email, setEmail, password, setPassword, visL
             console.log('Всё ОК!')
             
             setVisLog(false) 
-            // РАСКОММЕНТИРОВАТЬ !!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
             setVisCon(true)
-            // ЗАКОММЕНТИРОВАТЬ И УБРАТЬ ИЗ ПРОПСОВ !!!! (иСПОЛЬЗУЕТСЯ ДЛЯ РАЗРАБОТКИ)
-            //onLoginSuccess()
             
         } else if (response?.status === 400){ // Какая-то ошибка в процессе выполнения логики
-            // Тут можно подсвечивать ошибку на форме
             const error = await response?.json()
             // Сам текст ошибки: errorMessages[error[0].type]
             console.log(errorMessages[error[0].type])

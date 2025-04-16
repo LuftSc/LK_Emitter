@@ -17,7 +17,7 @@ export default function Page () {
                                 <SettingsInput placeholder="Фамилия*" />
                                 <SettingsInput placeholder="Отчество*" />
                                 <SettingsInput placeholder="Дата рождения*" />
-                                <SettingsSelect placeholder="Пол*" />
+                                <SettingsInputPassword placeholder="Новый пароль*" />
                             </div>
                             <div className="w-[290px] flex flex-col justify-between">
                                 <SettingsInput placeholder="Имя*" />
@@ -36,15 +36,7 @@ export default function Page () {
                             </div>
                             <SettingsInput placeholder="Дата выдачи*" />
                             <SettingsInput placeholder="Кем выдан*" />
-                            <SettingsInput placeholder="Место рождения*" />
-                        </div>
-                    </div>
-                </div>
-                <div className="flex w-[950px] justify-between">
-                    <div>
-                        <p className="text-center bold text-[24px] mb-[20px]">Пароль от аккаунта</p>
-                        <div className="w-[290px] justify-between">
-                            <SettingsInputPassword placeholder="Пароль*" />
+                            <SettingsInput placeholder="Код подразделения*" />
                         </div>
                     </div>
                 </div>

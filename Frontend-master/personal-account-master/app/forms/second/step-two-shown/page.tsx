@@ -1,12 +1,11 @@
-import { Step } from "@/app/ui/forms/step"
+import { NavigationButtons } from "@/app/ui/forms/nav-btn";
 import { InputForm } from "@/app/ui/forms/input"
 import { CheckBox } from "@/app/ui/forms/checkbox";
 import CalendarInput from "@/app/ui/forms/calendar";
 
 export default function Page () {
   return (
-    <div className="w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
-      <Step back='/forms/hidden/firstSecond' next='' >
+    <div className="relative w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
           <p className="text-[#B82116] text-[15px]/[19px] font-bold text-center mb-[31px]">Распоряжение Эмитента на предоставление информации из реестра</p>
           <div className="border-[0.5px] border-black rounded-[28px] p-[26px] mb-[45px]">
             <p className="text-[14px]/[18px] font-bold mb-[9px]">Описание требуемой информации:</p>
@@ -39,7 +38,7 @@ export default function Page () {
             <div className="mb-[9px]"><CheckBox text="Информация о лицах в сокращенной форме"/></div>
             <CheckBox text="Справка о структуре распределения акций"/>
           </div>
-      </Step>
+          <NavigationButtons back='/forms/second/step-one' next='/forms/second/step-three-shown' />
      </div>
   );
 }

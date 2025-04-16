@@ -56,7 +56,7 @@ export default function Page () {
               <div className="w-[129px]"><InputForm placeholder=""/></div>
             </div>
           </div>
-          <NavigationButtons back='/forms/second/step-two' next='' />
+          <NavigationButtons back='/forms/second/step-two-shown' next='' />
      </div>
   );
 }

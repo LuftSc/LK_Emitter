@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import ShowListsRadio from "./showLists-radio"
 
 type NavigationButtonsProps = {
   back: string
@@ -16,7 +15,7 @@ export const NavigationButtons = ({
 }: NavigationButtonsProps) => {
   //if (onClick) onClick()
   return (
-    <div className='mt-[10px] flex justify-between items-center'>
+    <div className='flex justify-between items-center absolute inset-x-[45px] bottom-[45px]'>
       <Link href={back}>
         <p className={back == '' ? 'hidden' : 'bg-[#FBCB18] border border-[#BDBDBD] rounded-2xl w-[167px] h-[41px] drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)] text-center text-xl pt-[6px]'}>
         {back == '' ? "" : "Назад"}
