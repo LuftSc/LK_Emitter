@@ -1,5 +1,4 @@
-﻿//using CSharpFunctionalExtensions;
-using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -8,48 +7,60 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmitterPersonalAccount.DataAccess.Repositories
+namespace ExternalOrderReportService.DataAccess.Repositories
 {
-    public class OrderReportsRepository 
-        : EFRepository<OrderReport, EmitterPersonalAccountDbContext>, 
+    public class OrderReportsRepository : 
+        EFRepository<OrderReport, ExternalOrderReportServiceDbContext>, 
         IOrderReportsRepository
     {
-        private readonly EmitterPersonalAccountDbContext context;
+        private readonly ExternalOrderReportServiceDbContext context;
 
-        public OrderReportsRepository(EmitterPersonalAccountDbContext context) 
+        public OrderReportsRepository(ExternalOrderReportServiceDbContext context) 
             : base(context)
         {
             this.context = context;
         }
 
+        public async Task<Result> ChangeProcessingStatusFailed(Guid id)
+        {
+            await context.OrderReports
+                .Where(o => o.Id == id)
+                .ExecuteUpdateAsync(o => o
+                    .SetProperty(p => p.Status, CompletionStatus.Failed));
+
+            return Result.Success();
+        }
         public async Task<Result> ChangeProcessingStatusOk(Guid id, Guid externalStorageId)
         {
             await context.OrderReports
                 .Where(o => o.Id == id)
                 .ExecuteUpdateAsync(o => o
-                    .SetProperty(p => p.Status, ReportOrderStatus.Successfull)
-                    .SetProperty(p => p.ExternalStorageId,  externalStorageId));
+                    .SetProperty(p => p.Status, CompletionStatus.Successfull)
+                    .SetProperty(p => p.ExternalStorageId, externalStorageId));
 
             return Result.Success();
         }
-        public async Task<Result<List<OrderReport>>> GetAllByEmitterId(Guid emitterId)
+
+        public async Task<Result<List<OrderReport>>> GetAllByIssuerId(int issuerId)
         {
-            var listOrderReports = await context.OrderReports
-                .Where(o => o.Emitter.Id == emitterId)
+            var listOrderReports = await context.OrderReports.AsNoTracking()
+                .Where(o => o.IssuerId == issuerId)
                 .ToListAsync();
 
             return Result<List<OrderReport>>.Success(listOrderReports);
         }
+
         public async Task<Result<Tuple<int, List<OrderReport>>>> GetByPage
-            (Guid emitterId, int page, int pageSize)
+            (int issuerId, int page, int pageSize)
         {
             var query = context.OrderReports
                 .AsNoTracking()
                 .AsQueryable()
-                .Where(o => o.Emitter.Id == emitterId)
+                .Where(o => o.IssuerId == issuerId)
                 .OrderByDescending(o => o.RequestDate);
 
             var totalSize = await query.CountAsync();
@@ -62,22 +73,15 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
             return Result<Tuple<int, List<OrderReport>>>
                 .Success(Tuple.Create(totalSize, listOrderReports));
         }
-        public async Task<Result> SaveAsync(Guid emitterId, OrderReport orderReport)
+
+        public async Task<Result> SaveAsync(OrderReport orderReport, CancellationToken cancellationToken)
         {
-            var emitter = await context.Emitters
-                .Include(e => e.OrderReports)
-                .FirstOrDefaultAsync(e => e.Id == emitterId);
+            await AddAsync(orderReport, cancellationToken);
 
-            if (emitter is null) return Result
-                    .Error(new EmitterNotFoundError());
-
-            emitter.OrderReports.Add(orderReport);
-
-            await context.OrderReports.AddAsync(orderReport);
-
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
 
             return Result.Success();
         }
     }
 }
+

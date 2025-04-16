@@ -4,6 +4,8 @@ using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,6 +43,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel
             FieldOfActivity = fieldOfActivity;
             AdditionalInformation = additionalInformation;
         }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int IssuerId { get; private set; }
         public EmitterInfo EmitterInfo { get; private set; }
         public Location Location { get; private set; }
         public MailingAddress MailingAddress { get; private set; }
@@ -53,10 +57,11 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel
         public PaymentRecipient PaymentRecipient { get; private set; } = null!;
         public string FieldOfActivity { get; private set; }
         public string AdditionalInformation { get; private set; } = null!;
+        
         public List<User> Users { get; private set; } = [];
         public List<Document> Documents { get; private set; } = [];
         public Registrator Registrator { get; private set; } = null!;
-        public List<OrderReport> OrderReports { get; private set; } = [];
+        //public List<OrderReport> OrderReports { get; private set; } = [];
         public static Result<Emitter> Create(
             EmitterInfo emitterInfo,
             Location location,

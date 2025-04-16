@@ -51,7 +51,7 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
 
             return Result.Success();
         }
-        public async Task<Result<List<Tuple<Guid, EmitterInfo>>>> GetAllByUserId(Guid userId)
+        public async Task<Result<List<Tuple<Guid, EmitterInfo, int>>>> GetAllByUserId(Guid userId)
         {
             var user = await context.Users
                 .Include(u => u.Emitters)
@@ -59,27 +59,27 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (user is null)
-                return Result<List<Tuple<Guid, EmitterInfo>>>
+                return Result<List<Tuple<Guid, EmitterInfo, int>>>
                     .Error(new UserNotFoundError());
 
-            var emittersInfo = new List<Tuple<Guid, EmitterInfo>>();
+            var emittersInfo = new List<Tuple<Guid, EmitterInfo, int>>();
 
             // Пользователь - сотрудник регистратора
             Console.WriteLine(user.Registrator);
             if (user.Registrator is null)
             {
                 emittersInfo = context.Emitters
-                    .Select(e => Tuple.Create(e.Id, e.EmitterInfo))
+                    .Select(e => Tuple.Create(e.Id, e.EmitterInfo, e.IssuerId))
                     .ToList();
             }
             else // Пользователь - представитель эмитента
             {
                 emittersInfo = user.Emitters
-                    .Select(e => Tuple.Create(e.Id, e.EmitterInfo))
+                    .Select(e => Tuple.Create(e.Id, e.EmitterInfo, e.IssuerId))
                     .ToList();
             }
 
-            return Result<List<Tuple<Guid, EmitterInfo>>>.Success(emittersInfo);
+            return Result<List<Tuple<Guid, EmitterInfo, int>>>.Success(emittersInfo);
         }
     }
 

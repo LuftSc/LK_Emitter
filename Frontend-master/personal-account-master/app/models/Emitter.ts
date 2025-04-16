@@ -1,7 +1,8 @@
 
 export interface Emitter {
     id: string
-    emitterInfo : EmitterInfo
+    emitterInfo : EmitterInfo,
+    issuerId: number
 }
 
 interface EmitterInfo {

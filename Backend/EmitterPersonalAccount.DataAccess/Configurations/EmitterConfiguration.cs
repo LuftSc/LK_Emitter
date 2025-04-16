@@ -16,6 +16,7 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<Emitter> builder)
         {
             builder.ToTable("Emitters").HasKey(e => e.Id);
+            builder.Property(e => e.IssuerId).HasColumnName("ISSUER_ID");
             builder.Property(e => e.Id).HasColumnName("EMIT_ID");
 
             builder.HasOne(e => e.Registrator).WithMany(r => r.Emitters);
@@ -23,7 +24,7 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
                 .WithOne(d => d.Emitter)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(e => e.OrderReports).WithOne(o => o.Emitter);
+            //builder.HasMany(e => e.OrderReports).WithOne().HasForeignKey(o => o.IssuerId);
 
             // Конфигурация VO EmitterInfo
             builder.ComplexProperty(e => e.EmitterInfo, eInfoBuilder =>

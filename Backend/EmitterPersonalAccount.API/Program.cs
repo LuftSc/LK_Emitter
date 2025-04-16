@@ -15,7 +15,9 @@ using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using EmitterPersonalAccount.DataAccess;
 using EmitterPersonalAccount.DataAccess.Repositories;
+using MassTransit;
 using MediatR;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmitterPersonalAccount.API
@@ -40,6 +42,22 @@ namespace EmitterPersonalAccount.API
                 options.UseNpgsql(builder.Configuration
                     .GetConnectionString(nameof(EmitterPersonalAccountDbContext))
             ));
+
+            /*builder.Services.AddMassTransit(x =>
+            {
+                x.AddBus(provider =>
+                {
+                    Bus.Factory.CreateUsingRabbitMq(cfg =>
+                    {
+                        cfg.Host(builder.Configuration.GetConnectionString("RabbitMqUri"));
+                        
+                        cfg.ReceiveEndpoint("Test", epc =>
+                        {
+                            epc.ConfigureConsumer<>(provider);
+                        });
+                    });
+                });
+            }); */
 
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
             builder.Services.AddScoped<IJwtProvider, JwtProvider>();
@@ -68,7 +86,7 @@ namespace EmitterPersonalAccount.API
             builder.Services.RegisterRepository<IUserRepository, UsersRepository>();
             builder.Services.RegisterRepository<IEmittersRepository, EmittersRepository>();
             builder.Services.RegisterRepository<IRegistratorRepository, RegistratorRepository>();
-            builder.Services.RegisterRepository<IOrderReportsRepository, OrderReportsRepository>();
+            
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
@@ -105,13 +123,19 @@ namespace EmitterPersonalAccount.API
 
             builder.Services.AddSignalR();
 
+            // 2. ƒобавл€ем HttpClient дл€ проксировани€ в NotificationService
+            builder.Services.AddHttpClient("ResultHubService", client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:5001"); // или другой URL
+            });
+
             builder.Services.AddMemoryCache();
 
             builder.Services.AddHealthChecks();
 
             var app = builder.Build();
 
-            app.MapHub<ResultsHub>("/resultsHub");
+            app.MapHub<ResultsHubProxy>("/resultsHub");
 
             app.UseWebSockets();
 

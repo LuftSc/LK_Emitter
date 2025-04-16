@@ -4,7 +4,8 @@ namespace EmitterPersonalAccount.API.Contracts
 {
     public record EmitterInfoDTO(
         Guid Id,
-        EmitterInfo EmitterInfo
+        EmitterInfo EmitterInfo,
+        int IssuerId
         )
     {
         

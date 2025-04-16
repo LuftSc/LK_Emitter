@@ -21,14 +21,15 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         {
             ExternalStorageId = Guid.Empty;
             FileName = fileName;
-            Status = ReportOrderStatus.Processing;
+            Status = CompletionStatus.Processing;
             RequestDate = requestDate;
         }
         public Guid ExternalStorageId { get; private set; }
         public string FileName { get; private set; }
-        public ReportOrderStatus Status { get; private set; }
+        public CompletionStatus Status { get; private set; }
         public DateTime RequestDate { get; private set; }
-        public Emitter Emitter { get; private set; } = null!;
+        //public Emitter Emitter { get; private set; } = null!;
+        public int IssuerId { get; private set; }
         public static Result<OrderReport> Create(string fileName, DateTime requestDate)
         {
             return Result<OrderReport>

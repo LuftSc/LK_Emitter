@@ -42,7 +42,7 @@ namespace EmitterPersonalAccount.Application.Infrastructure.Consumers
                 var changeResult = await orderReportsRepository
                     .ChangeProcessingStatusOk(orderGeneratingResult.DocumentId,
                     orderGeneratingResult.ExternalDocumentId);
-
+/*
                 if (!changeResult.IsSuccessfull)
                 {
                     await resultsService.SendListOfShareholdersResultToClient(
@@ -61,7 +61,7 @@ namespace EmitterPersonalAccount.Application.Infrastructure.Consumers
                     orderGeneratingResult.UserId,
                     orderGeneratingResult.DocumentId,
                     ReportOrderStatus.Successfull
-                );
+                );*/
             }
 
             return Result.Success();

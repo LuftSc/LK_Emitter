@@ -34,11 +34,17 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
         public static readonly RabbitMqAction ResultDividendList =
             new("orderReports_exchange", "orderReports.dividend_result", "result_dividend_list_queue");
 
+        public static readonly RabbitMqAction GetOrderReports = new
+            ("orderReports_exchange", "orderReports.get", "orderReports_get_queue");
+
         public static readonly RabbitMqAction DownloadReportOrder =
             new("orderReports_exchange", "orderReports.download", "download_report_order_queue");
+
+        public static readonly RabbitMqAction SendResultToClient =
+            new("result_exchange", "send_result", "send_results_queue");
         /*public static readonly RabbitMqAction ResultDownloadReportOrder =
             new("orderReports_exchange", "orderReports.result_download", "result_download_report_order_queue");*/
-        
+
 
         public string ExchangeName { get; }
         public string RoutingKey { get; }

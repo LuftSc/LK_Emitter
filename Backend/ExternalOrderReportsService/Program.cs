@@ -1,7 +1,10 @@
 
+using BaseMicroservice;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
+using ExternalOrderReportService.DataAccess;
+using ExternalOrderReportService.DataAccess.Repositories;
 using ExternalOrderReportsService.Publishers;
 using ExternalOrderReportsService.Services;
 using Microsoft.EntityFrameworkCore;
@@ -25,22 +28,24 @@ namespace ExternalOrderReportsService
 
             builder.Services.AddHttpClient();
 
-            //builder.Services.RegisterRepository<IOrderReportsRepository, OrderReportsRepository>();
+            builder.Services.RegisterRepository<IOrderReportsRepository, OrderReportsRepository>();
 
-            builder.Services.AddScoped<IRabbitMqPublisher, ResultPublisher>();
+            builder.Services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
             builder.Services.AddScoped<IOrderReportsService, OrderReportsService>();
+            builder.Services.AddScoped<IReportStatusChangeService, ReportStatusChangeService>();
 
             builder.Services.AddHostedService<MainService>(provider => new MainService(
                 builder.Configuration,
                 provider
             ));
 
-            /*builder.Services.AddDbContext<ExternalOrderReportsServiceDbContext>(options =>
+            builder.Services.AddDbContext<ExternalOrderReportServiceDbContext>(options =>
             {
                 options.UseNpgsql(builder.Configuration
-                    .GetConnectionString(nameof(ExternalOrderReportsServiceDbContext)));
-            });*/
+                    .GetConnectionString(nameof(ExternalOrderReportServiceDbContext)));
+            });
 
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

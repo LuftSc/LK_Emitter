@@ -27,7 +27,7 @@ namespace EmitterPersonalAccount.Application.Services
             DateTime requestDate,
             string userId,
             Guid documentId,
-            ReportOrderStatus status)
+            CompletionStatus status)
         {
             var connInfoResult = memoryCache.GetValue<ConnectionInfo>(userId);
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from 'clsx';
-import { getAllOrderReportsByEmitterId, getOrderReportsByEmitterId, ListOfShareholders, RequestListOfShareholders, sendRequestListOfShareholders } from "@/app/services/orderReportsService";
+import { getAllOrderReportsByEmitterId, getOrderReportsByEmitterId, RequestListOfShareholders, sendRequestListOfShareholders } from "@/app/services/orderReportsService";
 import { Button, List } from "antd";
 import { ReportOrder, ReportOrderStatus } from "@/app/models/ReportOrder";
 import { useEffect, useState } from "react";
@@ -28,7 +28,7 @@ export default function FormsMain () {
     const { startConnection } = useSignalR();
 
     const [emitterName, setEmitterName] = useState<string>("")
-    const [emitterId, setEmitterId] = useState<string>("");
+    const [emitterId, setEmitterId] = useState<number>(0);
 
     const [loading, setLoading] = useState(false);
     const [pagination, setPagination] = useState({
@@ -37,15 +37,18 @@ export default function FormsMain () {
     });
 
     useEffect(() => {
+        //onRequestListOSA() !
         
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
 
         if (emitterData) {
             setEmitterName(emitterData.Name)
+            console.log(emitterData.AuthPerson)
             //onReportOrdersTableUpdate(emitterData.Id)
-            getOrderReportsByPage(emitterData.Id, pagination)
-            setEmitterId(emitterData.Id)
+            //onGetReportOrders(); !
+            //getOrderReportsByPage(emitterData.IssuerId, pagination) !
+            setEmitterId(emitterData.IssuerId)
         }
     }, [])
 
@@ -54,27 +57,27 @@ export default function FormsMain () {
         console.log('обновился размер')
     }, [orderReports])
 
-    const getOrderReportsByPage = async (emitterId: string, pagination: any) => {
+    const getOrderReportsByPage = async (issuerId: number, pagination: any) => {
         setLoading(true)
         //console.log('зашли в обновление')
         setPagination(pagination)
         const orderReportsResponse = await 
-            getOrderReportsByEmitterId(emitterId, pagination.current, pagination.pageSize)
+            getOrderReportsByEmitterId(issuerId, pagination.current, pagination.pageSize)
 
         if (orderReportsResponse?.ok) {
-            const reports = await orderReportsResponse.json()
-            console.log(reports)
-            setOrderReports({
+            //const reports = await orderReportsResponse.json()
+            console.log('Отправили запрос на отчёты')
+            /*setOrderReports({
                 totalSize: reports.totalSize,
                 orderReports: reports.orderReports
-            })
+            }) */
         } else if (orderReportsResponse?.status === 400) {
             console.error('контролируемая ошибка')
         } else {
             console.error('НЕконтролируемая ошибка')
         }
 
-        setLoading(false)
+        
     } 
 
     const formatDate = (dateTime: string) : string => {
@@ -86,10 +89,22 @@ export default function FormsMain () {
         return `${time} ${date}`
     }
 
+    const onGetReportOrders = async () => {
+        const currentConnection = connection ? connection : await startConnection()
+
+        currentConnection?.on('ReceiveReports', (orderReports: {totalSize: number, 
+            orderReports:ReportOrder[]}) => {
+                setOrderReports(orderReports)
+                setLoading(false)
+            })
+
+        currentConnection?.off('ReceiveReports')
+    }
+
     const onRequestListOSA = async () => {
         // Если соединения не установлено - устанавливаем
-        const emitter = localStorage.getItem('emitter')
-        const emitterData = emitter ? JSON.parse(emitter) : null
+        //const emitter = localStorage.getItem('emitter')
+        //const emitterData = emitter ? JSON.parse(emitter) : null
 
         const currentConnection = connection ? connection : await startConnection()
 
@@ -144,7 +159,7 @@ export default function FormsMain () {
             });
         }
         
-        const defaultListOSRequest = {
+        /*const defaultListOSRequest = {
             requestData: {
                 reportName: "string",
                 isSaveToStorage: true,
@@ -185,7 +200,7 @@ export default function FormsMain () {
             emitterId: emitterData.Id
         } as RequestListOfShareholders
     
-        await sendRequestListOfShareholders(defaultListOSRequest)
+        await sendRequestListOfShareholders(defaultListOSRequest) */
     }
 
     const columns : ColumnsType<ReportOrder> = [

@@ -9,6 +9,7 @@ namespace ExternalOrderReportsService.Services
         private readonly RequestListOfShareholdersConsumer requestShareholdersConsumer;
         private readonly RequestReeRepConsumer requestReeRepConsumer;
         private readonly RequestDividendListConsumer requestDividendListConsumer;
+        private readonly GetOrderReportsConsumer getOrderReportsConsumer;
 
         private readonly DownloadReportOrderRpcServer downloadReportOrderRpcServer;
         public MainService(IConfiguration configuration, IServiceProvider provider)
@@ -19,6 +20,7 @@ namespace ExternalOrderReportsService.Services
             requestShareholdersConsumer = new RequestListOfShareholdersConsumer(rabbitUri, provider);
             requestReeRepConsumer = new RequestReeRepConsumer(rabbitUri, provider);
             requestDividendListConsumer = new RequestDividendListConsumer(rabbitUri, provider);
+            getOrderReportsConsumer = new GetOrderReportsConsumer(rabbitUri, provider);
 
             downloadReportOrderRpcServer = new DownloadReportOrderRpcServer(rabbitUri, provider);
         }
@@ -30,6 +32,8 @@ namespace ExternalOrderReportsService.Services
                 .ExecuteAsync(RabbitMqAction.RequestReeRep, cancellationToken);
             await requestDividendListConsumer
                 .ExecuteAsync(RabbitMqAction.RequestDividendList, cancellationToken);
+            await getOrderReportsConsumer
+                .ExecuteAsync(RabbitMqAction.GetOrderReports, cancellationToken);
 
             await downloadReportOrderRpcServer
                 .StartAsync(RabbitMqAction.DownloadReportOrder, cancellationToken);
@@ -39,6 +43,7 @@ namespace ExternalOrderReportsService.Services
             requestShareholdersConsumer.Dispose();
             requestReeRepConsumer.Dispose();
             requestDividendListConsumer.Dispose();
+            getOrderReportsConsumer.Dispose();
 
             downloadReportOrderRpcServer.Dispose();
 

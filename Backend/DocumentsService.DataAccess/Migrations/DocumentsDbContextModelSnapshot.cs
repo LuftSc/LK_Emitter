@@ -94,6 +94,12 @@ namespace DocumentsService.DataAccess.Migrations
                         .HasColumnType("boolean")
                         .HasColumnName("ONLY_PERS");
 
+                    b.Property<int>("IssuerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IssuerId"));
+
                     b.Property<string>("MeetNotifyXML")
                         .HasColumnType("text")
                         .HasColumnName("MEET_NOTIFY");
@@ -315,6 +321,35 @@ namespace DocumentsService.DataAccess.Migrations
                     b.ToTable("Emitters", (string)null);
                 });
 
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.OrderReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EmitterId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ExternalStorageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RequestDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmitterId");
+
+                    b.ToTable("OrderReport");
+                });
+
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", b =>
                 {
                     b.Property<Guid>("Id")
@@ -411,7 +446,7 @@ namespace DocumentsService.DataAccess.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("EmitterUser", (string)null);
+                    b.ToTable("EmitterUser");
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Document", b =>
@@ -444,6 +479,17 @@ namespace DocumentsService.DataAccess.Migrations
                     b.Navigation("Registrator");
                 });
 
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.OrderReport", b =>
+                {
+                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", "Emitter")
+                        .WithMany("OrderReports")
+                        .HasForeignKey("EmitterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Emitter");
+                });
+
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", b =>
                 {
                     b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", "Registrator")
@@ -471,6 +517,8 @@ namespace DocumentsService.DataAccess.Migrations
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", b =>
                 {
                     b.Navigation("Documents");
+
+                    b.Navigation("OrderReports");
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", b =>

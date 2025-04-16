@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BaseMicroservice\BaseMicroservice.csproj" />
     <ProjectReference Include="..\EmitterPersonalAccount.Core\EmitterPersonalAccount.Core.csproj" />
+    <ProjectReference Include="..\ExternalOrderReportService.DataAccess\ExternalOrderReportService.DataAccess.csproj" />
   </ItemGroup>
 
 </Project>

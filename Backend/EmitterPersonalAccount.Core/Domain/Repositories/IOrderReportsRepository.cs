@@ -11,10 +11,19 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
 {
     public interface IOrderReportsRepository : IRepository<OrderReport>
     {
-        Task<Result> SaveAsync(Guid emitterId, OrderReport orderReport);
-        Task<Result<List<OrderReport>>> GetAllByEmitterId(Guid emitterId);
         Task<Result> ChangeProcessingStatusOk(Guid id, Guid externalStorageId);
+
+        Task<Result> ChangeProcessingStatusFailed(Guid id);
+
+
+        Task<Result<List<OrderReport>>> GetAllByIssuerId(int issuerId);
+
+
         Task<Result<Tuple<int, List<OrderReport>>>> GetByPage
-            (Guid emitterId, int page, int pageSize);
+            (int issuerId, int page, int pageSize);
+
+
+        Task<Result> SaveAsync(OrderReport orderReport, CancellationToken cancellationToken);
+        
     }
 }

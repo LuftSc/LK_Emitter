@@ -1,7 +1,11 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using ExternalOrderReportService.DataAccess.Repositories;
 using ExternalOrderReportsService.Contracts;
 using ExternalOrderReportsService.Services;
 using RabbitMQ.Client.Events;
@@ -12,8 +16,7 @@ namespace ExternalOrderReportsService.Consumers
     public record RequestListOfShareholdersEvent(
         DateTime SendingDate,
         ListOfShareholdersRequest RequestData,
-        string UserId,
-        Guid DocumentId
+        string UserId
         ) { }
 
     public record ResultListOfShareholsders(
@@ -38,42 +41,59 @@ namespace ExternalOrderReportsService.Consumers
             var ev = EventDeserializer<RequestListOfShareholdersEvent>
                 .Deserialize(args);
 
+            var orderReportCreatingResult = OrderReport
+                .Create("Лист участников собрания акционеров", ev.SendingDate);
+
+            if (!orderReportCreatingResult.IsSuccessfull) return orderReportCreatingResult;
+
             using (var scope = provider.CreateScope()) 
             {
-                try
+                var statusChangeService = scope.ServiceProvider
+                    .GetRequiredService<IReportStatusChangeService>();
+
+                var setProcessingResult = await statusChangeService
+                    .SetProcessingStatus(ev.UserId, orderReportCreatingResult.Value);
+
+                if (!setProcessingResult.IsSuccessfull)
                 {
-                    var orderReportService = scope.ServiceProvider
-                        .GetRequiredService<IOrderReportsService>();
-
-                    var orderReportResult = await orderReportService
-                        .RequestListOfShareholdersForMeetingReport(ev.SendingDate, ev.RequestData);
-
-                    if (!orderReportResult.IsSuccessfull)
-                        return Result.Error(new ListOfShareholsdersReportGeneratingError());
-
-                    var response = new ResultListOfShareholsders
-                        (ev.SendingDate, 
-                        orderReportResult.Value, 
-                        ev.UserId,
-                        ev.DocumentId);
-
-                    var message = JsonSerializer.Serialize(response);
-
-                    var publisher = scope.ServiceProvider
-                        .GetRequiredService<IRabbitMqPublisher>();
-
-                    var isSuccessfull = await publisher
-                        .SendMessageAsync(message, RabbitMqAction.ResultListOfShareholders, default);
-
-                    if (!isSuccessfull)
-                        return Result.Error(new ListOfShareholsdersReportQueueDeliveryError());
-
-                    return Result.Success();
+                    await statusChangeService
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value);
+                    return setProcessingResult;
                 }
-                catch (InvalidOperationException ex)
+
+                var updatedRequestData = ev.RequestData with
                 {
-                    return Result.Error(new ListOfShareholsdersReportQueueDeliveryError());
+                    Guid = orderReportCreatingResult.Value.Id.ToString()
+                };
+
+                var orderReportService = scope.ServiceProvider
+                    .GetRequiredService<IOrderReportsService>();
+
+                var responseResult = await orderReportService
+                    .RequestListOfShareholdersForMeetingReport(ev.SendingDate, updatedRequestData);
+
+                if (!responseResult.IsSuccessfull)
+                {
+                    await statusChangeService
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value);
+                    return responseResult;
                 }
+
+                var statusSuccessResult = await statusChangeService
+                    .SetSuccessfullStatus(
+                        ev.UserId, 
+                        orderReportCreatingResult.Value, 
+                        responseResult.Value);
+
+                if (!statusSuccessResult.IsSuccessfull)
+                {
+                    await statusChangeService
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value);
+                    return statusSuccessResult;
+                }
+
+                return Result.Success();
+               
             }
         }
     }

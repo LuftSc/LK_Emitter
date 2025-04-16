@@ -14,6 +14,6 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
     public interface IEmittersRepository : IRepository<Emitter>
     {
         Task<Result> BindUser(Guid emitterId, Guid userId);
-        Task<Result<List<Tuple<Guid, EmitterInfo>>>> GetAllByUserId(Guid userId);
+        Task<Result<List<Tuple<Guid, EmitterInfo, int>>>> GetAllByUserId(Guid userId);
     }
 }

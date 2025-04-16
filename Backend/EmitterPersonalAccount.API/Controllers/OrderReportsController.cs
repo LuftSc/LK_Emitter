@@ -1,6 +1,8 @@
 ﻿//using EmitterPersonalAccount.Application.Features.Documents;
 using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.Application.Features.OrderReports;
+using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using ExternalOrderReportsService.Contracts;
@@ -18,16 +20,16 @@ namespace EmitterPersonalAccount.API.Controllers
     public class OrderReportsController : ControllerBase
     {
         private readonly IMediator mediator;
-        private readonly IOrderReportsRepository orderReportsRepository;
+        private readonly IRabbitMqPublisher publisher;
 
         public OrderReportsController(IMediator mediator, 
-            IOrderReportsRepository orderReportsRepository)
+            IRabbitMqPublisher publisher)
         {
             this.mediator = mediator;
-            this.orderReportsRepository = orderReportsRepository;
+            this.publisher = publisher;
         }
 
-        [Authorize]
+       /* [Authorize]
         [HttpGet("get-all-report-orders/{emitterId:guid}")]
         public async Task<ActionResult<List<OrderReportDTO>>> GetReportOrders(Guid emitterId)
         {
@@ -41,28 +43,32 @@ namespace EmitterPersonalAccount.API.Controllers
                 .ToList();
 
             return Ok(response);  
-        }
+        }*/
 
         [Authorize]
-        [HttpGet("get-report-orders/{emitterId:guid}/")]
-        public async Task<ActionResult<OrderReportPaginationList>> GetReportOrdersByPage
-            (Guid emitterId, [FromQuery] PaginationInfo pagination)
+        [HttpGet("get-report-orders/{emitterId:int}/")]
+        public async Task<ActionResult> GetReportOrdersByPage
+            (int issuerId, [FromQuery] PaginationInfo pagination)
         {
-            var result = await orderReportsRepository
-                .GetByPage(emitterId, pagination.Page, pagination.PageSize);
+            var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
 
-            if (!result.IsSuccessfull)
-                return BadRequest(result.GetErrors());
+            var getReportsEvent = new GetOrderReportsEvent()
+            {
+                IssuerId = issuerId,
+                UserId = userId,
+                Page = pagination.Page,
+                PageSize = pagination.PageSize
+            };
 
-            var response = new OrderReportPaginationList(
-                result.Value.Item1, 
-                result.Value.Item2
-                    .Select(o => new OrderReportDTO
-                        (o.Id, o.FileName, o.Status.ToString(), 
-                        o.RequestDate, o.ExternalStorageId))
-                    .ToList());
+            var isSuccesfull = await publisher
+                .SendMessageAsync(
+                    JsonSerializer.Serialize(getReportsEvent), 
+                    RabbitMqAction.GetOrderReports, 
+                    default);
 
-            return Ok(response);
+            if (!isSuccesfull) return BadRequest();
+
+            return Ok(isSuccesfull);
         }
 
         [Authorize]
@@ -70,6 +76,7 @@ namespace EmitterPersonalAccount.API.Controllers
         public async Task<ActionResult> RequestListOfShareholdersReport(
             [FromBody] RequestListOfShareholdersCommand request)
         {
+            Console.WriteLine("Запрос пошёл");
             if (request == null) return BadRequest("Request body can not be null!");
 
             var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;

@@ -1,6 +1,9 @@
+"use client"
+
 import { InputForm } from "@/app/ui/forms/input";
 import { RadioButton } from "@/app/ui/forms/radiobtn";
 import { NavigationButtons } from "@/app/ui/forms/nav-btn";
+import { RequestListOfShareholders, sendRequestListOfShareholders } from "@/app/services/orderReportsService";
 
 export default function Page () {
   return (
@@ -40,7 +43,7 @@ export default function Page () {
             </div>
           </div>
          </div>
-        <NavigationButtons back='/forms/first/step-three-shown' next='' />
+        <NavigationButtons back='/forms/first/step-three-shown' next='/forms' />
     </div>
   );
 }

@@ -1,11 +1,30 @@
+"use client"
+
 import { NavigationButtons } from "@/app/ui/forms/nav-btn";
 import { InputForm } from "@/app/ui/forms/input"
 import { RadioButton } from "@/app/ui/forms/radiobtn";
 import CalendarInput from "@/app/ui/forms/calendar";
 import TimePicker from "@/app/ui/forms/time-picker";
+import { useState } from "react";
+import { RequestListOfShareholders } from "@/app/services/orderReportsService";
 
 export default function Page () {
-  return (
+    const [startRegistrationTime, setStartRegistrationTime] = useState<string>("")
+    const [endRegistrationTime, SetEndRegistrationTime] = useState<string>("")
+    
+    const onNextPageTransition = () => {
+        const request = localStorage.getItem('request_listOSA')
+        const requestData = request ? JSON.parse(request) as RequestListOfShareholders: null
+
+        if (requestData) {
+            requestData.forDbSaving.stepTwo = {
+                startRegistrationTime: startRegistrationTime,
+                endRegistrationTime: endRegistrationTime
+            }
+        }
+    }
+  
+    return (
     <div className="w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
           <p className="text-[#B82116] text-[15px]/[19px] font-bold text-center mb-[31px]">Распоряжение Эмитента на список к ОСА</p>
           <div className="border-[0.5px] border-black rounded-[28px] pt-[17px] pl-[26px] pb-[28px]">
@@ -39,7 +58,7 @@ export default function Page () {
                 <InputForm placeholder="Введите адрес"/>
             </div>
           </div>
-        <NavigationButtons back='/forms/first/step-one' next='/forms/first/step-three-shown'/>
+        <NavigationButtons back='/forms/first/step-one' next='/forms/first/step-three-shown' onClick={onNextPageTransition}/>
      </div>
   );
 }

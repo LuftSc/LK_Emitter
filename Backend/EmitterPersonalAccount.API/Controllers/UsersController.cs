@@ -210,7 +210,7 @@ namespace EmitterPersonalAccount.API.Controllers
                 return BadRequest(result.GetErrors());
 
             var response = result.Value
-                .Select(e => new EmitterInfoDTO(e.Item1, e.Item2))
+                .Select(e => new EmitterInfoDTO(e.Item1, e.Item2, e.Item3))
                 .ToList();
 
             return Ok(response);

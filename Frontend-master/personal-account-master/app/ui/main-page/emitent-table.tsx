@@ -5,14 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useSignalR } from "@/app/signalR/SignalRContext";
-//import { useSimpleStorage } from "@/app/hooks/useLocalStorage";
-//import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-
-
-/*interface Props {
-    emitentName: string,
-    setEmitentName: React.Dispatch<React.SetStateAction<string>>
-} */
 
 interface Props {
     userId: string
@@ -40,19 +32,24 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
     }, [])
     //const { getItem, setItem } = useSimpleStorage('emitter');
 
-    const handleSelect = async (id: string, emitterName: string) => {
+    const handleSelect = async (record: Emitter) => {
         
         const currentConnection = connection ? connection : await startConnection()
         
-        setSelectedRowId(id === selectedRowId ? null : id);
-        setEmitterName(emitterName)
-        console.log('устанавливаем id: ' + id)
+        setSelectedRowId(record.id === selectedRowId ? null : record.id);
+        setEmitterName(record.emitterInfo.shortName)
+        //console.log('устанавливаем id: ' + id)
         
-        const response = await currentConnection?.invoke('EmitterSelected', id)
+        const response = await currentConnection?.invoke('EmitterSelected', record.id)
         console.log('подключили пользователя в группу')
         console.log(response)
 
-        localStorage.setItem('emitter', JSON.stringify({ Id: id, Name: emitterName, AuthPerson: userId }))
+        localStorage.setItem('emitter', JSON.stringify({ 
+            Id: record.id, 
+            Name: record.emitterInfo.shortName, 
+            AuthPerson: userId, 
+            IssuerId: record.issuerId
+        }))
 
         //console.log(localStorage.getItem('emitter'))
         //setItem({ Id: id, Name: emitterName, AuthPerson: userId });
@@ -65,7 +62,7 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
             render: (_, record) => (
               <Button 
                 type={selectedRowId === record.id ? 'primary' : 'default'}
-                onClick={() => handleSelect(record.id, record.emitterInfo.shortName)}
+                onClick={() => handleSelect(record)}
               >
                 {selectedRowId === record.id ? 'Выбрано' : 'Выбрать'}
               </Button>

@@ -17,8 +17,9 @@ export default function Page() {
     const [emitterInfo, setEmitterInfo] = useState<{
         Id: string, 
         Name: string, 
-        AuthPerson: string}>
-        ({Id: "", Name: "", AuthPerson: ""})
+        AuthPerson: string,
+        IssuerId: number}>
+        ({Id: "", Name: "", AuthPerson: "", IssuerId: 0})
 
     //const { connection } = useSignalR();
     //const { startConnection } = useSignalR();

@@ -25,12 +25,6 @@ export default function Home() {
 
   const [userId, setUserId] = useState<string>("");
 
-  const [emitterInfo, setEmitterInfo] = useState<{
-    Id: string, 
-    Name: string, 
-    AuthPerson: string}>
-    ({Id: "", Name: "", AuthPerson: ""})
-
   useEffect(() => {
     // const emitter = getItem()
     // console.log(emitter)
