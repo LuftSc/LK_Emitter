@@ -32,6 +32,7 @@ export default function Page() {
       }
 
       localStorage.setItem('request_listOSA', JSON.stringify(requestData))
+      console.log(localStorage.getItem('request_listOSA'))
     }
   }
 

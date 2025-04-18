@@ -3,7 +3,6 @@
 import { NavigationButtons } from "@/app/ui/forms/nav-btn"
 import { InputForm } from "@/app/ui/forms/input"
 import { CheckBox } from "@/app/ui/forms/checkbox"
-import { RadioButton } from "@/app/ui/forms/radiobtn";
 import ShowListsRadio from "@/app/ui/forms/showLists-radio";
 import { useEffect, useState } from "react";
 import Calendar from "@/app/ui/forms/calendar-new";
@@ -25,7 +24,7 @@ export default function Page() {
   const [isMeetingWillBeHeldByBoD, setisMeetingWillBeHeldByBoD] = useState<boolean>(false)
   const [mettingWillBeHeldBy, setmettingWillBeHeldBy] = useState<string>('')
   const [meetingNumber, setMeetingNumber] = useState<number>(0)
-  const [decisionDate, setDecisionDate] = useState<string>("0000-00-00")
+  const [decisionDate, setDecisionDate] = useState<string>('')
 
   const [dtMod, setDtMod] = useState<string>('')
   const [isRangeMeeting, setisRangeMeeting] = useState<boolean>(false)
@@ -45,8 +44,8 @@ export default function Page() {
         isRangeMeeting: isRangeMeeting,
         isCategMeeting: isCategMeeting,
         issuerId: emitterData.IssuerId
-      } as ListOSAReportGeneratingData,
-
+      },
+      
       forDbSaving: {
         stepOne: {
           listOfPeopleRightToParticipate: listOfPeopleRightToParticipate,
@@ -56,31 +55,12 @@ export default function Page() {
           mettingWillBeHeldBy: mettingWillBeHeldBy,
           meetingNumber: meetingNumber,
           decisionDate: decisionDate
-        },
-        stepTwo: {
-          startRegistrationTime: "00:00",
-          endRegistrationTime: "00:00"
         }
-        
-      } as ListOSASavingToDbData
-
+      }
+      
     } as RequestListOfShareholders
 
     localStorage.setItem('request_listOSA', JSON.stringify(requestData))
-  }
-
-  const [pageInfo, setPageInfo] = useState<{
-    isRangeMeeting: boolean,
-    Dt_Begsobr: string,
-  }>({ isRangeMeeting: false, Dt_Begsobr: "" })
-
-  useEffect(() => {
-    onInfoUpdate()
-  }, [])
-
-  const onInfoUpdate = async () => {
-    setPageInfo({ isRangeMeeting, Dt_Begsobr })
-    console.log(pageInfo)
   }
 
   return (
