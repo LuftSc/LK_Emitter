@@ -62,9 +62,9 @@ export interface ListOSAReportGeneratingData {
 
 export interface ListOSASavingToDbData {
     stepOne: {
-        listOfPeopleRightToParticipate: string // Первый чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров"
-        listOfPeopleRightOnPapers: string // Второй чекбокс с "Список лиц, осуществляющих права по ценным бумагам"
-        listOfPeopleRightToParticipateTwo: string // Третий чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров,  без персональных данных"
+        listOfPeopleRightToParticipate: boolean // Первый чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров"
+        listOfPeopleRightOnPapers: boolean // Второй чекбокс с "Список лиц, осуществляющих права по ценным бумагам"
+        listOfPeopleRightToParticipateTwo: boolean // Третий чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров,  без персональных данных"
         isMeetingWillBeHeldByBoD: boolean // Флажок с 1 формы "Советом директоров"
         mettingWillBeHeldBy: string // Строка под флажком, если "Советом директоров" true, 
         // то она будет пустая, если нет, то тут должно быть название органа, 
