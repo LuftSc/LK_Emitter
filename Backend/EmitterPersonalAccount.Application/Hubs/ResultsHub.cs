@@ -1,4 +1,4 @@
-﻿using EmitterPersonalAccount.Application.Services;
+﻿/*using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -28,9 +28,9 @@ namespace EmitterPersonalAccount.Application.Hubs
         public async Task SendResult(Guid documentId, DateTime requestDate)
         {
 
-            /*await Clients
+            *//*await Clients
                 .Client(Context.ConnectionId)
-                .SendListOfShareholdersResult(documentId, requestDate);*/
+                .SendListOfShareholdersResult(documentId, requestDate);*//*
         }
         public async Task<Result> EmitterSelected(string emitterId)
         {
@@ -106,3 +106,4 @@ namespace EmitterPersonalAccount.Application.Hubs
         )
     { }
 }
+*/

@@ -1,4 +1,6 @@
-﻿using EmitterPersonalAccount.Application.Infrastructure.CacheManagment;
+﻿/*using EmitterPersonalAccount.Application.Infrastructure.CacheManagment;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -23,12 +25,14 @@ namespace EmitterPersonalAccount.Application.Hubs
             connections = new();
         private readonly HttpClient _httpClient;
         private readonly IDistributedCache distributedCache;
+        private readonly IDistributedCache redis;
 
         //private readonly IHubContext<ResultsHubProxy> hubContext;
         //private HubConnection _resultsServiceConnection;
-        public ResultsHubProxy(IHttpClientFactory httpClientFactory)
+        public ResultsHubProxy(IHttpClientFactory httpClientFactory, IDistributedCache redis)
         {
             _httpClient = httpClientFactory.CreateClient("ResultHubService");
+            this.redis = redis;
             //this.distributedCache = distributedCache;
             // this.hubContext = hubContext;
         }
@@ -38,7 +42,7 @@ namespace EmitterPersonalAccount.Application.Hubs
                 return Result.Error(new SelectedEmitterIdIsEmptyError());
             // Получить user ID
             // 1. Получаем JWT из Cookies запроса SignalR
-            /*var httpContext = Context.GetHttpContext();
+            *//*var httpContext = Context.GetHttpContext();
             var jwtToken = httpContext.Request.Cookies["tasty-cookies"]; // Или из заголовка
 
             // 2. Добавляем JWT в заголовок Authorization
@@ -52,15 +56,15 @@ namespace EmitterPersonalAccount.Application.Hubs
 
             /*try
             {
-                await EnsureConnectionActive();*/
+                await EnsureConnectionActive();*//*
                 //await _resultsServiceConnection.InvokeAsync("EmitterSelected", emitterId);
-           /* }
+           *//* }
             catch (Exception ex)
             {
                 // Отправляем ошибку клиенту
                 //await hubContext.Clients. .SendAsync("Error", ex.Message);
                 Console.WriteLine(ex.Message);
-            }*/
+            }*//*
 
             if (connections.TryGetValue(Context.ConnectionId, out var hubConnection))
                 await hubConnection.InvokeAsync("EmitterSelected", emitterId);
@@ -69,19 +73,29 @@ namespace EmitterPersonalAccount.Application.Hubs
         }
         public override async Task OnConnectedAsync()
         {
+            Console.WriteLine($"В ПРОКСИ ХАБ Зашёл пользователь с соединением: {Context.ConnectionId}");
             var httpContext = Context.GetHttpContext();
             var jwtToken = httpContext.Request.Cookies["tasty-cookies"];
-            //var userId = GetUserIdFromJwt(jwtToken);
+            var clientConnectionId = Context.ConnectionId;
+            var userId = GetUserIdFromJwt(jwtToken);
 
             var hubConnection = new HubConnectionBuilder()
-                .WithUrl($"http://localhost:5001/results-hub?access_token={jwtToken}") // Токен в URL
+                .WithUrl($"http://localhost:5001/results-hub?access_token={jwtToken}")
                 .Build();
 
-            //Context.Items["JwtToken"] = jwtToken;
-
-            connections.TryAdd(Context.ConnectionId, hubConnection);
-
             await hubConnection.StartAsync();
+
+            await redis
+                .SetStringAsync($"client:{userId}", hubConnection.ConnectionId);
+
+            connections.TryAdd(clientConnectionId, hubConnection);
+
+            *//*hubConnection.On("ReceiveReports", async (OrderReportPaginationList reports) =>
+            {
+                await Clients.Client(clientConnectionId).SendAsync("ReceiveReports", reports);
+            });*//*
+
+            
             await base.OnConnectedAsync();
 
             // Передаём токен в NotificationService через HTTP-заголовок
@@ -94,7 +108,8 @@ namespace EmitterPersonalAccount.Application.Hubs
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            /*var httpContext = Context.GetHttpContext();
+            Console.WriteLine($"ИЗ ПРОКСИ ХАБА вышел пользователь с соединением: {Context.ConnectionId}");
+            *//*var httpContext = Context.GetHttpContext();
             var jwtToken = httpContext.Request.Cookies["tasty-cookies"];
 
             // Передаём токен в NotificationService через HTTP-заголовок
@@ -103,12 +118,19 @@ namespace EmitterPersonalAccount.Application.Hubs
                 {
                     options.AccessTokenProvider = () => Task.FromResult(jwtToken);
                 })
-                .Build();*/
+                .Build();*//*
+
+            var httpContext = Context.GetHttpContext();
+            var jwtToken = httpContext.Request.Cookies["tasty-cookies"];
+            var userId = GetUserIdFromJwt(jwtToken);
+
             connections.TryRemove(Context.ConnectionId, out var hubConnection);
+
+            await redis.RemoveAsync($"client:{userId}");
             if (hubConnection is not null) await hubConnection.DisposeAsync();
             await base.OnDisconnectedAsync(exception);
         }
-        /*private async Task EnsureConnectionActive()
+        *//*private async Task EnsureConnectionActive()
         {
             if (_resultsServiceConnection == null)
                 throw new InvalidOperationException("Соединение не инициализировано");
@@ -117,7 +139,7 @@ namespace EmitterPersonalAccount.Application.Hubs
             {
                 await _resultsServiceConnection.StartAsync();
             }
-        }*/
+        }*//*
         private string GetUserIdFromJwt(string jwtToken)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -125,9 +147,10 @@ namespace EmitterPersonalAccount.Application.Hubs
             return token.Claims.First(c => c.Type == "userId").Value;
         }
     }
-    /*public record ConnectionInfo(
+    *//*public record ConnectionInfo(
         string CurrentEmitterId,
         HubConnection HubConnection
         )
-    { }*/
+    { }*//*
 }
+*/

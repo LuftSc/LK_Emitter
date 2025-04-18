@@ -1,4 +1,4 @@
-﻿using EmitterPersonalAccount.Application.Hubs;
+﻿/*using EmitterPersonalAccount.Application.Hubs;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -55,3 +55,4 @@ namespace EmitterPersonalAccount.Application.Services
         }
     }
 }
+*/

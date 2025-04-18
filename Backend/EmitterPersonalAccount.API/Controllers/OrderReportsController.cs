@@ -3,9 +3,9 @@ using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.Application.Features.OrderReports;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
-using ExternalOrderReportsService.Contracts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,12 +46,12 @@ namespace EmitterPersonalAccount.API.Controllers
         }*/
 
         [Authorize]
-        [HttpGet("get-report-orders/{emitterId:int}/")]
+        [HttpGet("get-report-orders/{issuerId:int}/")]
         public async Task<ActionResult> GetReportOrdersByPage
             (int issuerId, [FromQuery] PaginationInfo pagination)
         {
             var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
-
+            
             var getReportsEvent = new GetOrderReportsEvent()
             {
                 IssuerId = issuerId,

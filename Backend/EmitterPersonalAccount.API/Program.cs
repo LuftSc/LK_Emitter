@@ -3,7 +3,7 @@ using BaseMicroservice;
 using EmitterPersonalAccount.API.Extensions;
 using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Application.Features.Documents;
-using EmitterPersonalAccount.Application.Hubs;
+//using EmitterPersonalAccount.Application.Hubs;
 using EmitterPersonalAccount.Application.Infrastructure.CacheManagment;
 using EmitterPersonalAccount.Application.Infrastructure.RabbitMq;
 using EmitterPersonalAccount.Application.Infrastructure.Rpc;
@@ -99,15 +99,15 @@ namespace EmitterPersonalAccount.API
             builder.Services.AddHostedService<RabbitMqInitializer>();
             builder.Services.AddHostedService<RpcClientInitializer>();
 
-            builder.Services.AddHostedService<ConsumerRunService>(provider => new ConsumerRunService(
+            /*builder.Services.AddHostedService<ConsumerRunService>(provider => new ConsumerRunService(
                 builder.Configuration,
                 provider
-                ));
+                ));*/
 
             builder.Services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
             
 
-            builder.Services.AddScoped<ResultService>();
+            //builder.Services.AddScoped<ResultService>();
 
             builder.Services.AddCors(options =>
             {
@@ -121,13 +121,13 @@ namespace EmitterPersonalAccount.API
                 });
             });
 
-            builder.Services.AddSignalR();
+            //builder.Services.AddSignalR();
 
             // 2. ƒобавл€ем HttpClient дл€ проксировани€ в NotificationService
-            builder.Services.AddHttpClient("ResultHubService", client =>
+           /* builder.Services.AddHttpClient("ResultHubService", client =>
             {
                 client.BaseAddress = new Uri("http://localhost:5001"); // или другой URL
-            });
+            });*/
 
             builder.Services.AddMemoryCache();
 
@@ -135,7 +135,7 @@ namespace EmitterPersonalAccount.API
 
             var app = builder.Build();
 
-            app.MapHub<ResultsHubProxy>("/resultsHub");
+            //app.MapHub<ResultsHubProxy>("/resultsHub");
 
             app.UseWebSockets();
 

@@ -25,7 +25,6 @@
     <ProjectReference Include="..\EmitterPersonalAccount.Application\EmitterPersonalAccount.Application.csproj" />
     <ProjectReference Include="..\EmitterPersonalAccount.Core\EmitterPersonalAccount.Core.csproj" />
     <ProjectReference Include="..\EmitterPersonalAccount.DataAccess\EmitterPersonalAccount.DataAccess.csproj" />
-    <ProjectReference Include="..\ExternalOrderReportsService\ExternalOrderReportsService.csproj" />
   </ItemGroup>
 
 </Project>
