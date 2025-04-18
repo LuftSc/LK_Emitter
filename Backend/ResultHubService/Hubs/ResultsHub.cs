@@ -1,10 +1,12 @@
 ﻿using EmitterPersonalAccount.Core.Abstractions;
-using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Caching.Distributed;
+using ResultHubService.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -20,38 +22,33 @@ namespace ResultHubService.Hubs
     }
     public class ResultsHub : Hub<IResultClient>
     {
-        private readonly IDistributedCache distributedCache;
         private readonly IMemoryCacheService memoryCacheService;
+        private readonly IDistributedCache redis;
 
         //private readonly IMemoryCacheService memoryCacheService;
 
 
-        public ResultsHub(IMemoryCacheService memoryCacheService)
+        public ResultsHub(IMemoryCacheService memoryCacheService, IDistributedCache redis)
         {
-            this.distributedCache = distributedCache;
             this.memoryCacheService = memoryCacheService;
+            this.redis = redis;
             //this.memoryCacheService = memoryCacheService;
-        }
-        public async Task SendResult(Guid documentId, DateTime requestDate)
-        {
-
-            /*await Clients
-                .Client(Context.ConnectionId)
-                .SendListOfShareholdersResult(documentId, requestDate);*/
         }
         public async Task<Result> EmitterSelected(string emitterId)
         {
+            var httpContext = Context.GetHttpContext();
+            var jwtToken = httpContext.Request.Cookies["tasty-cookies"];
+            var userId = GetUserIdFromJwt(jwtToken);
             // Получить user ID
+            //var userIdResult = ClaimService.Get(Context, CustomClaims.UserId);
 
-            /*var userIdResult = ClaimService.Get(Context, CustomClaims.UserId);
-
-            if (!userIdResult.IsSuccessfull)
-                return Result.Error(new UserClaimNotFoundError());*/
+            //if (!userIdResult.IsSuccessfull)
+               // return Result.Error(new UserClaimNotFoundError());
 
             // Получаем JWT из запроса (переданного Edge)
-            var httpContext = Context.GetHttpContext();
-            var jwtToken = httpContext.Request.Query["access_token"];
-            var userId = GetUserIdFromJwt(jwtToken);
+            //var httpContext = Context.GetHttpContext();
+            //var jwtToken = httpContext.Request.Query["access_token"];
+            //var userId = GetUserIdFromJwt(jwtToken);
 
             var connInfoResult = memoryCacheService
                 .GetValue<ConnectionInfo>(userId);
@@ -64,79 +61,56 @@ namespace ResultHubService.Hubs
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId,
                     connInfoResult.Value.CurrentEmitterId);
 
+            Console.WriteLine($"Подключили к группе: {emitterId}");
             await Groups.AddToGroupAsync(Context.ConnectionId, emitterId);
 
             memoryCacheService.SetValue(userId,
-                new ConnectionInfo(Context.ConnectionId, connInfoResult.Value.CurrentEmitterId));
+                new ConnectionInfo(Context.ConnectionId, emitterId));
 
             return Result.Success();
         }
         public override async Task OnConnectedAsync()
         {
-            // Получить user ID
-            //var userId = Context.User.FindFirst(CustomClaims.UserId).Value;
-
             var httpContext = Context.GetHttpContext();
-            //var jwtToken = Context.Items["JwtToken"] as string;
-            var jwtToken = httpContext.Request.Query["access_token"].ToString();
-
+            var jwtToken = httpContext.Request.Cookies["tasty-cookies"];
             var userId = GetUserIdFromJwt(jwtToken);
-            //await Groups.AddToGroupAsync(Context.ConnectionId, $"user-{userId}");
 
-
-            var userConnectionResult = memoryCacheService.GetValue<ConnectionInfo>(userId);
-            //var userConnectionResult = await distributedCache.GetStringAsync(userId);
-
-            /*if (userConnectionResult is null)
+            //var userIdResult = ClaimService.Get(Context, CustomClaims.UserId);
+            if (userId is not null)
             {
-                await distributedCache.SetStringAsync(userId, 
-                    JsonSerializer.Serialize
-                        (new ConnectionInfo(Context.ConnectionId, string.Empty)));
-            } 
-            else
-            {
-                var connection = JsonSerializer.Deserialize<ConnectionInfo>(userConnectionResult);
+                var userConnectionResult = memoryCacheService
+                    .GetValue<ConnectionInfo>(userId);
 
-                await distributedCache.SetStringAsync(userId,
-                    JsonSerializer.Serialize
-                        (new ConnectionInfo(Context.ConnectionId, connection.CurrentEmitterId)));
-            }*/
-
-            if (!userConnectionResult.IsSuccessfull)
-            {
-                memoryCacheService.SetValue(userId,
-                    new ConnectionInfo(Context.ConnectionId, string.Empty));
-            }
-            else
-            {
-                memoryCacheService.SetValue(userId,
-                    new ConnectionInfo(Context.ConnectionId,
-                    userConnectionResult.Value.CurrentEmitterId));
+                if (!userConnectionResult.IsSuccessfull)
+                {
+                    memoryCacheService.SetValue(userId,
+                        new ConnectionInfo(Context.ConnectionId, string.Empty));
+                }
+                else
+                {
+                    memoryCacheService.SetValue(userId,
+                        new ConnectionInfo(Context.ConnectionId,
+                        userConnectionResult.Value.CurrentEmitterId));
+                }
             }
 
             await base.OnConnectedAsync();
-            //return base.OnConnectedAsync();
         }
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            // Получить user ID
-            //var userId = Context.User.FindFirst(CustomClaims.UserId).Value;
-
             var httpContext = Context.GetHttpContext();
-            var jwtToken = httpContext.Request.Query["access_token"].ToString();
-
+            var jwtToken = httpContext.Request.Cookies["tasty-cookies"];
             var userId = GetUserIdFromJwt(jwtToken);
 
-            var userConnectionResult = memoryCacheService.GetValue<ConnectionInfo>(userId);
-            //var userConnectionResult = await distributedCache.GetStringAsync(userId);
+           //var userIdResult = ClaimService.Get(Context, CustomClaims.UserId);
+            var userConnectionResult = memoryCacheService
+                .GetValue<ConnectionInfo>(userId);
 
             if (userConnectionResult.IsSuccessfull)
             {
                 await Groups.RemoveFromGroupAsync
                     (Context.ConnectionId, userConnectionResult.Value.CurrentEmitterId);
             }
-
-            //memoryCacheService.RemoveValue(userId);
 
             await base.OnDisconnectedAsync(exception);
         }

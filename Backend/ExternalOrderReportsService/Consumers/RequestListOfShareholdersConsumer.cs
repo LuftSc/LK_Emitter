@@ -2,11 +2,15 @@
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareholders;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+//using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportService.DataAccess.Repositories;
 using ExternalOrderReportsService.Contracts;
+
+//using ExternalOrderReportsService.Contracts;
 using ExternalOrderReportsService.Services;
 using RabbitMQ.Client.Events;
 using System.Text.Json;
@@ -17,13 +21,6 @@ namespace ExternalOrderReportsService.Consumers
         DateTime SendingDate,
         ListOfShareholdersRequest RequestData,
         string UserId
-        ) { }
-
-    public record ResultListOfShareholsders(
-        DateTime SendingDate,
-        Guid ExternalDocumentId,
-        string UserId,
-        Guid DocumentId
         )
     { }
     public class RequestListOfShareholdersConsumer : BaseRabbitConsumer
@@ -42,7 +39,9 @@ namespace ExternalOrderReportsService.Consumers
                 .Deserialize(args);
 
             var orderReportCreatingResult = OrderReport
-                .Create("Лист участников собрания акционеров", ev.SendingDate);
+                .Create("Лист участников собрания акционеров", ev.SendingDate, ev.RequestData.IssuerId);
+
+            var methodSendingResult = MethodResultSending.SendListOSAReport;
 
             if (!orderReportCreatingResult.IsSuccessfull) return orderReportCreatingResult;
 
@@ -52,12 +51,12 @@ namespace ExternalOrderReportsService.Consumers
                     .GetRequiredService<IReportStatusChangeService>();
 
                 var setProcessingResult = await statusChangeService
-                    .SetProcessingStatus(ev.UserId, orderReportCreatingResult.Value);
+                    .SetProcessingStatus(ev.UserId, orderReportCreatingResult.Value, methodSendingResult);
 
                 if (!setProcessingResult.IsSuccessfull)
                 {
                     await statusChangeService
-                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value);
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value , methodSendingResult);
                     return setProcessingResult;
                 }
 
@@ -75,7 +74,7 @@ namespace ExternalOrderReportsService.Consumers
                 if (!responseResult.IsSuccessfull)
                 {
                     await statusChangeService
-                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value);
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value , methodSendingResult);
                     return responseResult;
                 }
 
@@ -83,12 +82,12 @@ namespace ExternalOrderReportsService.Consumers
                     .SetSuccessfullStatus(
                         ev.UserId, 
                         orderReportCreatingResult.Value, 
-                        responseResult.Value);
+                        responseResult.Value , methodSendingResult);
 
                 if (!statusSuccessResult.IsSuccessfull)
                 {
                     await statusChangeService
-                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value);
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value , methodSendingResult);
                     return statusSuccessResult;
                 }
 

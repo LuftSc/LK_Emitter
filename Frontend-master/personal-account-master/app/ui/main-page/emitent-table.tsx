@@ -50,7 +50,9 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
             AuthPerson: userId, 
             IssuerId: record.issuerId
         }))
-
+        const emitter = localStorage.getItem('emitter')
+        const emitterData = emitter ? JSON.parse(emitter) : null
+        console.log(emitterData)
         //console.log(localStorage.getItem('emitter'))
         //setItem({ Id: id, Name: emitterName, AuthPerson: userId });
     };

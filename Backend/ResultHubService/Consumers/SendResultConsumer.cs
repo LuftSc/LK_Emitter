@@ -1,5 +1,8 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareholders;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using RabbitMQ.Client.Events;
 using ResultHubService.Services;
@@ -27,17 +30,28 @@ namespace ResultHubService.Consumers
 
                 switch (ev.MethodForResultSending)
                 {
-                    case "ListOfShareholders":
-                        await resultService.SendListOfShareholdersResultToClient(
-                            JsonSerializer.Deserialize<SendListOSAResultContent>(ev.ContentJSON));
-
-                    break;
-
-                    case "GetReports":
+                    case MethodResultSending.GetReports:
                         await resultService.SendReportsToClient(JsonSerializer
                             .Deserialize<ReportsPaginationListContent>(ev.ContentJSON));
+                        break;
+
+                    case MethodResultSending.SendListOSAReport:
+                        await resultService.SendListOfShareholdersResultToClient(
+                            JsonSerializer.Deserialize<OrderReportDTO>(ev.ContentJSON));
+
                     break;
 
+                    case MethodResultSending.SendReeRepReport:
+                        await resultService
+                            .SendReeRepResultToClient(
+                                JsonSerializer.Deserialize<OrderReportDTO>(ev.ContentJSON));
+                    break;
+
+                    case MethodResultSending.SendDividendListReport:
+                        await resultService
+                            .SendDividendListResultToClient(
+                                JsonSerializer.Deserialize<OrderReportDTO>(ev.ContentJSON));
+                    break;
                     default:
                         return await Task.FromResult
                             (Result.Error(new IncorrectMethodNameForSendingResult()));

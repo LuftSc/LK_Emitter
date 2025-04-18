@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmitterPersonalAccount.Core.Domain.Models.Rabbit
+namespace EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareholders
 {
     public class SendListOSAResultContent
     {
-        public required Guid ExternalDocumentId {  get; set; }
+        public required Guid ExternalDocumentId { get; set; }
         public required DateTime RequestDate { get; set; }
         public required string UserId { get; set; }
         public required Guid DocumentId { get; set; }

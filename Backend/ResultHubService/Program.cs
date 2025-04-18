@@ -16,7 +16,6 @@ namespace ResultHubService
             builder.Services.AddAuthorization();
 
             builder.Services.AddSignalR();
-            builder.Services.AddCors();
 
             builder.Services.AddMemoryCache();
 
@@ -32,18 +31,26 @@ namespace ResultHubService
             builder.Services.AddHostedService<MainService>(provider => 
                 new MainService(builder.Configuration, provider));
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(policy =>
+                {
+                    policy.WithOrigins("http://localhost:3000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .WithExposedHeaders("Content-Disposition");
+                });
+            });
+
             var app = builder.Build();
 
-            app.UseCors(b =>
-            {
-                b.AllowAnyMethod();
-                b.AllowAnyHeader();
-                b.AllowCredentials();
-                b.WithOrigins("http://localhost:5000");
-            });
-            // Configure the HTTP request pipeline.
+            // Отключаем HTTPS redirection для разработки
+            // app.UseHttpsRedirection();
 
-            app.UseHttpsRedirection();
+            app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 

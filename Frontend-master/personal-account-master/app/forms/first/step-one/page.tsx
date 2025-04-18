@@ -34,7 +34,7 @@ export default function Page () {
         dtMod: dtMod,
         nomList: showLists,
         isRangeMeeting: isRangeMeeting,
-        isCategMeeting: example,
+        isCategMeeting: isRangeMeeting,
         issuerId: emitterData.IssuerId
       } as ListOSAReportGeneratingData,
 
@@ -49,6 +49,7 @@ export default function Page () {
           startRegistrationTime: "00:00",
           endRegistrationTime: "00:00"
         }
+        
       } as ListOSASavingToDbData
       
     } as RequestListOfShareholders

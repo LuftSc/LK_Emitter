@@ -16,13 +16,14 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         {
             
         }
-        private OrderReport(string fileName, DateTime requestDate) 
+        private OrderReport(string fileName, DateTime requestDate, int issuerId) 
             : base(Guid.NewGuid()) 
         {
             ExternalStorageId = Guid.Empty;
             FileName = fileName;
             Status = CompletionStatus.Processing;
             RequestDate = requestDate;
+            IssuerId = issuerId;
         }
         public Guid ExternalStorageId { get; private set; }
         public string FileName { get; private set; }
@@ -30,10 +31,10 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         public DateTime RequestDate { get; private set; }
         //public Emitter Emitter { get; private set; } = null!;
         public int IssuerId { get; private set; }
-        public static Result<OrderReport> Create(string fileName, DateTime requestDate)
+        public static Result<OrderReport> Create(string fileName, DateTime requestDate, int issuerId)
         {
             return Result<OrderReport>
-                .Success(new OrderReport(fileName, requestDate));
+                .Success(new OrderReport(fileName, requestDate, issuerId));
         }
     }
 }

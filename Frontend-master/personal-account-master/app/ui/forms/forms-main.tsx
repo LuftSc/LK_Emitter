@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from 'clsx';
-import { getAllOrderReportsByEmitterId, getOrderReportsByEmitterId, RequestListOfShareholders, sendRequestListOfShareholders } from "@/app/services/orderReportsService";
+import { DividendListRequest, getAllOrderReportsByEmitterId, getOrderReportsByEmitterId, ListOfShareholdersRequest, ReeRepRequest, RequestDividendList_OLD, RequestListOfShareholders, RequestListOfShareholders_OLD, RequestReeRep_OLD, sendRequestDividendList, sendRequestListOfShareholders, sendRequestReeRep } from "@/app/services/orderReportsService";
 import { Button, List } from "antd";
 import { ReportOrder, ReportOrderStatus } from "@/app/models/ReportOrder";
 import { useEffect, useState } from "react";
@@ -43,12 +43,17 @@ export default function FormsMain () {
         const emitterData = emitter ? JSON.parse(emitter) : null
 
         if (emitterData) {
+            setOrderReports(prev => ({
+                ...prev, orderReports: []
+            }))
+            console.log(emitterId)
             setEmitterName(emitterData.Name)
-            console.log(emitterData.AuthPerson)
-            //onReportOrdersTableUpdate(emitterData.Id)
-            //onGetReportOrders(); !
-            //getOrderReportsByPage(emitterData.IssuerId, pagination) !
             setEmitterId(emitterData.IssuerId)
+            //onReportOrdersTableUpdate(emitterData.Id)
+            //onGetReportOrders();
+            console.log("кидаем запрос на отчёты по id: " + emitterData.IssuerId)
+            getOrderReportsByPage(emitterData.IssuerId, pagination) 
+            
         }
     }, [])
 
@@ -61,6 +66,7 @@ export default function FormsMain () {
         setLoading(true)
         //console.log('зашли в обновление')
         setPagination(pagination)
+        await onGetReportOrders()
         const orderReportsResponse = await 
             getOrderReportsByEmitterId(issuerId, pagination.current, pagination.pageSize)
 
@@ -89,6 +95,53 @@ export default function FormsMain () {
         return `${time} ${date}`
     }
 
+    const updateReportOrder = (id: string, updatedData: Partial<ReportOrder>) => {
+        setOrderReports(prevState => ({
+            ...prevState,
+            orderReports: prevState.orderReports.map(report => 
+              report.internalId === id ? { ...report, ...updatedData } : report
+            )
+          }));
+      };
+
+    const addReportOrder = (
+        idForDownload: string,
+        internalId: string,
+        fileName: string,
+        status: number,
+        requestDate: string,
+        userId: string) => {
+        setOrderReports(prev => {
+        // Если мы на первой странице
+        if (pagination.current === 1) {
+            const newReports = [{
+            internalId: internalId, 
+            fileName: fileName,
+            status: status,
+            requestDate: requestDate,
+            idForDownload: idForDownload,
+            userId: userId
+        }, ...prev.orderReports];
+            
+            // Обрезаем массив, если превысили pageSize
+            if (newReports.length > pagination.pageSize) {
+                newReports.pop();
+            }
+            
+            return {
+                totalSize: prev.totalSize + 1,
+                orderReports: newReports
+            };
+        }
+        
+        // Если не на первой странице, просто увеличиваем totalSize
+        return {
+            ...prev,
+            totalSize: prev.totalSize + 1
+        };
+        });
+    }
+
     const onGetReportOrders = async () => {
         const currentConnection = connection ? connection : await startConnection()
 
@@ -96,74 +149,202 @@ export default function FormsMain () {
             orderReports:ReportOrder[]}) => {
                 setOrderReports(orderReports)
                 setLoading(false)
-            })
-
-        currentConnection?.off('ReceiveReports')
+                console.log(orderReports)
+            currentConnection?.off('ReceiveReports')
+        })
     }
 
+    const onRequestDividendList = async () => {
+        // Если соединения не установлено - устанавливаем
+        const emitter = localStorage.getItem('emitter')
+        const emitterData = emitter ? JSON.parse(emitter) : null
+
+        const currentConnection = connection ? connection : await startConnection()
+
+        currentConnection?.on('SendDividendListResult', 
+            (   idForDownload: string,
+                internalId: string,
+                fileName: string,
+                status: number,
+                requestDate: string,
+                userId: string) => {
+
+            if (status === ReportOrderStatus.Successfull) {
+                updateReportOrder(internalId, {status: status, idForDownload: idForDownload} )
+                currentConnection.off('SendDividendListResult');
+            } else {
+                addReportOrder(idForDownload,internalId, fileName, status, requestDate, userId)
+            }
+        })
+
+        if (emitterData) {
+            const defaultDividendListRequest = {
+                requestData: {
+                    reportName: "",
+                    issuerId: emitterData.IssuerId,
+                    divPtr: 0,
+                    isPodr: false,
+                    isBr: false,
+                    typPers: "",
+                    postMan: "",
+                    isGroupTypNal: false,
+                    isBirthday: false,
+                    isRate: false,
+                    isOrderCoowner: false,
+                    isPostMan: false,
+                    regOutInfo: "",
+                    generalReportHeader: "",
+                    dtClo:  "2000-01-01",
+                    isAnnotation: false,
+                    isPrintNalog: false,
+                    isEstimationoN: false, 
+                    isExcelFormat: false,
+                    isViewGenDirect: false,
+                    isViewPrintUk: false,
+                    isViewInn: false,
+                    isViewOgrn: false,
+                    isViewAddress: false,
+                    printDt: false, 
+                    operator: "",
+                    controler: "", 
+                    isViewCtrl: false,
+                    isViewElecStamp: false,
+                    guid: ""
+                } as DividendListRequest
+            } as RequestDividendList_OLD
+            console.log(defaultDividendListRequest)
+            await sendRequestDividendList(defaultDividendListRequest)
+        }
+    }
+
+    const onRequestReeRep = async () => {
+
+        const emitter = localStorage.getItem('emitter')
+        const emitterData = emitter ? JSON.parse(emitter) : null
+
+        const currentConnection = connection ? connection : await startConnection()
+
+        currentConnection?.on('SendReeRepResult', 
+            (   idForDownload: string,
+                internalId: string,
+                fileName: string,
+                status: number,
+                requestDate: string,
+                userId: string) => {
+
+            if (status === ReportOrderStatus.Successfull) {
+                updateReportOrder(internalId, {status: status, idForDownload: idForDownload} )
+                currentConnection.off('SendReeRepResult');
+            } else {
+                addReportOrder(idForDownload,internalId, fileName, status, requestDate, userId)
+            }
+        })
+        if (emitterData) {
+            const defaultReeRepRequest = {
+                requestData: {
+                    reportName: "",
+                    isSaveToStorage: false,
+                    emitId: emitterData.IssuerId,
+                    svipId: 0,
+                    categ: "",
+                    fields: "",
+                    filter: "",
+                    numStoc: 0,
+                    procUk: 0,
+                    dtMod: "2000-01-01", // Особое условие
+                    isPodr: 0,
+                    isCateg: 0,
+                    nomList: 0,
+                    isZalog: 0,
+                    isNullSch: 0,
+                    estimation1: 0,
+                    estimation2: 0,
+                    isNotOblig: 0,
+                    isFillSchNd: 0,
+                    isFullAnketa: 0,
+                    isViewBorn: 0,
+                    typeReport: 0,
+                    isExcludeListZl: 0,
+                    listZl: "",
+                    isBr: 0,
+                    isControlModifyPerson: 0,
+                    isTrustManager: 0,
+                    isPawnGolos: 0,
+                    isPawnDivid: 0,
+                    isIssuerAccounts: 0,
+                    isEmissionAccounts: 0,
+                    isViewPhone: 0,
+                    isViewEmail: 0,
+                    corporateId: "",
+                    isClosedAccount: 0,
+                    isViewMeetNotify: 0,
+                    oneProcMode: false,
+                    isBenef: 0,
+                    isAgent: 0,
+                    procCat: 0,
+                    isReestr: false,
+                    operator: "",
+                    controler: "",
+                    isViewCtrl: false,
+                    isViewGenDirect: false,
+                    isViewUk: false,
+                    isZl: false,
+                    isViewInn: false,
+                    isPcateg: false,
+                    isCheckGroupCb: false,
+                    isViewDirect: false,
+                    viewGroupCb: "",
+                    diagn: "",
+                    printDt: "",
+                    strParams: "",
+                    isRiskEst: false,
+                    spisZl: "",
+                    isPrintDtRegIssueOfSecurities: false,
+                    guid: "",
+                    isPrintUk: false,
+                    generalReportHeader: "",
+                    regOutInfo: "",
+                    isViewElecStamp: false,
+                    currentUser: ""
+                } as ReeRepRequest
+            } as RequestReeRep_OLD
+
+            console.log(defaultReeRepRequest)
+
+            await sendRequestReeRep(defaultReeRepRequest)
+        }
+        
+    }
     const onRequestListOSA = async () => {
         // Если соединения не установлено - устанавливаем
-        //const emitter = localStorage.getItem('emitter')
-        //const emitterData = emitter ? JSON.parse(emitter) : null
+        const emitter = localStorage.getItem('emitter')
+        const emitterData = emitter ? JSON.parse(emitter) : null
 
         const currentConnection = connection ? connection : await startConnection()
 
         currentConnection?.on('ReceiveListOfShareholdersResult', 
-            (documentId: string, status: string, requestDate: string, idForDownload: string) => {
+            (   idForDownload: string,
+                internalId: string,
+                fileName: string,
+                status: number,
+                requestDate: string,
+                userId: string) => {
 
             if (status === ReportOrderStatus.Successfull) {
-                updateReportOrder(documentId, {status: status, idForDownload: idForDownload} )
+                updateReportOrder(internalId, {status: status, idForDownload: idForDownload} )
                 currentConnection.off('ReceiveListOfShareholdersResult');
             } else {
-                addReportOrder(documentId, status, requestDate, idForDownload, 'Лист участников собрания акционеров')
+                addReportOrder(idForDownload,internalId, fileName, status, requestDate, userId)
             }
         })
 
-        const updateReportOrder = (id: string, updatedData: Partial<ReportOrder>) => {
-            setOrderReports(prevState => ({
-                ...prevState,
-                orderReports: prevState.orderReports.map(report => 
-                  report.id === id ? { ...report, ...updatedData } : report
-                )
-              }));
-          };
-    
-        const addReportOrder = (documentId: string, status: string, requestDate: string, idForDownload: string, fileName: string) => {
-            setOrderReports(prev => {
-            // Если мы на первой странице
-            if (pagination.current === 1) {
-                const newReports = [{
-                id: documentId, 
-                fileName: fileName,
-                status: status,
-                requestTime: requestDate,
-                idForDownload: idForDownload
-            }, ...prev.orderReports];
-                
-                // Обрезаем массив, если превысили pageSize
-                if (newReports.length > pagination.pageSize) {
-                    newReports.pop();
-                }
-                
-                return {
-                    totalSize: prev.totalSize + 1,
-                    orderReports: newReports
-                };
-            }
-            
-            // Если не на первой странице, просто увеличиваем totalSize
-            return {
-                ...prev,
-                totalSize: prev.totalSize + 1
-            };
-            });
-        }
         
-        /*const defaultListOSRequest = {
+        
+        const defaultListOSRequest = {
             requestData: {
                 reportName: "string",
                 isSaveToStorage: true,
-                issuerId: 0,
+                issuerId: emitterData ? emitterData.IssuerId : 9999,
                 regOutInfo: "string",
                 generalReportHeader: "string",
                 typKls: "string",
@@ -196,11 +377,11 @@ export default function FormsMain () {
                 isViewCtrl: true,
                 isViewElecStamp: true,
                 guid: "string"
-            } as ListOfShareholders,
-            emitterId: emitterData.Id
-        } as RequestListOfShareholders
+            } as ListOfShareholdersRequest
+        } as RequestListOfShareholders_OLD
     
-        await sendRequestListOfShareholders(defaultListOSRequest) */
+        console.log(defaultListOSRequest)
+        await sendRequestListOfShareholders(defaultListOSRequest) 
     }
 
     const columns : ColumnsType<ReportOrder> = [
@@ -212,16 +393,16 @@ export default function FormsMain () {
         },
         {
             title: 'Дата запроса',
-            dataIndex: 'requestTime',
-            key: 'requestTime',
-            sorter: (a, b) => {
+            dataIndex: 'requestDate',
+            key: 'requestDate',
+            //sorter: (a, b) => {
                 // Преобразуем даты в timestamp и сравниваем
-                const dateA = new Date(a.requestTime).getTime();
-                const dateB = new Date(b.requestTime).getTime();
-                return dateA - dateB;
-              },
-            sortDirections: ['descend', 'ascend'],
-            render: (date) => formatDate(date),
+                //const dateA = new Date(a.requestDate).getTime();
+                //const dateB = new Date(b.requestDate).getTime();
+                //return dateA - dateB;
+              //},
+            //sortDirections: ['descend', 'ascend'],
+            //render: (date) => formatDate(date),
             width: 150
         },
         {
@@ -273,11 +454,11 @@ export default function FormsMain () {
                 <h2 className="text-xl/[26px] font-bold mb-5">Распоряжения по эмитенту {emitterName}</h2>
                 <Button onClick={onRequestListOSA}>Запросить тестовый лист участников собрания</Button>
                 <br />
-                <Button>Запросить информацию из реестра</Button>
+                <Button onClick={onRequestReeRep}>Запросить информацию из реестра</Button>
                 <br />
-                <Button> Запросить дивидендный список</Button>
+                <Button onClick={onRequestDividendList}> Запросить дивидендный список</Button>
 
-                <Table rowKey="id" columns={columns} dataSource={orderReports.orderReports}
+                <Table rowKey="internalId" columns={columns} dataSource={orderReports.orderReports}
                     pagination={pagination}
                     loading={loading}
                     onChange={(newPagination, filters, sorter) => getOrderReportsByPage(emitterId, newPagination)}

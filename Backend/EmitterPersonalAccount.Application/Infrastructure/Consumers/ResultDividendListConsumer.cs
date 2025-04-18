@@ -1,4 +1,4 @@
-﻿using BaseMicroservice;
+﻿/*using BaseMicroservice;
 using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -53,3 +53,4 @@ namespace EmitterPersonalAccount.Application.Infrastructure.Consumers
         }
     }
 }
+*/

@@ -1,8 +1,10 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.DividendList;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
-using ExternalOrderReportsService.Contracts;
+//using ExternalOrderReportsService.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +17,7 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
     public sealed class RequestDividendListCommand : Command
     {
         public DateTime? SendingDate { get; set; }
-        public ReportAboutDividendListNotSignRequest RequestData { get; set; }
+        public DividendListReportData RequestData { get; set; }
         public string UserId { get; set; } = string.Empty;
     }
     public sealed class RequestDividendListCommandHandler
@@ -31,9 +33,13 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
             (RequestDividendListCommand request, 
             CancellationToken cancellationToken)
         {
-            request.SendingDate = DateTime.Now;
+            var requestDate = DateTime.Now.ToUniversalTime().AddHours(5);
 
-            var message = JsonSerializer.Serialize(request);
+            request.SendingDate = requestDate;
+
+            var ev = new RequestDividendListEvent(requestDate, request.RequestData, request.UserId);
+
+            var message = JsonSerializer.Serialize(ev);
 
             var isSuccesfull = await publisher.SendMessageAsync(message,
                 RabbitMqAction.RequestDividendList, cancellationToken);

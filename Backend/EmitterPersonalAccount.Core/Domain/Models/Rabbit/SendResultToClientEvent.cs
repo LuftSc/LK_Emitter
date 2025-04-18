@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Rabbit
 {
     public class SendResultToClientEvent
     {
-        public required string MethodForResultSending { get; set; }
+        public required MethodResultSending MethodForResultSending { get; set; }
         public required string ContentJSON { get; set; }
     }
 }

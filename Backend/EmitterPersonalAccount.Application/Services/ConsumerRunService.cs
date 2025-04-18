@@ -1,4 +1,4 @@
-﻿using EmitterPersonalAccount.Application.Infrastructure.Consumers;
+﻿/*using EmitterPersonalAccount.Application.Infrastructure.Consumers;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 //using ExternalOrderReportsService.Consumers;
 using Microsoft.Extensions.Configuration;
@@ -46,3 +46,4 @@ namespace EmitterPersonalAccount.Application.Services
         }
     }
 }
+*/

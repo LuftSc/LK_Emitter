@@ -1,5 +1,6 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Contracts;
@@ -12,12 +13,6 @@ namespace ExternalOrderReportsService.Consumers
     public record RequestReeRepEvent(
         DateTime SendingDate,
         ReeRepNotSignRequest RequestData,
-        string UserId
-        )
-    { }
-    public record ResultReeRep(
-        DateTime SendingDate,
-        Guid DocumentId,
         string UserId
         )
     { }
@@ -36,32 +31,61 @@ namespace ExternalOrderReportsService.Consumers
             var ev = EventDeserializer<RequestReeRepEvent>
                 .Deserialize(args);
 
+            var orderReportCreatingResult = OrderReport
+                .Create("Список ЗЛ", ev.SendingDate, ev.RequestData.EmitId);
+
+            var methodSendingResult = MethodResultSending.SendReeRepReport;
+
+            if (!orderReportCreatingResult.IsSuccessfull) return orderReportCreatingResult;
+
             using (var scope = provider.CreateScope())
             {
+                var statusChangeService = scope.ServiceProvider
+                    .GetRequiredService<IReportStatusChangeService>();
+
+                var setProcessingResult = await statusChangeService
+                    .SetProcessingStatus(ev.UserId, orderReportCreatingResult.Value, methodSendingResult);
+
+                if (!setProcessingResult.IsSuccessfull)
+                {
+                    await statusChangeService
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value, methodSendingResult);
+                    return setProcessingResult;
+                }
+
+                var updatedRequestData = ev.RequestData with
+                {
+                    GUID = orderReportCreatingResult.Value.Id.ToString()
+                };
+
                 var orderReportService = scope.ServiceProvider
                     .GetRequiredService<IOrderReportsService>();
 
-                var orderReportResult = await orderReportService
-                    .RequestReeRepReport(ev.SendingDate, ev.RequestData);
+                var responseResult = await orderReportService
+                    .RequestReeRepReport(ev.SendingDate, updatedRequestData);
 
-                if (!orderReportResult.IsSuccessfull)
-                    return Result.Error(new ReeRepReportGeneratingError());
+                if (!responseResult.IsSuccessfull)
+                {
+                    await statusChangeService
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value, methodSendingResult);
+                    return responseResult;
+                }
 
-                var response = new ResultReeRep
-                    (ev.SendingDate, orderReportResult.Value, ev.UserId);
+                var statusSuccessResult = await statusChangeService
+                    .SetSuccessfullStatus(
+                        ev.UserId,
+                        orderReportCreatingResult.Value,
+                        responseResult.Value, methodSendingResult);
 
-                var message = JsonSerializer.Serialize(response);
-
-                var publisher = scope.ServiceProvider
-                    .GetRequiredService<IRabbitMqPublisher>();
-
-                var isSuccessfull = await publisher
-                    .SendMessageAsync(message, RabbitMqAction.ResultReeRep, default);
-
-                if (!isSuccessfull)
-                    return Result.Error(new ReeRepReportQueueDeliveryError());
+                if (!statusSuccessResult.IsSuccessfull)
+                {
+                    await statusChangeService
+                        .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value, methodSendingResult);
+                    return statusSuccessResult;
+                }
 
                 return Result.Success();
+
             }
         }
     }

@@ -21,6 +21,8 @@ export default function Page () {
                 startRegistrationTime: startRegistrationTime,
                 endRegistrationTime: endRegistrationTime
             }
+
+            localStorage.setItem('request_listOSA', JSON.stringify(requestData))
         }
     }
   

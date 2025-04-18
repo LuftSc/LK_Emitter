@@ -1,14 +1,8 @@
 ﻿using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace EmitterPersonalAccount.Application.Services
+namespace ResultHubService.Services
 {
     public static class ClaimService
     {
@@ -27,7 +21,7 @@ namespace EmitterPersonalAccount.Application.Services
             return Result<string>.Success(claim);
         }
 
-        /*public static Result<string> Get(HubCallerContext context, string type)
+        public static Result<string> Get(HubCallerContext context, string type)
         {
             var isClaimExist = context.User.HasClaim(c => c.Type == type);
 
@@ -40,7 +34,7 @@ namespace EmitterPersonalAccount.Application.Services
                 return Result<string>.Error(new UserClaimGettingError());
 
             return Result<string>.Success(claim);
-        }*/
+        }
     }
     public class UserClaimNotFoundError : Error
     {

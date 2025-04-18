@@ -1,6 +1,7 @@
 ﻿using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -19,7 +20,7 @@ namespace ExternalOrderReportsService.Services
             this.orderReportsRepository = orderReportsRepository;
             this.publisher = publisher;
         }
-        public async Task<Result> SetProcessingStatus(string userId, OrderReport report)
+        public async Task<Result> SetProcessingStatus(string userId, OrderReport report, MethodResultSending method)
         {
             var saveToDbResult = await orderReportsRepository.SaveAsync(report, default);
 
@@ -27,15 +28,15 @@ namespace ExternalOrderReportsService.Services
 
             var eventProcessing = new SendResultToClientEvent
             {
-                MethodForResultSending = "ListOfShareholders",
-                ContentJSON = JsonSerializer.Serialize(new SendListOSAResultContent()
-                {
-                    ExternalDocumentId = report.ExternalStorageId,
-                    RequestDate = report.RequestDate,
-                    UserId = userId,
-                    DocumentId = report.Id,
-                    Status = CompletionStatus.Processing
-                })
+                MethodForResultSending = method,
+                ContentJSON = JsonSerializer.Serialize(new OrderReportDTO(
+                    report.ExternalStorageId,
+                    report.Id,
+                    report.FileName,
+                    CompletionStatus.Processing,
+                    report.RequestDate,
+                    userId
+                    ))
             };
 
             await publisher
@@ -47,7 +48,7 @@ namespace ExternalOrderReportsService.Services
             return Result.Success();
         }
         public async Task<Result> SetSuccessfullStatus
-            (string userId, OrderReport report, Guid externalReportId)
+            (string userId, OrderReport report, Guid externalReportId, MethodResultSending method)
         {
             var changeStatusDbResult = await orderReportsRepository
                 .ChangeProcessingStatusOk(report.Id, externalReportId);
@@ -56,15 +57,15 @@ namespace ExternalOrderReportsService.Services
 
             var eventSuccessfull = new SendResultToClientEvent
             {
-                MethodForResultSending = "ListOfShareholders",
-                ContentJSON = JsonSerializer.Serialize(new SendListOSAResultContent()
-                {
-                    ExternalDocumentId = externalReportId,
-                    RequestDate = report.RequestDate,
-                    UserId = userId,
-                    DocumentId = report.Id,
-                    Status = CompletionStatus.Successfull
-                })
+                MethodForResultSending = method,
+                ContentJSON = JsonSerializer.Serialize(new OrderReportDTO(
+                    externalReportId,
+                    report.Id,
+                    report.FileName,
+                    CompletionStatus.Successfull,
+                    report.RequestDate,
+                    userId
+                    ))
             };
 
             await publisher
@@ -76,7 +77,7 @@ namespace ExternalOrderReportsService.Services
             return Result.Success();
         }
         public async Task<Result> SetFailedStatus
-            (string userId, OrderReport report)
+            (string userId, OrderReport report, MethodResultSending method)
         {
             var changeStatusDbResult = await orderReportsRepository
                 .ChangeProcessingStatusFailed(report.Id);
@@ -85,15 +86,16 @@ namespace ExternalOrderReportsService.Services
 
             var eventFailed = new SendResultToClientEvent
             {
-                MethodForResultSending = "ListOfShareholders",
-                ContentJSON = JsonSerializer.Serialize(new SendListOSAResultContent()
-                {
-                    ExternalDocumentId = report.ExternalStorageId,
-                    RequestDate = report.RequestDate,
-                    UserId = userId,
-                    DocumentId = report.Id,
-                    Status = CompletionStatus.Failed
-                })
+                MethodForResultSending = method,
+                ContentJSON = JsonSerializer.Serialize(new OrderReportDTO(
+                    report.ExternalStorageId,
+                    report.Id,
+                    report.FileName,
+                    CompletionStatus.Failed,
+                    report.RequestDate,
+                    userId
+                ))
+                
             };
 
             await publisher

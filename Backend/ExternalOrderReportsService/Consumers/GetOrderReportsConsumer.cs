@@ -1,6 +1,7 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -37,16 +38,16 @@ namespace ExternalOrderReportsService.Consumers
                 var paginationList = new OrderReportPaginationList(
                     getReportsResult.Value.Item1,
                     getReportsResult.Value.Item2
-                        .Select(o => new OrderReportInfo
-                            (o.Id, o.FileName, o.Status.ToString(),
-                            o.RequestDate, o.ExternalStorageId)
+                        .Select(o => new OrderReportDTO
+                            (o.ExternalStorageId, o.Id, o.FileName, o.Status,
+                            o.RequestDate, ev.UserId)
                             )
                         .ToList()
                     );
 
                 var sendClientEvent = new SendResultToClientEvent()
                 {
-                    MethodForResultSending = "GetReports",
+                    MethodForResultSending = MethodResultSending.GetReports,
                     ContentJSON = JsonSerializer.Serialize
                         (new ReportsPaginationListContent(paginationList, ev.UserId))
                 };

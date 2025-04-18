@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client.Core" Version="9.0.4" />
@@ -24,7 +25,6 @@
     <ProjectReference Include="..\BaseMicroservice\BaseMicroservice.csproj" />
     <ProjectReference Include="..\EmitterPersonalAccount.Core\EmitterPersonalAccount.Core.csproj" />
     <ProjectReference Include="..\EmitterPersonalAccount.DataAccess\EmitterPersonalAccount.DataAccess.csproj" />
-    <ProjectReference Include="..\ExternalOrderReportsService\ExternalOrderReportsService.csproj" />
   </ItemGroup>
 
 </Project>

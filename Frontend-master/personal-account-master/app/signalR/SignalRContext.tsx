@@ -20,7 +20,7 @@ export const SignalRProvider = ({children} : {children: React.ReactNode}) => {
         if (typeof window === 'undefined') return;
         
         const newConnection = new HubConnectionBuilder()
-            .withUrl("http://localhost:5000/resultsHub")
+            .withUrl("http://localhost:5001/results-hub")
             .withAutomaticReconnect()
             .build();
 
