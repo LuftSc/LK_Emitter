@@ -106,10 +106,10 @@ export default function Page() {
             <div className="flex flex-col gap-[10px]">
               <div className="relative w-[457px]">
                 <RadioGroupColumn firstText="Советом директоров " secondText="" setState={setisMeetingWillBeHeldByBoD} />
-                <div className="absolute w-[457px] left-[25px] bottom-[-1px]"><InputForm setState={setmettingWillBeHeldBy} placeholder="Введите наименование" /></div>
+                <div className="absolute w-[457px] left-[25px] bottom-[-4px]"><InputForm setState={setmettingWillBeHeldBy} placeholder="Введите наименование" /></div>
               </div>
-              <div className="flex">
-                <div className="flex w-[149px] mr-[20px]">
+              <div className="flex items-center">
+                <div className="flex items-center w-[149px] mr-[20px]">
                   <p className="text-[14px]/[18px] mr-[11px]">№</p>
                   <InputFormNumber setState={setMeetingNumber} placeholder="" />
                 </div>

@@ -15,6 +15,7 @@
     "@types/react-dom": "19.0.0",
     "antd": "^5.24.5",
     "clsx": "^2.1.1",
+    "moment-timezone": "^0.5.48",
     "next": "^15.2.4",
     "react": "19.0.0",
     "react-datetime": "^3.3.1",

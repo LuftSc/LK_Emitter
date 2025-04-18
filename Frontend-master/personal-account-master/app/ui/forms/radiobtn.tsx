@@ -1,17 +1,18 @@
-import { Radio } from "antd"
+import { ConfigProvider, Radio } from "antd"
 
 interface RadioBtnProps {
-    text: string
-    name: string
-    // value: boolean
-    // setState: React.Dispatch<React.SetStateAction<boolean>>
+  text: string
+  setState: React.Dispatch<React.SetStateAction<boolean>>
 }
-  
-export const RadioButton = ({ 
-  text, 
-  name, 
+
+export const RadioButton = ({
+  text,
+  setState,
 }: RadioBtnProps) => {
-    return (
-      <Radio name={name} className="text-[14px]/[18px]">{text}</Radio>
-    )
+  return (
+    <ConfigProvider
+      theme={{ token: { colorText: 'rgba(0,0,0,1)' } }}>
+      <Radio onChange={() => setState(true)} className="text-[14px]/[18px]">{text}</Radio>
+    </ConfigProvider>
+  )
 }
