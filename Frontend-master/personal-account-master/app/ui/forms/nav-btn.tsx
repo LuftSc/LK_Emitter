@@ -13,7 +13,6 @@ export const NavigationButtons = ({
   next,
   onClick
 }: NavigationButtonsProps) => {
-  //if (onClick) onClick()
   return (
     <div className='flex justify-between items-center absolute inset-x-[45px] bottom-[45px]'>
       <Link href={back}>

@@ -6,6 +6,6 @@ interface Props {
 
 export default function ShowListsRadio ({setShowLists}: Props) {
     return (
-        <Radio onChange={() => setShowLists(true)}>Раскрывать списки НД</Radio>
+        <Radio className='mt-[50px] items-center' onChange={() => setShowLists(true)}>Раскрывать списки НД</Radio>
     )
 }

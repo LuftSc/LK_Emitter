@@ -5,6 +5,7 @@ import { InputFormHeight } from "@/app/ui/forms/inputWithHeight";
 export default function Page () {
   return (
     <div className="relative w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
+        <div>
             <p className="text-[#B82116] text-[15px]/[19px] font-bold text-center mb-[31px]">Распоряжение Эмитента на список к ОСА</p>
             <div className="border-[0.5px] border-black rounded-[28px] p-[26px]">
                 <div className="flex mb-[10px]">
@@ -32,7 +33,8 @@ export default function Page () {
                     </div>
                 </div>
             </div>
-            <NavigationButtons back='/forms/first/step-two-shown' next='/forms/first/step-four-shown'/>
+        </div>    
+        <NavigationButtons back='/forms/first/step-two-shown' next='/forms/first/step-four-shown'/>
      </div>
   );
 }
