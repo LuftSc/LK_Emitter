@@ -1,5 +1,5 @@
-type CheckboxProps = {
-    text: string
+interface CheckboxProps {
+  text: string
 }
   
 export const CheckBox = ({ text}: CheckboxProps) => {

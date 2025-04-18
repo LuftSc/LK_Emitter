@@ -1,27 +1,26 @@
 'use client'
 
 import locale from 'antd/locale/ru_RU';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs  from 'dayjs';
 import { ConfigProvider, DatePicker } from 'antd';
-import { DatePickerProps } from 'antd';
 import 'dayjs/locale/ru';
 
 interface Props {
-    setState: React.Dispatch<React.SetStateAction<string>>
+    setDate: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default function Calendar({setState}: Props) {
-
-    const onChange: DatePickerProps['onChange'] = (date, dateString) => {
-        console.log(date, dateString);
-        setState(dateString)
-    };
-
+export default function Calendar({setDate}: Props) {
     dayjs.locale('ru');
     return (
         <div>
             <ConfigProvider locale={locale}>
-                <DatePicker onChange={onChange} />
+                <DatePicker
+                    format={{
+                    format: 'YYYY-MM-DD',
+                    type: 'mask',
+                    }}
+                    onChange={(date) => setDate(date.add(1, 'day').toISOString().slice(0, 10))}
+                />
             </ConfigProvider>
         </div>
     )

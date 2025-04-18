@@ -62,6 +62,9 @@ export interface ListOSAReportGeneratingData {
 
 export interface ListOSASavingToDbData {
     stepOne: {
+        listOfPeopleRightToParticipate: string // Первый чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров"
+        listOfPeopleRightOnPapers: string // Второй чекбокс с "Список лиц, осуществляющих права по ценным бумагам"
+        listOfPeopleRightToParticipateTwo: string // Третий чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров,  без персональных данных"
         isMeetingWillBeHeldByBoD: boolean // Флажок с 1 формы "Советом директоров"
         mettingWillBeHeldBy: string // Строка под флажком, если "Советом директоров" true, 
         // то она будет пустая, если нет, то тут должно быть название органа, 
@@ -71,8 +74,27 @@ export interface ListOSASavingToDbData {
         decisionDate: string
     }
     stepTwo: {
-        startRegistrationTime: string
-        endRegistrationTime: string
+        startRegistrationTime: string // Время начало регистрации
+        startMeetingTime: string // Время начало собрания
+        endRegistrationTime: string // Время окончания приема бюллетеней
+        endRegistrationDate: string // Дата окончания приема бюллетеней
+        meetingPlace: string // Место проведения собрания
+        isVotingPossible: boolean // флажок "Методы голосования"
+        addressFilledBallots: string // Адрес заполненных бюллетеней
+    }
+    stepThree: {
+        fcs: string // ФИО
+        emailAddress: string // email
+        phoneNumber: string // номер телефона
+        infoReviewingProcedure: string // Порядок ознакомления с информацией
+    }
+    stepFour: {
+        isParticipatingInVote: boolean // 1 флажок "В голосовании принимают участие.."
+        agendaNumber: number // Номер повестки дня
+        isParticipatingInVoteOnNumber: boolean // 2 флажок 
+        emitentRepresentative: string // Уполномоченный представитель
+        isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
+        regulationNumber: number // номер Устава или Доверенности
     }
 }
 

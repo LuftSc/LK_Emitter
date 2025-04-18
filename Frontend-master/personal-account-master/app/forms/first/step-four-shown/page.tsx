@@ -42,7 +42,7 @@ export default function Page () {
               <div className="w-[129px]"><InputForm placeholder="" /></div>
             </div>
           </div>
-         </div>
+        </div>
         <NavigationButtons back='/forms/first/step-three-shown' next='/forms' />
     </div>
   );
