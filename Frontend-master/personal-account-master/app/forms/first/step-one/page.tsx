@@ -4,9 +4,9 @@ import { NavigationButtons } from "@/app/ui/forms/nav-btn"
 import { InputForm } from "@/app/ui/forms/input"
 import { CheckBox } from "@/app/ui/forms/checkbox"
 import ShowListsRadio from "@/app/ui/forms/showLists-radio";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Calendar from "@/app/ui/forms/calendar-new";
-import { ListOSAReportGeneratingData, ListOSASavingToDbData, RequestListOfShareholders } from "@/app/services/orderReportsService";
+import { RequestListOfShareholders } from "@/app/services/orderReportsService";
 import { RadioGroup } from "@/app/ui/forms/radioGroup";
 import { RadioGroupColumn } from "@/app/ui/forms/radioGroupColumn";
 import { InputFormNumber } from "@/app/ui/forms/inputNumbers";
@@ -33,6 +33,7 @@ export default function Page() {
 
 
   const onNextPageTransition = async () => {
+    localStorage.setItem('showNDlists', showLists.toString())
     const emitter = localStorage.getItem('emitter')
     const emitterData = emitter ? JSON.parse(emitter) : null
 

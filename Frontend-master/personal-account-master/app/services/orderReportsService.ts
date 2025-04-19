@@ -116,23 +116,33 @@ export interface RegistryInfoSavingToDbData {
     }
     stepTwo: {
         listPaperOwners: boolean // Чекбокс "Список владельцев ценных бумаг"
+        infoPeopleWithOpenAccount: boolean // Радио "Информация о людях, которым открыт лицевой счет"
+        infoPeopleShort: boolean // Чекбокс "Информация о людях в сокращенной форме"
+        listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
+        certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
+    }
+    stepTwoShown: {
+        listPaperOwners: boolean // Чекбокс "Список владельцев ценных бумаг"
         listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         includeInfo: boolean // Чекбокс "включая сведения о лицах..."
         infoPeopleWithOpenAccount: boolean // Чекбокс "Информация о людях, которым открыт лицевой счет"
         infoPeopleShort: boolean // Чекбокс "Информация о людях в сокращенной форме"
-        certificateAboutStructure: boolean // Чекбокс "Справкаа о структуре распределения акций"
+        certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
     }
     stepThree: {
+        certificateAboutState: boolean // Чекбокс о Справке о состоянии лицевого счета
         dateStateOfAccount: string // Состояние счета на дату
         fcsName: string // Наименование/ФИО
         ogrnPassport: string // ОГРН/Паспорт
-        another: string // Иное
-        section61: string // статья 6.1
-        section51: string // статья 51
-        section30: string // статья 30
-        section20: string // статья 20
-        section17: string // статья 17
-        anotherSection: string // Иное после статей
+        another: boolean // Чекбокс на Иное
+        anotherText: string // Иное
+        section61: boolean // статья 6.1
+        section51: boolean // статья 51
+        section30: boolean // статья 30
+        section20: boolean // статья 20
+        section17: boolean // статья 17 
+        anotherSection: boolean // Чекбокс на Иное после статей
+        anotherSectionText: string // Иное после статей
         emitentRepresentative: string // Уполномоченный представитель
         isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
         regulationNumber: number // номер Устава или Доверенности

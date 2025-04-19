@@ -10,6 +10,7 @@ import { InputFormNumber } from "@/app/ui/forms/inputNumbers";
 
 export default function Page() {
 
+  const back = localStorage.getItem('showNDlists')
   const [isParticipatingInVote, setIsParticipatingInVote] = useState<boolean>(false)
   const [agendaNumber, setAgendaNumber] = useState<number>(0)
   const [isParticipatingInVoteOnNumber, setIsParticipatingInVoteOnNumber] = useState<boolean>(false)
@@ -68,7 +69,7 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <NavigationButtons back='/forms/first/step-one' next='' onClick={onNextPageTransition} />
+      <NavigationButtons back={back == 'true' ? '/forms/first/step-three-shown' : '/forms/first/step-one'} next='' onClick={onNextPageTransition} />
     </div>
   );
 }
