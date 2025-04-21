@@ -12,9 +12,9 @@ export interface ListOSAReportGeneratingData {
 
 export interface ListOSASavingToDbData {
     stepOne: {
-        listOfPeopleRightToParticipate: string // Первый чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров"
-        listOfPeopleRightOnPapers: string // Второй чекбокс с "Список лиц, осуществляющих права по ценным бумагам"
-        listOfPeopleRightToParticipateTwo: string // Третий чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров,  без персональных данных"
+        listOfPeopleRightToParticipate: boolean // Первый чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров"
+        listOfPeopleRightOnPapers: boolean // Второй чекбокс с "Список лиц, осуществляющих права по ценным бумагам"
+        listOfPeopleRightToParticipateTwo: boolean // Третий чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров,  без персональных данных"
         isMeetingWillBeHeldByBoD: boolean // Флажок с 1 формы "Советом директоров"
         mettingWillBeHeldBy: string // Строка под флажком, если "Советом директоров" true, 
         // то она будет пустая, если нет, то тут должно быть название органа, 
@@ -51,6 +51,92 @@ export interface ListOSASavingToDbData {
 export interface RequestListOfShareholders {
     forReportGenerating: ListOSAReportGeneratingData
     forDbSaving: ListOSASavingToDbData
+}
+
+export interface RegistryInfoGeneratingData {
+    emitId: string // код эмитента
+    procUk: number // цифра из поля процентов на 2 странице формы
+    nomList: boolean // флажок на раскрытие списков НД
+    dtMod: string // Дата на которую необходимо предоставить информацию
+}
+
+export interface RegistryInfoSavingToDbData {
+    stepOne: {
+        fullName: string // полное наименование эмитента
+    }
+    stepTwo: {
+        listPaperOwners: boolean // Чекбокс "Список владельцев ценных бумаг"
+        infoPeopleWithOpenAccount: boolean // Радио "Информация о людях, которым открыт лицевой счет"
+        infoPeopleShort: boolean // Чекбокс "Информация о людях в сокращенной форме"
+        listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
+        certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
+    }
+    stepTwoShown: {
+        listPaperOwners: boolean // Чекбокс "Список владельцев ценных бумаг"
+        listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
+        includeInfo: boolean // Чекбокс "включая сведения о лицах..."
+        infoPeopleWithOpenAccount: boolean // Чекбокс "Информация о людях, которым открыт лицевой счет"
+        infoPeopleShort: boolean // Чекбокс "Информация о людях в сокращенной форме"
+        certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
+    }
+    stepThree: {
+        certificateAboutState: boolean // Чекбокс о Справке о состоянии лицевого счета
+        dateStateOfAccount: string // Состояние счета на дату
+        fcsName: string // Наименование/ФИО
+        ogrnPassport: string // ОГРН/Паспорт
+        another: boolean // Чекбокс на Иное
+        anotherText: string // Иное
+        section61: boolean // статья 6.1
+        section51: boolean // статья 51
+        section30: boolean // статья 30
+        section20: boolean // статья 20
+        section17: boolean // статья 17 
+        anotherSection: boolean // Чекбокс на Иное после статей
+        anotherSectionText: string // Иное после статей
+        emitentRepresentative: string // Уполномоченный представитель
+        isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
+        regulationNumber: number // номер Устава или Доверенности
+    }
+}
+
+export interface RequestInfoFromRegistry {
+    forReportGenerating: RegistryInfoGeneratingData
+    forDbSaving: RegistryInfoSavingToDbData
+}
+
+export interface ListOfEntitledGeneratingData {
+    issuerId: string // код эмитента
+    dtClo: string // Дата на которую необходимо предоставить информацию
+}
+
+export interface ListOfEntitledSavingToDbData {
+    stepOne: {
+        fullEmName: string // Полное наименование эмитента
+        decidingAuthority: string // Орган, управления эмитента, принявший решение...
+        dateOfProtocol: string // Дата протокола
+        numberOfProtocol: number // Номер протокола
+    }
+    stepTwo: {
+        papersCategory: string // Категории ценных бумаг
+        formOfPayment: string // Форма выплат
+        paymentForOne: string // Выплачиваемый доход на одну акцию
+        paymentForAll: string // Выплачиваемый доход, общий объем
+        dateOfPayment: string // Дата выплаты
+        fullOfficialName: string // Полное оф. наименование агента(ов)
+        placeOfAgents: string // Место нахождения агента(ов)
+        mailAddress: string // Почтовый адрес агента(ов)
+        includeCalcInfo: boolean // Включить инорфмацию о расчете налога
+    }
+    stepThree: {
+        emitentRepresentative: string // Уполномоченный представитель
+        isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
+        regulationNumber: number // номер Устава или Доверенности
+    }
+}
+
+export interface RequestListOfEntitled {
+    forReportGenerating: ListOfEntitledGeneratingData
+    forDbSaving: ListOfEntitledSavingToDbData
 }
 
 export interface ReeRepRequest {
