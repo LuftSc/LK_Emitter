@@ -1,5 +1,6 @@
 ﻿using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -15,10 +16,9 @@ namespace ResultHubService.Hubs
 {
     public interface IResultClient
     {
-        public Task ReceiveListOfShareholdersResult(Guid documentId, string status, DateTime requestDate, Guid idForDownload);
-        public Task SendReeRepResult(Guid documentId, DateTime requestDate);
-        public Task SendDividendListResult(Guid documentId, DateTime requestDate);
         public Task ReceiveReports(OrderReportPaginationList orderReports);
+        public Task ReceiveReport(OrderReportDTO orderReport);
+        public Task ReceiveDocuments(List<DocumentDTO> documents);
     }
     public class ResultsHub : Hub<IResultClient>
     {

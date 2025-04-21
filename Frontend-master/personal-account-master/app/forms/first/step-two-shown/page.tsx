@@ -17,10 +17,10 @@ export default function Page () {
         const requestData = request ? JSON.parse(request) as RequestListOfShareholders: null
 
         if (requestData) {
-            requestData.forDbSaving.stepTwo = {
+            /*requestData.forDbSaving.stepTwo = {
                 startRegistrationTime: startRegistrationTime,
                 endRegistrationTime: endRegistrationTime
-            }
+            } */
 
             localStorage.setItem('request_listOSA', JSON.stringify(requestData))
         }

@@ -1,6 +1,9 @@
-﻿using EmitterPersonalAccount.API.Swagger;
+﻿using EmitterPersonalAccount.API.Contracts;
+using EmitterPersonalAccount.API.Swagger;
 using EmitterPersonalAccount.Application.Features.Documents;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -47,14 +50,14 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [HttpGet("get-documents-info/{emitterId:guid}")]
+        /*[HttpGet("get-documents-info/{emitterId:guid}")]
         public async Task<ActionResult<List<DocumentInfoResponse>>> 
             GetDocumentsInfo(Guid emitterId)
         {// Достаёт информацию по документам из БД
             if (emitterId == Guid.Empty)
                 return BadRequest("Id can not be empty or null!");
 
-            var getDocsInfoQuery = new GetDocumentsInfoQuery() { EmitterId = emitterId };
+            var getDocsInfoQuery = new GetDocumentsInfoQuery() { IssuerId = emitterId };
 
             var result = await mediator.Send(getDocsInfoQuery);
 
@@ -62,6 +65,21 @@ namespace EmitterPersonalAccount.API.Controllers
                 return BadRequest(result.GetErrors());
 
             return Ok(result.Value.OrderByDescending(d => d.UploadDate).ToList());    
+        }*/
+
+        [HttpGet("get-documents-info/{issuerId:int}")]
+        public async Task<ActionResult<DocumentPaginationList>> GetDocumentsByPage
+            (int issuerId, [FromQuery] PaginationInfo pagination)
+        {
+            var getDocsInfoQuery = new GetDocumentsInfoQuery() 
+            { IssuerId = issuerId, Page = pagination.Page, PageSize = pagination.PageSize };
+
+            var result = await mediator.Send(getDocsInfoQuery);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            return Ok(result.Value);
         }
 
         [HttpGet("download/{documentId:guid}")]

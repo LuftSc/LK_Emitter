@@ -14,6 +14,7 @@ namespace DocumentsService.DataAccess.Configurations
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.ToTable("Users").HasKey(u => u.Id);
+
             builder.HasOne(u => u.Registrator).WithMany(r => r.Users);
         }
     }

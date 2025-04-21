@@ -33,7 +33,7 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("bytea");
 
-                    b.Property<Guid>("EmitterId")
+                    b.Property<Guid?>("EmitterId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Hash")
@@ -42,6 +42,9 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
 
                     b.Property<bool>("IsEmitterSended")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("IssuerId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -423,19 +426,15 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Document", b =>
                 {
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", "Emitter")
+                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", null)
                         .WithMany("Documents")
-                        .HasForeignKey("EmitterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EmitterId");
 
                     b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Emitter");
 
                     b.Navigation("User");
                 });

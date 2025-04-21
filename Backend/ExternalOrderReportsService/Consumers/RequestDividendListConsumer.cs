@@ -27,7 +27,7 @@ namespace ExternalOrderReportsService.Consumers
         }
         public override async Task<Result> Handler(object model, BasicDeliverEventArgs args)
         {
-            var ev = EventDeserializer<RequestDividendListEvent>
+            /*var ev = EventDeserializer<RequestDividendListEvent>
                 .Deserialize(args);
 
             var orderReportCreatingResult = OrderReport
@@ -60,8 +60,8 @@ namespace ExternalOrderReportsService.Consumers
                 var orderReportService = scope.ServiceProvider
                     .GetRequiredService<IOrderReportsService>();
 
-                var responseResult = await orderReportService
-                    .RequestDividendListReport(ev.SendingDate, updatedRequestData);
+               var responseResult = await orderReportService
+                    .RequestReport(ev.SendingDate, updatedRequestData);
 
                 if (!responseResult.IsSuccessfull)
                 {
@@ -82,11 +82,11 @@ namespace ExternalOrderReportsService.Consumers
                     await statusChangeService
                         .SetFailedStatus(ev.UserId, orderReportCreatingResult.Value, methodSendingResult);
                     return statusSuccessResult;
-                }
+                }*/
 
                 return Result.Success();
 
-            }
+           // }
         }
     }
 

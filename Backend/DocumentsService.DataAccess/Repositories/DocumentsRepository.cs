@@ -1,6 +1,6 @@
 ﻿using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
-using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
@@ -27,24 +27,16 @@ namespace DocumentsService.DataAccess.Repositories
             this.context = context;
             this.hashService = hashService;
         }
-        public async Task<Result> AddRangeByEmitterId(Guid senderId, Guid emitterId, 
+        public async Task<Result<List<DocumentDTO>>> CreateDocumentsAsync(Guid senderId, int issuerId, 
             List<DocumentInfo> documentsInfo, CancellationToken cancellationToken,
             bool withDigitalSignature = false)
         {
-            Console.Write("Зашли в репозиторий документов");
             var sender = await context.Users
                 .Include(u => u.Registrator)
                 .FirstOrDefaultAsync(u => u.Id == senderId);
 
             if (sender is null)
-                return Result.Error(new DocumentSenderNotFoundError());
-
-            var emitter = await context.Emitters
-                .Include(e => e.Documents)
-                .FirstOrDefaultAsync(e => e.Id == emitterId);
-
-            if (emitter is null)
-                return Result.Error(new EmitterNotFoundError());
+                return Result<List<DocumentDTO>>.Error(new DocumentSenderNotFoundError());
 
             var documents = new List<Document>(documentsInfo.Count);
 
@@ -53,42 +45,46 @@ namespace DocumentsService.DataAccess.Repositories
                     DateTime.Now.ToUniversalTime().AddHours(5), d.Content,
                     withDigitalSignature
                         ? hashService.ComputeHash(d.Content)
-                        : string.Empty
+                        : string.Empty, 
+                    issuerId
                 ));
 
             foreach (var documentResult in documentsResults)
             {
                 if (documentResult.IsSuccessfull)
                     documents.Add(documentResult.Value);
-                else return Result.Error(new DocumentCreatingError());
+                else return Result<List<DocumentDTO>>.Error(new DocumentCreatingError());
             }
-            await context.Documents.AddRangeAsync(documents);
-
-            emitter.Documents.AddRange(documents);
-
-            var entries = context.ChangeTracker.Entries();
-
-            foreach (var entry in entries)
-            {
-                Console.WriteLine($"Entity: {entry.Entity.GetType().Name}");
-                Console.WriteLine($"State: {entry.State}");
-
-                foreach (var property in entry.Properties)
-                {
-                    if (property.IsModified)
-                    {
-                        Console.WriteLine($"{property.Metadata.Name}:");
-                        Console.WriteLine($"  Original: {property.OriginalValue}");
-                        Console.WriteLine($"  Current: {property.CurrentValue}");
-                    }
-                }
-            }
+            await AddRangeAsync(documents, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return Result.Success();    
+            var docsDTO = documents.Select(d => new DocumentDTO
+                (d.Id, d.Title, d.Type, d.UploadDate, d.GetSize(), d.IsEmitterSended))
+                .ToList();
+
+            return Result<List<DocumentDTO>>.Success(docsDTO);    
         }
-        
+        public async Task<Result<Tuple<int, List<Document>>>> GetByPage
+            (int issuerId, int page, int pageSize)
+        {
+            var query = context.Documents
+                .AsNoTracking()
+                .AsQueryable()
+                .Where(o => o.IssuerId == issuerId)
+                .OrderByDescending(o => o.UploadDate);
+
+            var totalSize = await query.CountAsync();
+
+            var documents = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return Result<Tuple<int, List<Document>>>
+                .Success(Tuple.Create(totalSize, documents));
+        }
+
         public async Task<Result<List<Document>>> GetByUserId(Guid userId)
         {
             var user = await context.Users.FindAsync(userId);
@@ -107,17 +103,21 @@ namespace DocumentsService.DataAccess.Repositories
 
             return Result<List<Document>>.Success(documents);
         }
-        public async Task<Result<List<Document>>> GetByEmitterId(Guid emitterId)
+        public async Task<Result<List<Document>>> GetByEmitterId(int issuerId)
         {
-            var emitter = await context.Emitters
+            /*var emitter = await context.Emitters
                 .Include(e => e.Documents)
-                .FirstOrDefaultAsync(e => e.Id == emitterId);
+                .FirstOrDefaultAsync(e => e.Id == emitterId);*/
 
-            if (emitter is null)
-                return Result<List<Document>>
-                    .Error(new EmitterNotFoundError());
+            /* if (emitter is null)
+                 return Result<List<Document>>
+                     .Error(new EmitterNotFoundError());*/
+            var documents = await context.Documents
+                .AsNoTracking()
+                .Where(d => d.IssuerId == issuerId)
+                .ToListAsync();
 
-            return Result<List<Document>>.Success(emitter.Documents);
+            return Result<List<Document>>.Success(documents);
         }
 
         public async Task<Result> DeleteByIdAsync(Guid documentId, CancellationToken cancellationToken)

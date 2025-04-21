@@ -36,7 +36,7 @@ export default function Page() {
         isRangeMeeting: isRangeMeeting,
         isCategMeeting: isRangeMeeting,
         issuerId: emitterData.IssuerId
-      } as ListOSAReportGeneratingData,
+      },
 
       forDbSaving: {
         stepOne: {
@@ -50,7 +50,7 @@ export default function Page() {
           endRegistrationTime: "00:00"
         }
         
-      } as ListOSASavingToDbData
+      }
 
     } as RequestListOfShareholders
 

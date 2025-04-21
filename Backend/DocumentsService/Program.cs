@@ -1,4 +1,5 @@
 
+using BaseMicroservice;
 using DocumentsService.DataAccess;
 using DocumentsService.DataAccess.Repositories;
 using DocumentsService.Services;
@@ -32,6 +33,8 @@ namespace DocumentsService
                 options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(DocumentsDbContext)));
             });
 
+
+            builder.Services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
             builder.Services.AddScoped<IHashService, HashService>();
 
             builder.Services.RegisterRepository<IDocumentRepository, DocumentsRepository>();

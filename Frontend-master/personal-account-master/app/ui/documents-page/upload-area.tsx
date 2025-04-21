@@ -6,14 +6,20 @@ import { Button, message, Upload } from 'antd';
 import type { GetProp, UploadFile, UploadProps } from 'antd';
 import { uploadDocuments } from '@/app/services/documentsService';
 import Dragger from 'antd/es/upload/Dragger';
+import { useSignalR } from '@/app/signalR/SignalRContext';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
-export const UploadDocumentArea = () => {
+interface Props {
+  withUploadAction: () => void
+}
+
+export const UploadDocumentArea = ({withUploadAction}: Props) => {
 
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState(false);
   const [willSign, setWillSign] = useState(false);
+
 /*const [emitterInfo, setEmitterInfo] = useState<{
     Id: string, 
     Name: string, 
@@ -34,12 +40,12 @@ export const UploadDocumentArea = () => {
       // 2. Добавляем остальные параметры в FormData (не в URL!)
     
     //formData.append('SenderId', emitterInfo.AuthPerson );
-    formData.append('EmitterId', emitterData.Id);
+    formData.append('IssuerId', emitterData.IssuerId);
     formData.append('WithDigitalSignature', String(willSign));
     
 
     setUploading(true);
-    
+    withUploadAction();
     const response = await uploadDocuments(formData)
 
     if (response?.ok) {

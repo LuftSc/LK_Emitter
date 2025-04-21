@@ -1,5 +1,6 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.DividendList;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
@@ -37,12 +38,19 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
 
             request.SendingDate = requestDate;
 
-            var ev = new RequestDividendListEvent(requestDate, request.RequestData, request.UserId);
+            //var ev = new RequestDividendListEvent(requestDate, request.RequestData, request.UserId);
+            var ev = new RequestOrderReportEvent()
+            {
+                ReportType = ReportType.DividendList,
+                SendingDate = requestDate,
+                UserId = request.UserId,
+                RequestDataJSON = JsonSerializer.Serialize(request.RequestData)
+            };
 
             var message = JsonSerializer.Serialize(ev);
 
             var isSuccesfull = await publisher.SendMessageAsync(message,
-                RabbitMqAction.RequestDividendList, cancellationToken);
+                RabbitMqAction.RequestOrderReport, cancellationToken);
 
             if (!isSuccesfull) return Result
                     .Error(new SendingDividendListRequestError());

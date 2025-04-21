@@ -7,12 +7,20 @@ export const downloadDocument = async (documentInfo: Document) => {
     .catch(error => console.error(error))
 }
 
-export const getDocuments = async (emitterId: string) => {
+/*export const getDocuments = async (emitterId: string) => {
     return await fetch(`http://localhost:5000/Documents/get-documents-info/${emitterId}`, {
         credentials: 'include'
     })
     .catch(error => console.error(error))
+} */
+
+export const getDocumentsByPageByIssuerId = async (issuerId: number, page:number, pageSize: number) => {
+    return await fetch(`http://localhost:5000/Documents/get-documents-info/${issuerId}?Page=${page}&PageSize=${pageSize}`, {
+        credentials: 'include'
+    })
+    .catch(error => console.error(error))
 }
+
 
 export const uploadDocuments = async (formData: FormData) => {
     return await fetch(`http://localhost:5000/Documents/send-documents`, {

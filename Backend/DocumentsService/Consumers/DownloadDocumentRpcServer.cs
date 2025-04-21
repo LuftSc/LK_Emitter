@@ -2,7 +2,7 @@
 using EmitterPersonalAccount.Application.Features.Documents;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
-using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using System.Text.Json;
 

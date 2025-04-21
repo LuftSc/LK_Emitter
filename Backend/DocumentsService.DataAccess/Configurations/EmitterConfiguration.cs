@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DocumentsService.DataAccess.Configurations
 {
-    public class EmitterConfiguration : IEntityTypeConfiguration<Emitter>
+    /*public class EmitterConfiguration : IEntityTypeConfiguration<Emitter>
     {
         public void Configure(EntityTypeBuilder<Emitter> builder)
         {
@@ -110,6 +110,6 @@ namespace DocumentsService.DataAccess.Configurations
             builder.Property(p => p.FieldOfActivity).HasColumnName("TYP_KLS").IsRequired();
             builder.Property(p => p.AdditionalInformation).HasColumnName("INFO").IsRequired(false);
         }
-    }
+    }*/
     
 }

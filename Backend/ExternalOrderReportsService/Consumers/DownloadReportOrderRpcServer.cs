@@ -1,5 +1,5 @@
 ﻿using BaseMicroservice;
-using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Services;
 using System.Text.Json;
@@ -30,7 +30,7 @@ namespace ExternalOrderReportsService.Consumers
                     .GetRequiredService<IOrderReportsService>();
 
                 var response = await orderReportsService
-                    .LoadReportOrderFromStorage(reportOrderId);
+                    .DownloadReport(reportOrderId);
 
                 if (!response.IsSuccessfull) return response;
 

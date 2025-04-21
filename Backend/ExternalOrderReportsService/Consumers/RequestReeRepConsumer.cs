@@ -28,7 +28,8 @@ namespace ExternalOrderReportsService.Consumers
 
         public override async Task<Result> Handler(object model, BasicDeliverEventArgs args)
         {
-            var ev = EventDeserializer<RequestReeRepEvent>
+            return Result.Success();
+            /*var ev = EventDeserializer<RequestReeRepEvent>
                 .Deserialize(args);
 
             var orderReportCreatingResult = OrderReport
@@ -86,7 +87,7 @@ namespace ExternalOrderReportsService.Consumers
 
                 return Result.Success();
 
-            }
+            }*/
         }
     }
 

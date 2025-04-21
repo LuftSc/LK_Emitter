@@ -30,6 +30,7 @@ namespace ExternalOrderReportsService
 
             builder.Services.RegisterRepository<IOrderReportsRepository, OrderReportsRepository>();
 
+            builder.Services.AddScoped<IRequestSender, RequestSender>();
             builder.Services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
             builder.Services.AddScoped<IOrderReportsService, OrderReportsService>();
             builder.Services.AddScoped<IReportStatusChangeService, ReportStatusChangeService>();

@@ -35,7 +35,8 @@ namespace ExternalOrderReportsService.Consumers
         public override async Task<Result> Handler
             (object model, BasicDeliverEventArgs args)
         {
-            var ev = EventDeserializer<RequestListOfShareholdersEvent>
+            return Result.Success();
+            /*var ev = EventDeserializer<RequestListOfShareholdersEvent>
                 .Deserialize(args);
 
             var orderReportCreatingResult = OrderReport
@@ -93,7 +94,7 @@ namespace ExternalOrderReportsService.Consumers
 
                 return Result.Success();
                
-            }
+            }*/
         }
     }
     public class ListOfShareholsdersReportGeneratingError : Error

@@ -3,6 +3,7 @@ using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareholders;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
@@ -44,12 +45,19 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
 
             request.SendingDate = requestDate;
 
-            var ev = new RequestListOfShareholdersEvent(requestDate, request.RequestData, request.UserId);
+            //var ev = new RequestListOfShareholdersEvent(requestDate, request.RequestData, request.UserId);
+            var ev = new RequestOrderReportEvent()
+            {
+                ReportType = ReportType.ListOfShareholders,
+                SendingDate = requestDate,
+                UserId = request.UserId,
+                RequestDataJSON = JsonSerializer.Serialize(request.RequestData)
+            };
 
             var message = JsonSerializer.Serialize(ev);
 
             var isSuccesfull = await publisher.SendMessageAsync(message, 
-                RabbitMqAction.RequestListOfShareholders, cancellationToken);
+                RabbitMqAction.RequestOrderReport, cancellationToken);
 
             if (!isSuccesfull) return Result
                     .Error(new SendingListOfShareholdersRequestError());

@@ -1,6 +1,7 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,15 @@ namespace EmitterPersonalAccount.Application.Features.Documents
         double Size,
         bool IsEmitterSended)
     { }
-    public sealed class GetDocumentsInfoQuery : Query<List<DocumentInfoResponse>>
+    public sealed class GetDocumentsInfoQuery : Query<DocumentPaginationList>
     {
-        public Guid EmitterId { get; set; }
+        public int IssuerId { get; set; }
+        public int Page { get; set; }
+        public int PageSize { get; set; }
     }
 
     public sealed class GetDocumentsInfoQueryHandler 
-        : QueryHandler<GetDocumentsInfoQuery, List<DocumentInfoResponse>>
+        : QueryHandler<GetDocumentsInfoQuery, DocumentPaginationList>
     {
         private readonly IRpcClient rpcClient;
 
@@ -34,13 +37,13 @@ namespace EmitterPersonalAccount.Application.Features.Documents
         {
             this.rpcClient = rpcClient;
         }
-        public override async Task<Result<List<DocumentInfoResponse>>> Handle
+        public override async Task<Result<DocumentPaginationList>> Handle
             (GetDocumentsInfoQuery request, CancellationToken cancellationToken)
         {
             var message = JsonSerializer.Serialize(request);
 
             var result = await rpcClient
-                .CallAsync<List<DocumentInfoResponse>> 
+                .CallAsync<DocumentPaginationList> 
                     (message, RabbitMqAction.GetDocumentInfo, cancellationToken);
 
             if (!result.IsSuccessfull)

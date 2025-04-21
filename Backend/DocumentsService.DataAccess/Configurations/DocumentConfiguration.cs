@@ -1,4 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -16,7 +17,10 @@ namespace DocumentsService.DataAccess.Configurations
         {
             builder.ToTable("Documents").HasKey(d => d.Id);
 
-            builder.HasOne(d => d.Emitter).WithMany(e => e.Documents);
+            builder
+                .HasOne<Emitter>()
+                .WithMany(e => e.Documents)
+                .HasForeignKey(d => d.IssuerId);
         }
     }
 }

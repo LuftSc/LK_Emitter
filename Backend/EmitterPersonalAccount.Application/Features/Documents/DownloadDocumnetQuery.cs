@@ -1,6 +1,6 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
-using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using System;

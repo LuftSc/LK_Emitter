@@ -33,15 +33,15 @@ namespace DocumentsService.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("bytea");
 
-                    b.Property<Guid>("EmitterId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Hash")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("IsEmitterSended")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("IssuerId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -59,295 +59,9 @@ namespace DocumentsService.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmitterId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Documents", (string)null);
-                });
-
-            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("EMIT_ID");
-
-                    b.Property<string>("AdditionalInformation")
-                        .HasColumnType("text")
-                        .HasColumnName("INFO");
-
-                    b.Property<long>("AuthorizedCapital")
-                        .HasColumnType("bigint")
-                        .HasColumnName("UK");
-
-                    b.Property<string>("FieldOfActivity")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("TYP_KLS");
-
-                    b.Property<bool>("IsInformationDisclosure")
-                        .HasColumnType("boolean")
-                        .HasColumnName("PUBLIC_INFO");
-
-                    b.Property<bool>("IsPersonalDocumentsReception")
-                        .HasColumnType("boolean")
-                        .HasColumnName("ONLY_PERS");
-
-                    b.Property<int>("IssuerId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IssuerId"));
-
-                    b.Property<string>("MeetNotifyXML")
-                        .HasColumnType("text")
-                        .HasColumnName("MEET_NOTIFY");
-
-                    b.Property<string>("MethodGettingInfoFromRegistry")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("POST_INF");
-
-                    b.Property<Guid>("RegistratorId")
-                        .HasColumnType("uuid");
-
-                    b.ComplexProperty<Dictionary<string, object>>("BankDetails", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.BankDetails#BankDetails", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("BIK")
-                                .IsRequired()
-                                .HasMaxLength(10)
-                                .HasColumnType("character varying(10)")
-                                .HasColumnName("BIC");
-
-                            b1.Property<string>("BankINN")
-                                .HasColumnType("text")
-                                .HasColumnName("BINN");
-
-                            b1.Property<string>("BankName")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("BNAME");
-
-                            b1.Property<string>("CorrespondentAccount")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("BCOR_SCH");
-
-                            b1.Property<string>("Country")
-                                .HasColumnType("text")
-                                .HasColumnName("FOREIGN_BCOUNTRY");
-
-                            b1.Property<string>("CustomerAccount")
-                                .IsRequired()
-                                .HasMaxLength(21)
-                                .HasColumnType("character varying(21)")
-                                .HasColumnName("R_S");
-
-                            b1.Property<string>("Department")
-                                .HasColumnType("text")
-                                .HasColumnName("BDEPART");
-
-                            b1.Property<string>("SettlementAccount")
-                                .HasMaxLength(10)
-                                .HasColumnType("character varying(10)")
-                                .HasColumnName("BR_SCH");
-
-                            b1.Property<string>("TaxBenefits")
-                                .IsRequired()
-                                .HasColumnType("text")
-                                .HasColumnName("TYP_PERS");
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("EmitterInfo", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.EmitterInfo#EmitterInfo", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("FullName")
-                                .IsRequired()
-                                .HasMaxLength(100)
-                                .HasColumnType("character varying(100)")
-                                .HasColumnName("IO_PERS");
-
-                            b1.Property<string>("INN")
-                                .IsRequired()
-                                .HasMaxLength(14)
-                                .HasColumnType("character varying(14)")
-                                .HasColumnName("INN");
-
-                            b1.Property<string>("Jurisdiction")
-                                .IsRequired()
-                                .HasMaxLength(15)
-                                .HasColumnType("character varying(15)")
-                                .HasColumnName("COD_CITIZEN");
-
-                            b1.Property<string>("ShortName")
-                                .IsRequired()
-                                .HasMaxLength(70)
-                                .HasColumnType("character varying(70)")
-                                .HasColumnName("F_PERS");
-
-                            b1.ComplexProperty<Dictionary<string, object>>("OGRN", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.EmitterInfo#EmitterInfo.OGRN#OGRNInfo", b2 =>
-                                {
-                                    b2.IsRequired();
-
-                                    b2.Property<DateOnly>("DateOfAssignment")
-                                        .HasColumnType("date")
-                                        .HasColumnName("DT_OGRN");
-
-                                    b2.Property<string>("Issuer")
-                                        .IsRequired()
-                                        .HasMaxLength(60)
-                                        .HasColumnType("character varying(60)")
-                                        .HasColumnName("GIV_OGRN");
-
-                                    b2.Property<string>("Number")
-                                        .IsRequired()
-                                        .HasMaxLength(20)
-                                        .HasColumnType("character varying(20)")
-                                        .HasColumnName("OGRN");
-                                });
-
-                            b1.ComplexProperty<Dictionary<string, object>>("Registration", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.EmitterInfo#EmitterInfo.Registration#RegistrationInfo", b2 =>
-                                {
-                                    b2.IsRequired();
-
-                                    b2.Property<string>("Issuer")
-                                        .HasMaxLength(60)
-                                        .HasColumnType("character varying(60)")
-                                        .HasColumnName("GIVEN");
-
-                                    b2.Property<string>("Number")
-                                        .HasMaxLength(20)
-                                        .HasColumnType("character varying(20)")
-                                        .HasColumnName("S_N");
-
-                                    b2.Property<DateOnly>("RegistrationDate")
-                                        .ValueGeneratedOnAdd()
-                                        .HasColumnType("date")
-                                        .HasDefaultValue(new DateOnly(1, 1, 1))
-                                        .HasColumnName("DT_DOC");
-                                });
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("Location", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.Location#Location", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Address")
-                                .IsRequired()
-                                .HasMaxLength(110)
-                                .HasColumnType("character varying(110)")
-                                .HasColumnName("ADDRESS");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasMaxLength(15)
-                                .HasColumnType("character varying(15)")
-                                .HasColumnName("COD_COUNTRY");
-
-                            b1.Property<int>("Index")
-                                .HasColumnType("integer")
-                                .HasColumnName("IND");
-
-                            b1.Property<string>("Region")
-                                .IsRequired()
-                                .HasMaxLength(25)
-                                .HasColumnType("character varying(25)")
-                                .HasColumnName("COD_REGION");
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("MailingAddress", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.MailingAddress#MailingAddress", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Contacts")
-                                .HasColumnType("text")
-                                .HasColumnName("ContactInfo");
-
-                            b1.ComplexProperty<Dictionary<string, object>>("Location", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.MailingAddress#MailingAddress.Location#Location", b2 =>
-                                {
-                                    b2.IsRequired();
-
-                                    b2.Property<string>("Address")
-                                        .IsRequired()
-                                        .HasMaxLength(110)
-                                        .HasColumnType("character varying(110)")
-                                        .HasColumnName("PADDRESS");
-
-                                    b2.Property<string>("Country")
-                                        .IsRequired()
-                                        .HasMaxLength(15)
-                                        .HasColumnType("character varying(15)")
-                                        .HasColumnName("COD_PCOUNTRY");
-
-                                    b2.Property<int>("Index")
-                                        .HasColumnType("integer")
-                                        .HasColumnName("PIND");
-
-                                    b2.Property<string>("Region")
-                                        .IsRequired()
-                                        .HasMaxLength(25)
-                                        .HasColumnType("character varying(25)")
-                                        .HasColumnName("COD_PREGION");
-                                });
-                        });
-
-                    b.ComplexProperty<Dictionary<string, object>>("PaymentRecipient", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.PaymentRecipient#PaymentRecipient", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<string>("Assignment")
-                                .HasMaxLength(60)
-                                .HasColumnType("character varying(60)")
-                                .HasColumnName("RECGIVEN");
-
-                            b1.Property<string>("INN")
-                                .HasMaxLength(14)
-                                .HasColumnType("character varying(14)")
-                                .HasColumnName("RECINN");
-
-                            b1.Property<string>("Name")
-                                .HasColumnType("text")
-                                .HasColumnName("RECNAME");
-                        });
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RegistratorId");
-
-                    b.ToTable("Emitters", (string)null);
-                });
-
-            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.OrderReport", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("EmitterId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ExternalStorageId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("FileName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("RequestDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmitterId");
-
-                    b.ToTable("OrderReport");
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", b =>
@@ -434,60 +148,15 @@ namespace DocumentsService.DataAccess.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("EmitterUser", b =>
-                {
-                    b.Property<Guid>("EmittersId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UsersId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("EmittersId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("EmitterUser");
-                });
-
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Document", b =>
                 {
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", "Emitter")
-                        .WithMany("Documents")
-                        .HasForeignKey("EmitterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Emitter");
-
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", b =>
-                {
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", "Registrator")
-                        .WithMany("Emitters")
-                        .HasForeignKey("RegistratorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Registrator");
-                });
-
-            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.OrderReport", b =>
-                {
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", "Emitter")
-                        .WithMany("OrderReports")
-                        .HasForeignKey("EmitterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Emitter");
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", b =>
@@ -499,32 +168,8 @@ namespace DocumentsService.DataAccess.Migrations
                     b.Navigation("Registrator");
                 });
 
-            modelBuilder.Entity("EmitterUser", b =>
-                {
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", null)
-                        .WithMany()
-                        .HasForeignKey("EmittersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", b =>
-                {
-                    b.Navigation("Documents");
-
-                    b.Navigation("OrderReports");
-                });
-
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", b =>
                 {
-                    b.Navigation("Emitters");
-
                     b.Navigation("Users");
                 });
 #pragma warning restore 612, 618

@@ -6,7 +6,7 @@ namespace EmitterPersonalAccount.Core.Abstractions
     public interface IDocumentsService
     {
         Task<Result<List<Document>>> GetDocumentsInfoByUserId(Guid userId);
-        Task<Result<List<Document>>> GetDocumentsInfoByEmitterId(Guid emitterId);
+        Task<Result<List<Document>>> GetDocumentsInfoByEmitterId(int issuerId);
         Task<Result> SendToRecipientAsync(SendDocumentEvent sendDocumentEvent, 
             CancellationToken cancellationToken);
         Task<Result<Document>> DownloadDocumentById(Guid documentId,

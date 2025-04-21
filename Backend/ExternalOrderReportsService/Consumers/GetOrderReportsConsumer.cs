@@ -47,7 +47,7 @@ namespace ExternalOrderReportsService.Consumers
 
                 var sendClientEvent = new SendResultToClientEvent()
                 {
-                    MethodForResultSending = MethodResultSending.GetReports,
+                    MethodForResultSending = MethodResultSending.ReceiveReports,
                     ContentJSON = JsonSerializer.Serialize
                         (new ReportsPaginationListContent(paginationList, ev.UserId))
                 };

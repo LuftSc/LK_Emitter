@@ -1,6 +1,7 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace EmitterPersonalAccount.Application.Features.Documents
     public sealed class SendDocumentsCommand : Command
     {
         public Guid SenderId { get; set; } = Guid.Empty;
-        public Guid EmitterId { get; set; }
+        public int IssuerId { get; set; }
         public List<IFormFile> Files { get; set; } = [];
         public bool WithDigitalSignature { get; set; } = false;
     }
@@ -54,7 +55,7 @@ namespace EmitterPersonalAccount.Application.Features.Documents
             var sendingEvent = new SendDocumentEvent 
             { 
                 SenderId = request.SenderId,
-                EmitterId = request.EmitterId,
+                IssuerId = request.IssuerId,
                 Documents = documents,
                 WithDigitalSignature = request.WithDigitalSignature
             };

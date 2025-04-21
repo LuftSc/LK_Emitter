@@ -6,10 +6,12 @@ namespace ExternalOrderReportsService.Services
 {
     public class MainService : IHostedService
     {
-        private readonly RequestListOfShareholdersConsumer requestShareholdersConsumer;
-        private readonly RequestReeRepConsumer requestReeRepConsumer;
-        private readonly RequestDividendListConsumer requestDividendListConsumer;
+        //private readonly RequestListOfShareholdersConsumer requestShareholdersConsumer;
+        //private readonly RequestReeRepConsumer requestReeRepConsumer;
+        //private readonly RequestDividendListConsumer requestDividendListConsumer;
         private readonly GetOrderReportsConsumer getOrderReportsConsumer;
+
+        private readonly RequestOrderReportConsumer requestOrderReportConsumer;
 
         private readonly DownloadReportOrderRpcServer downloadReportOrderRpcServer;
         public MainService(IConfiguration configuration, IServiceProvider provider)
@@ -17,34 +19,39 @@ namespace ExternalOrderReportsService.Services
             var rabbitUri = configuration.GetConnectionString("RabbitMqUri");
             ArgumentNullException.ThrowIfNull(rabbitUri, "Rabbit URI can not be null!");
 
-            requestShareholdersConsumer = new RequestListOfShareholdersConsumer(rabbitUri, provider);
-            requestReeRepConsumer = new RequestReeRepConsumer(rabbitUri, provider);
-            requestDividendListConsumer = new RequestDividendListConsumer(rabbitUri, provider);
+            //requestShareholdersConsumer = new RequestListOfShareholdersConsumer(rabbitUri, provider);
+            //requestReeRepConsumer = new RequestReeRepConsumer(rabbitUri, provider);
+            //requestDividendListConsumer = new RequestDividendListConsumer(rabbitUri, provider);
             getOrderReportsConsumer = new GetOrderReportsConsumer(rabbitUri, provider);
+
+            requestOrderReportConsumer = new RequestOrderReportConsumer(rabbitUri, provider);
 
             downloadReportOrderRpcServer = new DownloadReportOrderRpcServer(rabbitUri, provider);
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await requestShareholdersConsumer
+           /* await requestShareholdersConsumer
                 .ExecuteAsync(RabbitMqAction.RequestListOfShareholders, cancellationToken);
             await requestReeRepConsumer
                 .ExecuteAsync(RabbitMqAction.RequestReeRep, cancellationToken);
             await requestDividendListConsumer
-                .ExecuteAsync(RabbitMqAction.RequestDividendList, cancellationToken);
+                .ExecuteAsync(RabbitMqAction.RequestDividendList, cancellationToken);*/
             await getOrderReportsConsumer
                 .ExecuteAsync(RabbitMqAction.GetOrderReports, cancellationToken);
+
+            await requestOrderReportConsumer
+                .ExecuteAsync(RabbitMqAction.RequestOrderReport, cancellationToken);
 
             await downloadReportOrderRpcServer
                 .StartAsync(RabbitMqAction.DownloadReportOrder, cancellationToken);
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            requestShareholdersConsumer.Dispose();
+           /* requestShareholdersConsumer.Dispose();
             requestReeRepConsumer.Dispose();
-            requestDividendListConsumer.Dispose();
+            requestDividendListConsumer.Dispose();*/
             getOrderReportsConsumer.Dispose();
-
+            requestOrderReportConsumer.Dispose();
             downloadReportOrderRpcServer.Dispose();
 
             return Task.CompletedTask;

@@ -1,5 +1,6 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareholders;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
@@ -23,34 +24,26 @@ namespace ResultHubService.Consumers
         {
             var ev = EventDeserializer<SendResultToClientEvent>
                 .Deserialize(args);
-
+            Console.WriteLine("Зашли в хэгдлер результатов");
             using(var scope = provider.CreateScope())
             {
                 var resultService = scope.ServiceProvider.GetRequiredService<ResultService>();
 
                 switch (ev.MethodForResultSending)
                 {
-                    case MethodResultSending.GetReports:
+                    case MethodResultSending.ReceiveReports:
                         await resultService.SendReportsToClient(JsonSerializer
                             .Deserialize<ReportsPaginationListContent>(ev.ContentJSON));
                         break;
 
-                    case MethodResultSending.SendListOSAReport:
-                        await resultService.SendListOfShareholdersResultToClient(
+                    case MethodResultSending.ReceiveGeneratedReport:
+                        await resultService.SendReportToClient(
                             JsonSerializer.Deserialize<OrderReportDTO>(ev.ContentJSON));
-
                     break;
 
-                    case MethodResultSending.SendReeRepReport:
-                        await resultService
-                            .SendReeRepResultToClient(
-                                JsonSerializer.Deserialize<OrderReportDTO>(ev.ContentJSON));
-                    break;
-
-                    case MethodResultSending.SendDividendListReport:
-                        await resultService
-                            .SendDividendListResultToClient(
-                                JsonSerializer.Deserialize<OrderReportDTO>(ev.ContentJSON));
+                    case MethodResultSending.ReceiveDocuments:
+                        await resultService.SendDocumentsToClient(
+                            JsonSerializer.Deserialize<DocumentsContent>(ev.ContentJSON));
                     break;
                     default:
                         return await Task.FromResult

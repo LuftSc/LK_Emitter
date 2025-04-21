@@ -20,19 +20,8 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
         public static readonly RabbitMqAction SendEmailConfirmation = 
             new("", "email", "email");
 
-        public static readonly RabbitMqAction RequestListOfShareholders =
-            new("orderReports_exchange", "orderReports.list", "request_list_shareholders_queue");
-        public static readonly RabbitMqAction RequestReeRep =
-            new("orderReports_exchange", "orderReports.ree_rep", "request_ree_rep_queue");
-        public static readonly RabbitMqAction RequestDividendList =
-            new("orderReports_exchange", "orderReports.dividend", "request_dividend_list_queue");
-
-        public static readonly RabbitMqAction ResultListOfShareholders =
-            new("orderReports_exchange", "orderReports.list_result", "result_list_shareholders_queue");
-        public static readonly RabbitMqAction ResultReeRep =
-            new("orderReports_exchange", "orderReports.ree_rep_result", "result_ree_rep_queue");
-        public static readonly RabbitMqAction ResultDividendList =
-            new("orderReports_exchange", "orderReports.dividend_result", "result_dividend_list_queue");
+        public static readonly RabbitMqAction RequestOrderReport = new
+            ("orderReports_exchange", "orderReports.request", "orderReports_request_queue");
 
         public static readonly RabbitMqAction GetOrderReports = new
             ("orderReports_exchange", "orderReports.get", "orderReports_get_queue");
@@ -42,6 +31,8 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
 
         public static readonly RabbitMqAction SendResultToClient =
             new("result_exchange", "send_result", "send_results_queue");
+
+        public static readonly RabbitMqAction Audit = new("log_exchange", "log", "log_queue");
         /*public static readonly RabbitMqAction ResultDownloadReportOrder =
             new("orderReports_exchange", "orderReports.result_download", "result_download_report_order_queue");*/
 

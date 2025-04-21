@@ -1,0 +1,14 @@
+﻿using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using ExternalOrderReportsService.Contracts;
+
+namespace ExternalOrderReportsService.Services
+{
+    public interface IRequestSender
+    {
+        Task<Result<Guid>> SendDividendListReportRequest(DateTime requestDate, ReportAboutDividendListNotSignRequest request);
+        Task<Result<DocumentInfo>> SendDownloadReportRequest(Guid reportOrderId);
+        Task<Result<Guid>> SendListOfShareholdersReportRequest(DateTime requestDate, ListOfShareholdersRequest request);
+        Task<Result<Guid>> SendReeRepReportRequest(DateTime requestDate, ReeRepNotSignRequest request);
+    }
+}

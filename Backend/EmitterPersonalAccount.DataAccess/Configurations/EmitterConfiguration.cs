@@ -20,9 +20,9 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
             builder.Property(e => e.Id).HasColumnName("EMIT_ID");
 
             builder.HasOne(e => e.Registrator).WithMany(r => r.Emitters);
-            builder.HasMany(e => e.Documents)
+            /*builder.HasMany(e => e.Documents)
                 .WithOne(d => d.Emitter)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade); */
 
             //builder.HasMany(e => e.OrderReports).WithOne().HasForeignKey(o => o.IssuerId);
 

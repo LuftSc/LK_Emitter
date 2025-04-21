@@ -1,55 +1,5 @@
 import { ReportOrder } from "../models/ReportOrder";
 
-/*const request = {
-    forReportGenerating: {
-        issuerId: emitterData.IssuerId, // код эмитента
-        dtMod: dtMod, // Дата фиксации с 1 формы
-        nomList: showLists, // Флажок на форме
-        isCategMeeting: example, // флажок с формы 1
-        isRangeMeeting: isRangeMeeting, // флажок с формы 1
-        // true - заседание\ false - заочное
-        dt_Begsobr: dtBegSobr, // Дата проведения собрания с формы
-    }
-    //reportName: "ListOfMeetingShareholdersCb",
-    //isSaveToStorage: true,
-    issuerId: emitterData.IssuerId, // код эмитента
-    //regOutInfo: "1/ИСХ",
-    //generalReportHeader: "Список лиц, имеющих право голоса при принятии решений общим собранием акционеров",
-    //typKls: "",
-    dtMod: dtMod, // Дата фиксации с 1 формы
-    nomList: showLists, // Флажок на форме
-    //isPodr: false,
-    //viewCb: true,
-    //isCateg: false,
-    //isOneRecAllNomin: false,
-    isCategMeeting: example, // флажок с формы 1
-    // true - годовое\ false - внеочередное
-
-    isRangeMeeting: isRangeMeeting, // флажок с формы 1
-    // true - заседание\ false - заочное
-    dt_Begsobr: dtBegSobr, // Дата проведения собрания с формы
-    //isSocr: false,
-    //isFillSchNd: false,
-    //isBirthday: false,
-    //isViewPhone: true,
-    //isViewEmail: true,
-    //isViewMeetNotify: true,
-    //isViewGenDirect: false,
-    //isViewInn: false,
-    //viewLs: false,
-    //isSignBox: false,
-    //offNumbers: false,
-    //isExcelFormat: false,
-    //printDt: false,
-    //currentUser: "LK",
-    //operator: "Кузнецов А. С.",
-    //controler: "",
-    //isViewDirect: false,
-    //isViewCtrl: false,
-    //isViewElecStamp: true,
-    //guid: "" // Пустое, я на бэке его генерю
-      } */
-
 export interface ListOSAReportGeneratingData {
     issuerId: string // код эмитента
     dtMod: string, // Дата фиксации с 1 формы | Строка ФОРМАТА: ГГГГ-ММ-ДД

@@ -37,7 +37,6 @@ export default function FormsMain () {
     });
 
     useEffect(() => {
-        //onRequestListOSA() !
         
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
@@ -49,8 +48,7 @@ export default function FormsMain () {
             console.log(emitterId)
             setEmitterName(emitterData.Name)
             setEmitterId(emitterData.IssuerId)
-            //onReportOrdersTableUpdate(emitterData.Id)
-            //onGetReportOrders();
+
             console.log("кидаем запрос на отчёты по id: " + emitterData.IssuerId)
             getOrderReportsByPage(emitterData.IssuerId, pagination) 
             
@@ -64,26 +62,21 @@ export default function FormsMain () {
 
     const getOrderReportsByPage = async (issuerId: number, pagination: any) => {
         setLoading(true)
-        //console.log('зашли в обновление')
         setPagination(pagination)
-        await onGetReportOrders()
+
+        await subscribeOnReceiveListReports()
+
         const orderReportsResponse = await 
             getOrderReportsByEmitterId(issuerId, pagination.current, pagination.pageSize)
 
         if (orderReportsResponse?.ok) {
-            //const reports = await orderReportsResponse.json()
             console.log('Отправили запрос на отчёты')
-            /*setOrderReports({
-                totalSize: reports.totalSize,
-                orderReports: reports.orderReports
-            }) */
+            
         } else if (orderReportsResponse?.status === 400) {
             console.error('контролируемая ошибка')
         } else {
             console.error('НЕконтролируемая ошибка')
         }
-
-        
     } 
 
     const formatDate = (dateTime: string) : string => {
@@ -93,6 +86,12 @@ export default function FormsMain () {
         const time = splitTime[0];
 
         return `${time} ${date}`
+    }
+
+    const formatStatus = (status: number) : string => {
+        if (ReportOrderStatus.Successfull === status) return "Выполнено";
+        else if (ReportOrderStatus.Processing === status) return "В процессе"
+        else return "Возникла ошибка";
     }
 
     const updateReportOrder = (id: string, updatedData: Partial<ReportOrder>) => {
@@ -105,23 +104,11 @@ export default function FormsMain () {
       };
 
     const addReportOrder = (
-        idForDownload: string,
-        internalId: string,
-        fileName: string,
-        status: number,
-        requestDate: string,
-        userId: string) => {
+        reportOrder: ReportOrder) => {
         setOrderReports(prev => {
         // Если мы на первой странице
         if (pagination.current === 1) {
-            const newReports = [{
-            internalId: internalId, 
-            fileName: fileName,
-            status: status,
-            requestDate: requestDate,
-            idForDownload: idForDownload,
-            userId: userId
-        }, ...prev.orderReports];
+            const newReports = [reportOrder, ...prev.orderReports];
             
             // Обрезаем массив, если превысили pageSize
             if (newReports.length > pagination.pageSize) {
@@ -142,7 +129,29 @@ export default function FormsMain () {
         });
     }
 
-    const onGetReportOrders = async () => {
+    const subscribeOnReceiveReport = async () => {
+        const currentConnection = connection ? connection : await startConnection()
+
+        currentConnection?.on('ReceiveReport', 
+                (orderReport: ReportOrder) => {
+            if (orderReport.status === ReportOrderStatus.Successfull) {
+                updateReportOrder(orderReport.internalId, {
+                        status: orderReport.status, 
+                        idForDownload: orderReport.idForDownload
+                    } )
+                currentConnection.off('ReceiveReport');
+            } else if (orderReport.status === ReportOrderStatus.Failed) {
+                updateReportOrder(orderReport.internalId, {
+                    status: orderReport.status
+                } )
+                currentConnection.off('ReceiveReport');
+            } else {
+                addReportOrder(orderReport)
+            }
+        })
+    }
+
+    const subscribeOnReceiveListReports = async () => {
         const currentConnection = connection ? connection : await startConnection()
 
         currentConnection?.on('ReceiveReports', (orderReports: {totalSize: number, 
@@ -159,23 +168,7 @@ export default function FormsMain () {
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
 
-        const currentConnection = connection ? connection : await startConnection()
-
-        currentConnection?.on('SendDividendListResult', 
-            (   idForDownload: string,
-                internalId: string,
-                fileName: string,
-                status: number,
-                requestDate: string,
-                userId: string) => {
-
-            if (status === ReportOrderStatus.Successfull) {
-                updateReportOrder(internalId, {status: status, idForDownload: idForDownload} )
-                currentConnection.off('SendDividendListResult');
-            } else {
-                addReportOrder(idForDownload,internalId, fileName, status, requestDate, userId)
-            }
-        })
+        await subscribeOnReceiveReport();
 
         if (emitterData) {
             const defaultDividendListRequest = {
@@ -218,27 +211,13 @@ export default function FormsMain () {
     }
 
     const onRequestReeRep = async () => {
-
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
 
         const currentConnection = connection ? connection : await startConnection()
 
-        currentConnection?.on('SendReeRepResult', 
-            (   idForDownload: string,
-                internalId: string,
-                fileName: string,
-                status: number,
-                requestDate: string,
-                userId: string) => {
-
-            if (status === ReportOrderStatus.Successfull) {
-                updateReportOrder(internalId, {status: status, idForDownload: idForDownload} )
-                currentConnection.off('SendReeRepResult');
-            } else {
-                addReportOrder(idForDownload,internalId, fileName, status, requestDate, userId)
-            }
-        })
+        await subscribeOnReceiveReport();
+        
         if (emitterData) {
             const defaultReeRepRequest = {
                 requestData: {
@@ -313,32 +292,14 @@ export default function FormsMain () {
 
             await sendRequestReeRep(defaultReeRepRequest)
         }
-        
     }
     const onRequestListOSA = async () => {
-        // Если соединения не установлено - устанавливаем
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
 
         const currentConnection = connection ? connection : await startConnection()
 
-        currentConnection?.on('ReceiveListOfShareholdersResult', 
-            (   idForDownload: string,
-                internalId: string,
-                fileName: string,
-                status: number,
-                requestDate: string,
-                userId: string) => {
-
-            if (status === ReportOrderStatus.Successfull) {
-                updateReportOrder(internalId, {status: status, idForDownload: idForDownload} )
-                currentConnection.off('ReceiveListOfShareholdersResult');
-            } else {
-                addReportOrder(idForDownload,internalId, fileName, status, requestDate, userId)
-            }
-        })
-
-        
+        await subscribeOnReceiveReport();
         
         const defaultListOSRequest = {
             requestData: {
@@ -402,13 +363,14 @@ export default function FormsMain () {
                 //return dateA - dateB;
               //},
             //sortDirections: ['descend', 'ascend'],
-            //render: (date) => formatDate(date),
+            render: (date) => formatDate(date),
             width: 150
         },
         {
             title: 'Статус выполнения',
             dataIndex: 'status',
             key: 'status',
+            render: (status) => formatStatus(status),
             width: 100
         },
         {
@@ -457,7 +419,7 @@ export default function FormsMain () {
                 <Button onClick={onRequestReeRep}>Запросить информацию из реестра</Button>
                 <br />
                 <Button onClick={onRequestDividendList}> Запросить дивидендный список</Button>
-
+                
                 <Table rowKey="internalId" columns={columns} dataSource={orderReports.orderReports}
                     pagination={pagination}
                     loading={loading}

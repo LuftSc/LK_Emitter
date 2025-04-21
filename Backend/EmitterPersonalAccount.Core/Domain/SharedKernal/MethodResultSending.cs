@@ -8,9 +8,8 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
 {
     public enum MethodResultSending
     {
-        GetReports,
-        SendListOSAReport,
-        SendReeRepReport,
-        SendDividendListReport
+        ReceiveReports,
+        ReceiveGeneratedReport,
+        ReceiveDocuments
     }
 }

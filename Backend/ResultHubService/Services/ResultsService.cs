@@ -1,4 +1,6 @@
 ﻿using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareholders;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
@@ -26,7 +28,6 @@ namespace ResultHubService.Services
         {
             var connInfoResult = memoryCache.GetValue<Hubs.ConnectionInfo>(content.UserId);
 
-
             if (connInfoResult.IsSuccessfull)
             {
                 await hubContext.Clients
@@ -34,21 +35,18 @@ namespace ResultHubService.Services
                     .ReceiveReports(content.OrderReports);
             }
         }
-        public async Task SendListOfShareholdersResultToClient
-            (OrderReportDTO content)
+        public async Task SendReportToClient(OrderReportDTO orderReport)
         {
-            var connInfoResult = memoryCache.GetValue<Hubs.ConnectionInfo>(content.UserId);
+            var connInfoResult = memoryCache.GetValue<Hubs.ConnectionInfo>(orderReport.UserId);
 
             if (connInfoResult.IsSuccessfull)
             {
                 await hubContext.Clients
                     .Group(connInfoResult.Value.CurrentEmitterId)
-                    .ReceiveListOfShareholdersResult
-                        (content.InternalId, content.Status.ToString(), content.RequestDate, content.IdForDownload);
+                    .ReceiveReport(orderReport);
             }
         }
-        public async Task SendReeRepResultToClient
-            (OrderReportDTO content)
+        public async Task SendDocumentsToClient(DocumentsContent content)
         {
             var connInfoResult = memoryCache.GetValue<Hubs.ConnectionInfo>(content.UserId);
 
@@ -56,21 +54,7 @@ namespace ResultHubService.Services
             {
                 await hubContext.Clients
                     .Group(connInfoResult.Value.CurrentEmitterId)
-                    .ReceiveListOfShareholdersResult
-                        (content.InternalId, content.Status.ToString(), content.RequestDate, content.IdForDownload);
-            }
-        }
-        public async Task SendDividendListResultToClient
-            (OrderReportDTO content)
-        {
-            var connInfoResult = memoryCache.GetValue<Hubs.ConnectionInfo>(content.UserId);
-
-            if (connInfoResult.IsSuccessfull)
-            {
-                await hubContext.Clients
-                    .Group(connInfoResult.Value.CurrentEmitterId)
-                    .ReceiveListOfShareholdersResult
-                        (content.InternalId, content.Status.ToString(), content.RequestDate, content.IdForDownload);
+                    .ReceiveDocuments(content.Documents);
             }
         }
     }

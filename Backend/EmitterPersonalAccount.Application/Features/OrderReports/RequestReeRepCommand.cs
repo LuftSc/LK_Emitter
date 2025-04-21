@@ -1,5 +1,6 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ReeRepNotSign;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
@@ -35,12 +36,19 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
 
             request.SendingDate = requestDate;
 
-            var ev = new RequestReeRepNotSignEvent(requestDate, request.RequestData, request.UserId);
+            //var ev = new RequestReeRepNotSignEvent(requestDate, request.RequestData, request.UserId);
+            var ev = new RequestOrderReportEvent()
+            {
+                ReportType = ReportType.ReeRepNotSign,
+                SendingDate = requestDate,
+                UserId = request.UserId,
+                RequestDataJSON = JsonSerializer.Serialize(request.RequestData)
+            };
 
             var message = JsonSerializer.Serialize(ev);
 
             var isSuccesfull = await publisher.SendMessageAsync(message,
-                RabbitMqAction.RequestReeRep, cancellationToken);
+                RabbitMqAction.RequestOrderReport, cancellationToken);
 
             if (!isSuccesfull) return Result
                     .Error(new SendingReeRepRequestError());
