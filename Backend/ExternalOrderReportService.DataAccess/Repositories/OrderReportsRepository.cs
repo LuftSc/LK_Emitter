@@ -1,6 +1,7 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +80,48 @@ namespace ExternalOrderReportService.DataAccess.Repositories
             await AddAsync(orderReport, cancellationToken);
 
             await context.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
+        }
+
+        public async Task<Result> SaveAsync
+            (GenerateListOSARequest listOSAReport, CancellationToken cancellationToken)
+        {
+            var reportCreatingResult = ListOSAReport.Create(
+                Guid.Parse(listOSAReport.InternalDocumentId),
+                listOSAReport.IssuerId,
+                DateOnly.Parse(listOSAReport.DtMod),
+                listOSAReport.NomList,
+                listOSAReport.IsCategMeeting,
+                listOSAReport.IsRangeMeeting,
+                DateOnly.Parse(listOSAReport.Dt_Begsobr),
+                listOSAReport.ExtractMetadata()
+            );
+
+            if (!reportCreatingResult.IsSuccessfull) return reportCreatingResult;
+
+            await context.ListOSAReports.AddAsync(reportCreatingResult.Value, cancellationToken);
+
+            var entries = context.ChangeTracker.Entries();
+
+            foreach (var entry in entries)
+            {
+                Console.WriteLine($"Entity: {entry.Entity.GetType().Name}");
+                Console.WriteLine($"State: {entry.State}");
+
+                foreach (var property in entry.Properties)
+                {
+                    if (property.IsModified)
+                    {
+                        Console.WriteLine($"{property.Metadata.Name}:");
+                        Console.WriteLine($"  Original: {property.OriginalValue}");
+                        Console.WriteLine($"  Current: {property.CurrentValue}");
+                    }
+                }
+            }
+
+
+            await context.SaveChangesAsync();
 
             return Result.Success();
         }

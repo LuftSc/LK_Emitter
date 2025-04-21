@@ -8,6 +8,7 @@ using ExternalOrderReportService.DataAccess.Repositories;
 using ExternalOrderReportsService.Publishers;
 using ExternalOrderReportsService.Services;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace ExternalOrderReportsService
 {
@@ -42,8 +43,14 @@ namespace ExternalOrderReportsService
 
             builder.Services.AddDbContext<ExternalOrderReportServiceDbContext>(options =>
             {
-                options.UseNpgsql(builder.Configuration
-                    .GetConnectionString(nameof(ExternalOrderReportServiceDbContext)));
+                var connectionString = builder.Configuration
+                    .GetConnectionString(nameof(ExternalOrderReportServiceDbContext));
+
+                var npgsqlBuilder = new NpgsqlDataSourceBuilder(connectionString);
+
+                npgsqlBuilder.EnableDynamicJson();
+
+                options.UseNpgsql(npgsqlBuilder.Build());
             });
 
             

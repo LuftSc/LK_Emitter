@@ -3,7 +3,7 @@
 import { InputForm } from "@/app/ui/forms/input";
 import { RadioButton } from "@/app/ui/forms/radiobtn";
 import { NavigationButtons } from "@/app/ui/forms/nav-btn";
-import { RequestListOfShareholders } from "@/app/services/orderReportsService";
+import { RequestListOfShareholders, sendRequestListOfShareholders } from "@/app/services/orderReportsService";
 import { useState } from "react";
 import { RadioGroup } from "@/app/ui/forms/radioGroup";
 import { InputFormNumber } from "@/app/ui/forms/inputNumbers";
@@ -18,7 +18,7 @@ export default function Page() {
   const [isRegulationOrAttorney, setIsRegulationOrAttorney] = useState<boolean>(false)
   const [regulationNumber, setRegulationNumber] = useState<number>(0)
 
-  const onNextPageTransition = () => {
+  const onNextPageTransition = async () => {
     const request = localStorage.getItem('request_listOSA')
     const requestData = request ? JSON.parse(request) as RequestListOfShareholders : null
 
@@ -33,6 +33,52 @@ export default function Page() {
       }
 
       localStorage.setItem('request_listOSA', JSON.stringify(requestData))
+
+      await onRequestListOSA();
+    }
+  }
+
+  const onRequestListOSA = async () => {
+    const request = localStorage.getItem('request_listOSA')
+    const requestInfo = request ? JSON.parse(request) as RequestListOfShareholders : null
+
+    if (requestInfo) {
+      const listOSARequest = {
+        requestData: {
+          issuerId: requestInfo.forReportGenerating.issuerId, // код эмитента
+          dtMod: requestInfo.forReportGenerating.dtMod, // Дата фиксации с 1 формы | Строка ФОРМАТА: ГГГГ-ММ-ДД
+          nomList: requestInfo.forReportGenerating.nomList, // Флажок на форме
+          isCategMeeting: requestInfo.forReportGenerating.isCategMeeting, // флажок с формы 1
+          isRangeMeeting: requestInfo.forReportGenerating.isRangeMeeting, // флажок с формы 1 // true - заседание\ false - заочное
+          dt_Begsobr: requestInfo.forReportGenerating.dt_Begsobr, // Дата проведения собрания с формы | Строка ФОРМАТА: ГГГГ-ММ-ДД
+          listOfPeopleRightToParticipate: requestInfo.forDbSaving.stepOne.listOfPeopleRightToParticipate, // Первый чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров"
+          listOfPeopleRightOnPapers: requestInfo.forDbSaving.stepOne.listOfPeopleRightOnPapers, // Второй чекбокс с "Список лиц, осуществляющих права по ценным бумагам"
+          listOfPeopleRightToParticipateTwo: requestInfo.forDbSaving.stepOne.listOfPeopleRightToParticipateTwo, // Третий чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров,  без персональных данных"
+          isMeetingWillBeHeldByBoD: requestInfo.forDbSaving.stepOne.isMeetingWillBeHeldByBoD, // Флажок с 1 формы "Советом директоров"
+          mettingWillBeHeldBy: requestInfo.forDbSaving.stepOne.mettingWillBeHeldBy, // Строка под флажком, если "Советом директоров" true, 
+          meetingNumber: requestInfo.forDbSaving.stepOne.meetingNumber, // номер под инпутом с плейсхолдером "Введите наименование"
+          decisionDate: requestInfo.forDbSaving.stepOne.decisionDate,
+          startRegistrationTime: requestInfo.forDbSaving.stepTwo.startRegistrationTime, // Время начало регистрации
+          startMeetingTime: requestInfo.forDbSaving.stepTwo.startMeetingTime, // Время начало собрания
+          endRegistrationTime: requestInfo.forDbSaving.stepTwo.endRegistrationTime, // Время окончания приема бюллетеней
+          endRegistrationDate: requestInfo.forDbSaving.stepTwo.endRegistrationDate, // Дата окончания приема бюллетеней
+          meetingPlace: requestInfo.forDbSaving.stepTwo.meetingPlace, // Место проведения собрания
+          isVotingPossible: requestInfo.forDbSaving.stepTwo.isVotingPossible, // флажок "Методы голосования"
+          addressFilledBallots: requestInfo.forDbSaving.stepTwo.addressFilledBallots, // Адрес заполненных бюллетеней
+          fcs: requestInfo.forDbSaving.stepThree.fcs, // ФИО
+          emailAddress: requestInfo.forDbSaving.stepThree.emailAddress, // email
+          phoneNumber: requestInfo.forDbSaving.stepThree.phoneNumber, // номер телефона
+          infoReviewingProcedure: requestInfo.forDbSaving.stepThree.infoReviewingProcedure, // Порядок ознакомления с информацией
+          isParticipatingInVote: requestInfo.forDbSaving.stepFour.isParticipatingInVote, // 1 флажок "В голосовании принимают участие.."
+          agendaNumber: requestInfo.forDbSaving.stepFour.agendaNumber, // Номер повестки дня
+          isParticipatingInVoteOnNumber: requestInfo.forDbSaving.stepFour.isParticipatingInVoteOnNumber, // 2 флажок 
+          emitentRepresentative: requestInfo.forDbSaving.stepFour.emitentRepresentative, // Уполномоченный представитель
+          isRegulationOrAttorney: requestInfo.forDbSaving.stepFour.isRegulationOrAttorney, // 3 флажок Устав/Доверенность
+          regulationNumber: requestInfo.forDbSaving.stepFour.regulationNumber // номер Устава или Доверенности
+        }
+      }
+      console.log(listOSARequest)
+      await sendRequestListOfShareholders(listOSARequest);
     }
   }
 
@@ -68,8 +114,8 @@ export default function Page() {
             <div className="w-[129px]"><InputFormNumber setState={setRegulationNumber} placeholder="" /></div>
           </div>
         </div>
-      </div>
-      <NavigationButtons back={back == 'true' ? '/forms/first/step-three-shown' : '/forms/first/step-one'} next='' onClick={onNextPageTransition} />
+      </div> 
+      <NavigationButtons back={back == 'true' ? '/forms/first/step-three-shown' : '/forms/first/step-one'} next='/forms' onClick={onNextPageTransition} />
     </div>
   );
 }

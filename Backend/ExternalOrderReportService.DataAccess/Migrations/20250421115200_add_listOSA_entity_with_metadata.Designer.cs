@@ -4,6 +4,7 @@ using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using ExternalOrderReportService.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ExternalOrderReportService.DataAccess.Migrations
 {
     [DbContext(typeof(ExternalOrderReportServiceDbContext))]
-    partial class ExternalOrderReportServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250421115200_add_listOSA_entity_with_metadata")]
+    partial class add_listOSA_entity_with_metadata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

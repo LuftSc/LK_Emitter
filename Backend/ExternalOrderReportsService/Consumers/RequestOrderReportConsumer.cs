@@ -1,6 +1,7 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Contracts;
 using ExternalOrderReportsService.Services;
@@ -34,7 +35,7 @@ namespace ExternalOrderReportsService.Consumers
                 {
                     case ReportType.ListOfShareholders:
                         result = await orderReportsService.RequestReport(
-                            JsonSerializer.Deserialize<ListOfShareholdersRequest>(ev.RequestDataJSON),
+                            JsonSerializer.Deserialize<GenerateListOSARequest>(ev.RequestDataJSON),
                             ev.SendingDate,
                             ev.UserId);
                         break;

@@ -1,4 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using System;
@@ -15,7 +16,8 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
 
         Task<Result> ChangeProcessingStatusFailed(Guid id);
 
-
+        Task<Result> SaveAsync
+            (GenerateListOSARequest listOSAReport, CancellationToken cancellationToken);
         Task<Result<List<OrderReport>>> GetAllByIssuerId(int issuerId);
 
 

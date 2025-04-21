@@ -1,7 +1,9 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
+using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Contracts;
 
@@ -16,22 +18,33 @@ namespace ExternalOrderReportsService.Services
     {
         private readonly IReportStatusChangeService statusChangeService;
         private readonly IRequestSender requestSender;
+        private readonly IOrderReportsRepository orderReportsRepository;
 
         public OrderReportsService(IReportStatusChangeService changeStatusService,
-            IRequestSender requestSender)
+            IRequestSender requestSender, 
+            IOrderReportsRepository orderReportsRepository)
         {
             this.statusChangeService = changeStatusService;
             this.requestSender = requestSender;
+            this.orderReportsRepository = orderReportsRepository;
         }
         public async Task<Result<DocumentInfo>> DownloadReport(Guid reportOrderId)
         {
             return await requestSender.SendDownloadReportRequest(reportOrderId);
         }
-        public async Task<Result> RequestReport(ListOfShareholdersRequest requestData, DateTime sendingDate, string userId)
+        public async Task<Result> RequestReport(GenerateListOSARequest requestData, DateTime sendingDate, string userId)
         {
             var fileName = "Лист участников собрания акционеров";
             var issuerId = requestData.IssuerId;
-            var internalIdFieldName = "Guid";
+            var internalIdFieldName = "InternalDocumentId";
+            var internalId = Guid.NewGuid();
+
+            var requestDataWithInternalId = requestData with
+            {
+                InternalDocumentId = internalId.ToString()
+            };
+
+            await orderReportsRepository.SaveAsync(requestDataWithInternalId, default);
 
             var result = await RequestReportBase(
                 requestData,
@@ -40,6 +53,7 @@ namespace ExternalOrderReportsService.Services
                 issuerId,
                 userId,
                 internalIdFieldName,
+                internalId,
                 requestSender.SendListOfShareholdersReportRequest);
 
             return result;
@@ -49,6 +63,7 @@ namespace ExternalOrderReportsService.Services
             var fileName = "Список ЗЛ";
             var issuerId = requestData.EmitId;
             var internalIdFieldName = "GUID";
+            var internalId = Guid.NewGuid();
 
             var result = await RequestReportBase(
                 requestData,
@@ -57,6 +72,7 @@ namespace ExternalOrderReportsService.Services
                 issuerId,
                 userId,
                 internalIdFieldName,
+                internalId,
                 requestSender.SendReeRepReportRequest);
 
             return result;
@@ -66,6 +82,7 @@ namespace ExternalOrderReportsService.Services
             var fileName = "Дивидендный список";
             var issuerId = requestData.IssuerId;
             var internalIdFieldName = "Guid";
+            var internalId = Guid.NewGuid();
 
             var result = await RequestReportBase(
                 requestData,
@@ -74,6 +91,7 @@ namespace ExternalOrderReportsService.Services
                 issuerId,
                 userId,
                 internalIdFieldName,
+                internalId,
                 requestSender.SendDividendListReportRequest);
 
             return result;
@@ -104,11 +122,12 @@ namespace ExternalOrderReportsService.Services
             int issuerId,
             string userId,
             string internalIdFieldName,
+            Guid internalId,
             Func<DateTime, TRequestData, Task<Result<Guid>>> sendRequestMethod
             )
             where TRequestData : class
         {
-            var orderReportCreatingResult = OrderReport.Create(fileName, sendingDate, issuerId);
+            var orderReportCreatingResult = OrderReport.Create(fileName, sendingDate, issuerId, internalId);
 
             if (!orderReportCreatingResult.IsSuccessfull) return orderReportCreatingResult;
 
@@ -127,9 +146,9 @@ namespace ExternalOrderReportsService.Services
             var updatedRequestData = UpdateRecordProperty
                 (requestData,
                 internalIdFieldName,
-                orderReportCreatingResult.Value.Id.ToString());
+                internalId.ToString());
 
-            var generatingResult = await sendRequestMethod(sendingDate, requestData);
+            var generatingResult = await sendRequestMethod(sendingDate, updatedRequestData);
 
             if (!generatingResult.IsSuccessfull)
             {

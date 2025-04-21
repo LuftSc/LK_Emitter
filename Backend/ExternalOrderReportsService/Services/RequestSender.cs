@@ -3,6 +3,7 @@ using System.Text;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Contracts;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
 
 namespace ExternalOrderReportsService.Services
 {
@@ -42,15 +43,53 @@ namespace ExternalOrderReportsService.Services
         }
         public async Task<Result<Guid>> SendListOfShareholdersReportRequest(
             DateTime requestDate,
-            ListOfShareholdersRequest request)
+            GenerateListOSARequest request)
         {
             var dateString = requestDate.ToString("yyyy-MM-dd HH:mm:ss");
             // Заменить на URL вашего API: 
             // http://host:port/api/ListOfShareholdersForMeetingNotSign?r=2023-07-11 09:15:15
             var url = $"https://localhost:7024/api/ListOfShareholdersForMeetingNotSign?r={dateString}";
 
+            var apiRequest = new ListOfShareholdersRequest(
+                ReportName: "ListOfMeetingShareholdersCb",
+                IsSaveToStorage: true,
+                IssuerId: request.IssuerId,
+                RegOutInfo: "1/ИСХ",
+                GeneralReportHeader: "Список лиц, имеющих право голоса при принятии решений общим собранием акционеров",
+                TypKls: string.Empty,
+                DtMod: request.DtMod,
+                NomList: request.NomList,
+                IsPodr: false,
+                ViewCb: true,
+                IsCateg: false,
+                IsOneRecAllNomin: false,
+                IsCategMeeting: request.IsCategMeeting,
+                IsRangeMeeting: request.IsRangeMeeting,
+                Dt_Begsobr: request.Dt_Begsobr,
+                IsSocr: false,
+                IsFillSchNd: false,
+                IsBirthday: false,
+                IsViewPhone: true,
+                IsViewEmail: true,
+                IsViewMeetNotify: true,
+                IsViewGenDirect: false,
+                IsViewInn: false,
+                ViewLs: false,
+                IsSignBox: false,
+                OffNumbers: false,
+                IsExcelFormat: false,
+                PrintDt: false,
+                CurrentUser: "LK",
+                Operator: "Кузнецов А. С.",
+                Controler: string.Empty,
+                IsViewDirect: false,
+                IsViewCtrl: false,
+                IsViewElecStamp: true,
+                Guid: request.InternalDocumentId
+            );
+
             var jsonContent = new StringContent(
-                JsonSerializer.Serialize(request),
+                JsonSerializer.Serialize(apiRequest),
                 Encoding.UTF8,
                 "application/json"
             );

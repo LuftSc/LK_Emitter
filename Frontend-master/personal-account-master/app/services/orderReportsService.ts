@@ -1,7 +1,7 @@
 import { ReportOrder } from "../models/ReportOrder";
 
 export interface ListOSAReportGeneratingData {
-    issuerId: string // код эмитента
+    issuerId: number // код эмитента
     dtMod: string, // Дата фиксации с 1 формы | Строка ФОРМАТА: ГГГГ-ММ-ДД
     nomList: boolean, // Флажок на форме
     isCategMeeting: boolean, // флажок с формы 1
@@ -19,7 +19,6 @@ export interface ListOSASavingToDbData {
         mettingWillBeHeldBy: string // Строка под флажком, если "Советом директоров" true, 
         // то она будет пустая, если нет, то тут должно быть название органа, 
         // который инициировал проведенеи собрания
-
         meetingNumber: number // номер под инпутом с плейсхолдером "Введите наименование"
         decisionDate: string
     }
@@ -54,7 +53,7 @@ export interface RequestListOfShareholders {
 }
 
 export interface RegistryInfoGeneratingData {
-    emitId: string // код эмитента
+    emitId: number // код эмитента
     procUk: number // цифра из поля процентов на 2 странице формы
     nomList: boolean // флажок на раскрытие списков НД
     dtMod: string // Дата на которую необходимо предоставить информацию
@@ -105,7 +104,7 @@ export interface RequestInfoFromRegistry {
 }
 
 export interface ListOfEntitledGeneratingData {
-    issuerId: string // код эмитента
+    issuerId: number // код эмитента
     dtClo: string // Дата на которую необходимо предоставить информацию
 }
 
@@ -297,7 +296,7 @@ export const downloadReportOrder = async (request: ReportOrder) => {
 }
 
 // ПОМЕНЯТЬ!!!!!!!!!!!
-export const sendRequestListOfShareholders = async (request: RequestListOfShareholders_OLD) => {
+export const sendRequestListOfShareholders = async (request: any) => {
     await fetch('http://localhost:5000/OrderReports/list-of-shareholders', {
         method: 'POST',
         credentials: 'include',
@@ -308,7 +307,7 @@ export const sendRequestListOfShareholders = async (request: RequestListOfShareh
     })
 }
 
-export const sendRequestReeRep = async (request: RequestReeRep_OLD) => {
+export const sendRequestReeRep = async (request: any) => {
     await fetch('http://localhost:5000/OrderReports/ree-rep', {
         method: 'POST',
         credentials: 'include',
@@ -319,7 +318,7 @@ export const sendRequestReeRep = async (request: RequestReeRep_OLD) => {
     })
 }
 
-export const sendRequestDividendList = async (request: RequestDividendList_OLD) => {
+export const sendRequestDividendList = async (request: any) => {
     await fetch('http://localhost:5000/OrderReports/dividend-list', {
         method: 'POST',
         credentials: 'include',
@@ -382,3 +381,86 @@ export const getOrderReportsByEmitterId = async (issuerId: number, page:number, 
     isViewCtrl: boolean,
     isViewElecStamp: boolean,
     guid : string */
+
+// ЛИСТ УЧАСТНИКОВ СОБРАНИЯ АКЦИОНЕРОВ
+
+/*
+
+requestListOSA: {
+    forReportGenerating: {
+        issuerId: string // код эмитента
+        dtMod: string, // Дата фиксации с 1 формы | Строка ФОРМАТА: ГГГГ-ММ-ДД
+        nomList: boolean, // Флажок на форме
+        isCategMeeting: boolean, // флажок с формы 1
+        isRangeMeeting: boolean, // флажок с формы 1 // true - заседание\ false - заочное
+        dt_Begsobr: string, // Дата проведения собрания с формы | Строка ФОРМАТА: ГГГГ-ММ-ДД
+    }
+    forDbSaving: {
+        stepOne: {
+            listOfPeopleRightToParticipate: boolean // Первый чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров"
+            listOfPeopleRightOnPapers: boolean // Второй чекбокс с "Список лиц, осуществляющих права по ценным бумагам"
+            listOfPeopleRightToParticipateTwo: boolean // Третий чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров,  без персональных данных"
+            isMeetingWillBeHeldByBoD: boolean // Флажок с 1 формы "Советом директоров"
+            mettingWillBeHeldBy: string // Строка под флажком, если "Советом директоров" true, 
+            // то она будет пустая, если нет, то тут должно быть название органа, 
+            // который инициировал проведенеи собрания
+            meetingNumber: number // номер под инпутом с плейсхолдером "Введите наименование"
+            decisionDate: string
+        }
+        stepTwo: {
+            startRegistrationTime: string // Время начало регистрации
+            startMeetingTime: string // Время начало собрания
+            endRegistrationTime: string // Время окончания приема бюллетеней
+            endRegistrationDate: string // Дата окончания приема бюллетеней
+            meetingPlace: string // Место проведения собрания
+            isVotingPossible: boolean // флажок "Методы голосования"
+            addressFilledBallots: string // Адрес заполненных бюллетеней
+        }
+        stepThree: {
+            fcs: string // ФИО
+            emailAddress: string // email
+            phoneNumber: string // номер телефона
+            infoReviewingProcedure: string // Порядок ознакомления с информацией
+        }
+        stepFour: {
+            isParticipatingInVote: boolean // 1 флажок "В голосовании принимают участие.."
+            agendaNumber: number // Номер повестки дня
+            isParticipatingInVoteOnNumber: boolean // 2 флажок 
+            emitentRepresentative: string // Уполномоченный представитель
+            isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
+            regulationNumber: number // номер Устава или Доверенности
+        }
+    } 
+}
+
+issuerId: string // код эмитента
+dtMod: string, // Дата фиксации с 1 формы | Строка ФОРМАТА: ГГГГ-ММ-ДД
+nomList: boolean, // Флажок на форме
+isCategMeeting: boolean, // флажок с формы 1
+isRangeMeeting: boolean, // флажок с формы 1 // true - заседание\ false - заочное
+dt_Begsobr: string, // Дата проведения собрания с формы | Строка ФОРМАТА: ГГГГ-ММ-ДД
+listOfPeopleRightToParticipate: boolean // Первый чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров"
+listOfPeopleRightOnPapers: boolean // Второй чекбокс с "Список лиц, осуществляющих права по ценным бумагам"
+listOfPeopleRightToParticipateTwo: boolean // Третий чекбокс с "Список лиц, имеющих право на участие в общем собрании акционеров,  без персональных данных"
+isMeetingWillBeHeldByBoD: boolean // Флажок с 1 формы "Советом директоров"
+mettingWillBeHeldBy: string // Строка под флажком, если "Советом директоров" true, 
+meetingNumber: number // номер под инпутом с плейсхолдером "Введите наименование"
+decisionDate: string
+startRegistrationTime: string // Время начало регистрации
+startMeetingTime: string // Время начало собрания
+endRegistrationTime: string // Время окончания приема бюллетеней
+endRegistrationDate: string // Дата окончания приема бюллетеней
+meetingPlace: string // Место проведения собрания
+isVotingPossible: boolean // флажок "Методы голосования"
+addressFilledBallots: string // Адрес заполненных бюллетеней
+fcs: string // ФИО
+emailAddress: string // email
+phoneNumber: string // номер телефона
+infoReviewingProcedure: string // Порядок ознакомления с информацией
+isParticipatingInVote: boolean // 1 флажок "В голосовании принимают участие.."
+agendaNumber: number // Номер повестки дня
+isParticipatingInVoteOnNumber: boolean // 2 флажок 
+emitentRepresentative: string // Уполномоченный представитель
+isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
+regulationNumber: number // номер Устава или Доверенности
+*/

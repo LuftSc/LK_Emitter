@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { ReportOrderDownloadLink } from "./reportOrder-dwn-btn";
 import { useSignalR } from "@/app/signalR/SignalRContext";
 import Table, { ColumnsType } from "antd/es/table";
+import { HubConnection } from "@microsoft/signalr";
 
 const links = [
     {name: 'Распоряжение Эмитента на список к ОСА', href: '/forms/first/step-one'},
@@ -60,11 +61,18 @@ export default function FormsMain () {
         console.log('обновился размер')
     }, [orderReports])
 
+    function isSubscribed(connection: HubConnection, methodName: string): boolean {
+        // @ts-ignore - доступ к внутреннему хранилищу
+        const handlers = connection._handlers;
+        return handlers && handlers[methodName]?.length > 0;
+    }
+
     const getOrderReportsByPage = async (issuerId: number, pagination: any) => {
         setLoading(true)
         setPagination(pagination)
 
         await subscribeOnReceiveListReports()
+        //await subscribeOnReceiveReport()
 
         const orderReportsResponse = await 
             getOrderReportsByEmitterId(issuerId, pagination.current, pagination.pageSize)
@@ -128,9 +136,13 @@ export default function FormsMain () {
         };
         });
     }
-
+    
     const subscribeOnReceiveReport = async () => {
+        
         const currentConnection = connection ? connection : await startConnection()
+
+        if (currentConnection)
+            console.log(isSubscribed(currentConnection, 'ReceiveReport'))
 
         currentConnection?.on('ReceiveReport', 
                 (orderReport: ReportOrder) => {
@@ -161,6 +173,24 @@ export default function FormsMain () {
                 console.log(orderReports)
             currentConnection?.off('ReceiveReports')
         })
+
+        currentConnection?.on('ReceiveReport', 
+            (orderReport: ReportOrder) => {
+        if (orderReport.status === ReportOrderStatus.Successfull) {
+            updateReportOrder(orderReport.internalId, {
+                    status: orderReport.status, 
+                    idForDownload: orderReport.idForDownload
+                } )
+            currentConnection.off('ReceiveReport');
+        } else if (orderReport.status === ReportOrderStatus.Failed) {
+            updateReportOrder(orderReport.internalId, {
+                status: orderReport.status
+            } )
+            currentConnection.off('ReceiveReport');
+        } else {
+            addReportOrder(orderReport)
+        }
+    })
     }
 
     const onRequestDividendList = async () => {
@@ -356,13 +386,6 @@ export default function FormsMain () {
             title: 'Дата запроса',
             dataIndex: 'requestDate',
             key: 'requestDate',
-            //sorter: (a, b) => {
-                // Преобразуем даты в timestamp и сравниваем
-                //const dateA = new Date(a.requestDate).getTime();
-                //const dateB = new Date(b.requestDate).getTime();
-                //return dateA - dateB;
-              //},
-            //sortDirections: ['descend', 'ascend'],
             render: (date) => formatDate(date),
             width: 150
         },

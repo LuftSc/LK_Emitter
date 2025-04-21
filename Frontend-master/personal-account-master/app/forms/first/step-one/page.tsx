@@ -34,6 +34,7 @@ export default function Page() {
 
   const onNextPageTransition = async () => {
     localStorage.setItem('showNDlists', showLists.toString())
+    
     const emitter = localStorage.getItem('emitter')
     const emitterData = emitter ? JSON.parse(emitter) : null
 

@@ -17,6 +17,14 @@ namespace ExternalOrderReportService.DataAccess
         {
             
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ExternalOrderReportServiceDbContext).Assembly);
+
+            base.OnModelCreating(modelBuilder);
+        }
         public DbSet<OrderReport> OrderReports { get; set; }
+        public DbSet<ListOSAReport> ListOSAReports { get; set; }
     }
 }

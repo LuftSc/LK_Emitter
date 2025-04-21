@@ -8,6 +8,7 @@ using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareh
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.DataAccess.Repositories;
 //using ExternalOrderReportsService.Contracts;
@@ -23,7 +24,8 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
     public sealed class RequestListOfShareholdersCommand : Command
     {
         public DateTime? SendingDate { get; set; }
-        public ListOfShareholdersReportData RequestData { get; set; }
+        //public ListOfShareholdersReportData RequestData { get; set; }
+        public GenerateListOSARequest RequestData { get; set; }
         public string UserId { get; set; } = string.Empty;
         //public Guid DocumentId { get; set; } = Guid.Empty;
     }
