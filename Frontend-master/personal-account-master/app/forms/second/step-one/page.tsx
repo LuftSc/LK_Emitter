@@ -37,7 +37,7 @@ export default function Page () {
             </div>
           </div>
           <ShowListsRadio setShowLists={setShowLists}/>
-          <NavigationButtons back='' next={showLists == true ? '/forms/second/step-two-shown' : '/forms/second/step-two' } onClick={onNextPageTransition}/>
+          <NavigationButtons back='' next='/forms/second/step-two' onClick={onNextPageTransition}/>
      </div>
   );
 }
