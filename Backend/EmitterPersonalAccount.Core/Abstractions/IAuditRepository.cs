@@ -10,5 +10,6 @@ namespace EmitterPersonalAccount.Core.Abstractions
 {
     public interface IAuditRepository : IRepository<UserActionLog>
     {
+        Task SaveRangeAsync(List<UserActionLog> logs, CancellationToken cancellationToken);
     }
 }

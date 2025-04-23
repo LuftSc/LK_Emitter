@@ -57,7 +57,10 @@ export interface RegistryInfoGeneratingData {
     procUk: number // цифра из поля процентов на 2 странице формы
     nomList: boolean // флажок на раскрытие списков НД
     dtMod: string // Дата на которую необходимо предоставить информацию
+    oneProcMode: boolean // флажок: "в сокращённой форме на дату"
 }
+
+
 
 export interface RegistryInfoSavingToDbData {
     stepOne: {
@@ -66,7 +69,6 @@ export interface RegistryInfoSavingToDbData {
     stepTwo: {
         listPaperOwners: boolean // Чекбокс "Список владельцев ценных бумаг"
         infoPeopleWithOpenAccount: boolean // Радио "Информация о людях, которым открыт лицевой счет"
-        infoPeopleShort: boolean // Чекбокс "Информация о людях в сокращенной форме"
         listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
     }
@@ -75,7 +77,6 @@ export interface RegistryInfoSavingToDbData {
         listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         includeInfo: boolean // Чекбокс "включая сведения о лицах..."
         infoPeopleWithOpenAccount: boolean // Чекбокс "Информация о людях, которым открыт лицевой счет"
-        infoPeopleShort: boolean // Чекбокс "Информация о людях в сокращенной форме"
         certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
     }
     stepThree: {
@@ -107,6 +108,27 @@ export interface ListOfEntitledGeneratingData {
     issuerId: number // код эмитента
     dtClo: string // Дата на которую необходимо предоставить информацию
 }
+
+/* 
+issuerId: number // код эмитента
+dtClo: string // Дата на которую необходимо предоставить информацию
+fullEmName: string // Полное наименование эмитента
+decidingAuthority: string // Орган, управления эмитента, принявший решение...
+dateOfProtocol: string // Дата протокола
+numberOfProtocol: number // Номер протокола
+papersCategory: string // Категории ценных бумаг
+formOfPayment: string // Форма выплат
+paymentForOne: string // Выплачиваемый доход на одну акцию
+paymentForAll: string // Выплачиваемый доход, общий объем
+dateOfPayment: string // Дата выплаты
+fullOfficialName: string // Полное оф. наименование агента(ов)
+placeOfAgents: string // Место нахождения агента(ов)
+mailAddress: string // Почтовый адрес агента(ов)
+includeCalcInfo: boolean // Включить инорфмацию о расчете налога
+emitentRepresentative: string // Уполномоченный представитель
+isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
+regulationNumber: number // номер Устава или Доверенности
+*/
 
 export interface ListOfEntitledSavingToDbData {
     stepOne: {

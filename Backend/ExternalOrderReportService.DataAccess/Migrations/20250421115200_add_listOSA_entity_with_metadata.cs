@@ -1,5 +1,5 @@
 ﻿using System;
-using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.ListOSA;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable

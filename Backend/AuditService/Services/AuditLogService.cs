@@ -5,15 +5,16 @@ namespace AuditService.Services
 {
     public class AuditLogService : IDisposable, IAuditLogService
     {
-        private readonly IAuditRepository auditRepository;
+        //private readonly IAuditRepository auditRepository;
+        private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly List<UserActionLog> batchBuffer = new();
         private readonly Timer flushTimer;
         private readonly SemaphoreSlim _lock = new(1, 1);
         private readonly int maxBatchSize = 100;
         private readonly TimeSpan flushInterval = TimeSpan.FromSeconds(5);
-        public AuditLogService(IAuditRepository auditRepository)
+        public AuditLogService(IServiceScopeFactory serviceScopeFactory)
         {
-            this.auditRepository = auditRepository;
+            this.serviceScopeFactory = serviceScopeFactory;
             flushTimer = new Timer(async _ => await FlushBatchAsync(),
                               null,
                               flushInterval,
@@ -53,7 +54,16 @@ namespace AuditService.Services
 
             try
             {
-                await auditRepository.AddRangeAsync(logsToSave, default);
+                using (var scope = serviceScopeFactory.CreateScope()) 
+                {
+                    var auditRepository = scope.ServiceProvider
+                        .GetRequiredService<IAuditRepository>();
+
+                    Console.WriteLine($"Логи были доабвлены в количестве: {logsToSave.Count}");
+                    await auditRepository.SaveRangeAsync(logsToSave, default);
+                    
+                }
+                
             }
             catch (Exception ex)
             {

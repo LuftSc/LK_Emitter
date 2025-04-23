@@ -3,7 +3,7 @@ using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
-using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Contracts;
 
@@ -36,7 +36,6 @@ namespace ExternalOrderReportsService.Services
         {
             var fileName = "Лист участников собрания акционеров";
             var issuerId = requestData.IssuerId;
-            var internalIdFieldName = "InternalDocumentId";
             var internalId = Guid.NewGuid();
 
             var requestDataWithInternalId = requestData with
@@ -52,18 +51,23 @@ namespace ExternalOrderReportsService.Services
                 sendingDate,
                 issuerId,
                 userId,
-                internalIdFieldName,
                 internalId,
                 requestSender.SendListOfShareholdersReportRequest);
 
             return result;
         }
-        public async Task<Result> RequestReport(ReeRepNotSignRequest requestData, DateTime sendingDate, string userId)
+        public async Task<Result> RequestReport(GenerateReeRepRequest requestData, DateTime sendingDate, string userId)
         {
             var fileName = "Список ЗЛ";
             var issuerId = requestData.EmitId;
-            var internalIdFieldName = "GUID";
             var internalId = Guid.NewGuid();
+
+            var requestDataWithInternalId = requestData with
+            {
+                InternalDocumentId = internalId.ToString()
+            };
+
+            await orderReportsRepository.SaveAsync(requestDataWithInternalId, default);
 
             var result = await RequestReportBase(
                 requestData,
@@ -71,18 +75,23 @@ namespace ExternalOrderReportsService.Services
                 sendingDate,
                 issuerId,
                 userId,
-                internalIdFieldName,
                 internalId,
                 requestSender.SendReeRepReportRequest);
 
             return result;
         }
-        public async Task<Result> RequestReport(ReportAboutDividendListNotSignRequest requestData, DateTime sendingDate, string userId)
+        public async Task<Result> RequestReport(GenerateDividendListRequest requestData, DateTime sendingDate, string userId)
         {
             var fileName = "Дивидендный список";
             var issuerId = requestData.IssuerId;
-            var internalIdFieldName = "Guid";
             var internalId = Guid.NewGuid();
+
+            var requestDataWithInternalId = requestData with
+            {
+                InternalDocumentId = internalId.ToString()
+            };
+
+            await orderReportsRepository.SaveAsync(requestDataWithInternalId, default);
 
             var result = await RequestReportBase(
                 requestData,
@@ -90,29 +99,10 @@ namespace ExternalOrderReportsService.Services
                 sendingDate,
                 issuerId,
                 userId,
-                internalIdFieldName,
                 internalId,
                 requestSender.SendDividendListReportRequest);
 
             return result;
-        }
-
-        private static T UpdateRecordProperty<T>(T record, string propertyName, object newValue)
-            where T : class
-        {
-            // Получаем PropertyInfo по имени
-            var property = typeof(T).GetProperty(propertyName);
-            if (property == null)
-                throw new ArgumentException($"Property '{propertyName}' not found.");
-
-            // Получаем значения всех свойств
-            var values = typeof(T).GetProperties().Select(p =>
-                p.Name == propertyName ? newValue : p.GetValue(record)
-            ).ToArray();
-
-            // Получаем конструктор с нужными параметрами
-            var ctor = typeof(T).GetConstructors().First();
-            return (T)ctor.Invoke(values);
         }
         private async Task<Result> RequestReportBase<TRequestData>
         (
@@ -121,7 +111,6 @@ namespace ExternalOrderReportsService.Services
             DateTime sendingDate,
             int issuerId,
             string userId,
-            string internalIdFieldName,
             Guid internalId,
             Func<DateTime, TRequestData, Task<Result<Guid>>> sendRequestMethod
             )
@@ -142,13 +131,8 @@ namespace ExternalOrderReportsService.Services
                     .SetFailedStatus(userId, orderReportCreatingResult.Value, methodSendingResult);
                 return setProcessingResult;
             }
-            // Эта штука немного отличается у одного из отчётов
-            var updatedRequestData = UpdateRecordProperty
-                (requestData,
-                internalIdFieldName,
-                internalId.ToString());
 
-            var generatingResult = await sendRequestMethod(sendingDate, updatedRequestData);
+            var generatingResult = await sendRequestMethod(sendingDate, requestData);
 
             if (!generatingResult.IsSuccessfull)
             {

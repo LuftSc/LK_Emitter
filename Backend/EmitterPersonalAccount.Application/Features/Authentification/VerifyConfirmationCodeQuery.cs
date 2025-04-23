@@ -1,12 +1,17 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Logs;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Application.Features.Authentification
@@ -15,6 +20,7 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
     {
         public string Email { get; set; }
         public string ConfiramtionCode { get; set; }
+        public string IpAddress { get; set; } = string.Empty;
     }
 
     public sealed class VerifyConfirmationCodeQueryHandler
@@ -22,12 +28,14 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
     {
         private readonly IDistributedCache distributedCache;
         private readonly IJwtProvider jwtProvider;
+        private readonly IRabbitMqPublisher publisher;
 
         public VerifyConfirmationCodeQueryHandler(IDistributedCache distributedCache,
-            IJwtProvider jwtProvider)
+            IJwtProvider jwtProvider, IRabbitMqPublisher publisher)
         {
             this.distributedCache = distributedCache;
             this.jwtProvider = jwtProvider;
+            this.publisher = publisher;
         }
         public override async Task<Result<string>> Handle
             (VerifyConfirmationCodeQuery request, 
@@ -46,6 +54,14 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
 
             await distributedCache.RemoveAsync(request.Email);
             await distributedCache.RemoveAsync($"id-{request.Email}");
+
+            var loggingActionEvent = new UserActionLogEvent
+                (userId, ActionLogType.LoginToSystem.Type, request.IpAddress);
+
+            var deliveryResult = await publisher.SendMessageAsync(
+                JsonSerializer.Serialize(loggingActionEvent),
+                RabbitMqAction.Audit,
+                default);
 
             var token = jwtProvider.GenerateToken(userId);
 

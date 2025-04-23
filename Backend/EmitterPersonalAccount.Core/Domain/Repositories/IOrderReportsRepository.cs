@@ -1,5 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
-using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using System;
@@ -16,16 +16,16 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
 
         Task<Result> ChangeProcessingStatusFailed(Guid id);
 
+        Task<Result> SaveAsync(OrderReport orderReport, CancellationToken cancellationToken);
         Task<Result> SaveAsync
             (GenerateListOSARequest listOSAReport, CancellationToken cancellationToken);
+        Task<Result> SaveAsync(GenerateReeRepRequest reeReport,
+            CancellationToken cancellationToken);
+        Task<Result> SaveAsync(GenerateDividendListRequest divListReport,
+            CancellationToken cancellationToken);
         Task<Result<List<OrderReport>>> GetAllByIssuerId(int issuerId);
-
-
         Task<Result<Tuple<int, List<OrderReport>>>> GetByPage
             (int issuerId, int page, int pageSize);
 
-
-        Task<Result> SaveAsync(OrderReport orderReport, CancellationToken cancellationToken);
-        
     }
 }

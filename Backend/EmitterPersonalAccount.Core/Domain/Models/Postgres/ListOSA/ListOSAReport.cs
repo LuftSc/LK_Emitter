@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
+namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.ListOSA
 {
     public class ListOSAReport : Entity<Guid>, IAggregateRoot
     {
@@ -20,12 +20,12 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
             Guid id,
             int issuerId,
             DateOnly dtMod,
-            bool nomList, 
-            bool isCategMeeting, 
-            bool isRangeMeeting, 
+            bool nomList,
+            bool isCategMeeting,
+            bool isRangeMeeting,
             DateOnly dt_Begsobr,
             ListOSAMetadata metadata
-            ) : base(id) 
+            ) : base(id)
         {
             IssuerId = issuerId;
             DtMod = dtMod;
@@ -44,7 +44,7 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         public DateOnly Dt_Begsobr { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
-        [Column(TypeName = " jsonb ")]
+        [Column(TypeName = "jsonb")]
         public ListOSAMetadata Metadata { get; private set; }
 
         public static Result<ListOSAReport> Create(
@@ -60,13 +60,13 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         {
             return Result<ListOSAReport>
                 .Success(new ListOSAReport(
-                    id, 
-                    issuerId, 
-                    dtMod, 
-                    nomList, 
-                    isCategMeeting, 
-                    isRangeMeeting, 
-                    dt_Begsobr, 
+                    id,
+                    issuerId,
+                    dtMod,
+                    nomList,
+                    isCategMeeting,
+                    isRangeMeeting,
+                    dt_Begsobr,
                     metadata));
         }
     }

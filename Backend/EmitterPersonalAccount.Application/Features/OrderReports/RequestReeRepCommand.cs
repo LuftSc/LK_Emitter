@@ -18,7 +18,7 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
     public sealed class RequestReeRepCommand : Command
     {
         public DateTime? SendingDate { get; set; }
-        public ReeRepNotSignReportData RequestData { get; set; }
+        public GenerateReeRepRequest RequestData { get; set; }
         public string UserId { get; set; } = string.Empty;
     }
     public class RequestReeRepCommandHandler : CommandHandler<RequestReeRepCommand>

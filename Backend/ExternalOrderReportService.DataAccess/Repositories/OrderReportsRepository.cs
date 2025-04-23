@@ -1,7 +1,10 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.DividendList;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.ListOSA;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.ReeRep;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
-using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using Microsoft.EntityFrameworkCore;
@@ -102,26 +105,44 @@ namespace ExternalOrderReportService.DataAccess.Repositories
 
             await context.ListOSAReports.AddAsync(reportCreatingResult.Value, cancellationToken);
 
-            var entries = context.ChangeTracker.Entries();
+            await context.SaveChangesAsync(cancellationToken);
 
-            foreach (var entry in entries)
-            {
-                Console.WriteLine($"Entity: {entry.Entity.GetType().Name}");
-                Console.WriteLine($"State: {entry.State}");
+            return Result.Success();
+        }
+        public async Task<Result> SaveAsync(GenerateReeRepRequest reeReport, 
+            CancellationToken cancellationToken)
+        {
+            var reportCreatingResult = ReeRepReport.Create(
+                Guid.Parse(reeReport.InternalDocumentId), 
+                reeReport.EmitId, 
+                reeReport.ProcUk, 
+                reeReport.NomList, 
+                reeReport.DtMod,
+                reeReport.OneProcMode,
+                reeReport.ExtractMetadata());
 
-                foreach (var property in entry.Properties)
-                {
-                    if (property.IsModified)
-                    {
-                        Console.WriteLine($"{property.Metadata.Name}:");
-                        Console.WriteLine($"  Original: {property.OriginalValue}");
-                        Console.WriteLine($"  Current: {property.CurrentValue}");
-                    }
-                }
-            }
+            if (!reportCreatingResult.IsSuccessfull) return reportCreatingResult;
 
+            await context.ReeRepReports.AddAsync(reportCreatingResult.Value, cancellationToken);
 
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync(cancellationToken);
+
+            return Result.Success();
+        }
+        public async Task<Result> SaveAsync(GenerateDividendListRequest divListReport, 
+            CancellationToken cancellationToken)
+        {
+            var reportCreatingResult = DividendListReport.Create(
+                Guid.Parse(divListReport.InternalDocumentId),
+                divListReport.IssuerId,
+                divListReport.DtClo,
+                divListReport.ExtractMetadata());
+
+            if (!reportCreatingResult.IsSuccessfull) return reportCreatingResult;
+
+            await context.DividendListReports.AddAsync(reportCreatingResult.Value, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
 
             return Result.Success();
         }

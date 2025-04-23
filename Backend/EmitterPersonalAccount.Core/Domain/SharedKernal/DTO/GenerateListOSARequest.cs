@@ -1,11 +1,11 @@
-﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres.ListOSA;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA
+namespace EmitterPersonalAccount.Core.Domain.SharedKernal.DTO
 {
     public record GenerateListOSARequest(
         int IssuerId, // код эмитента
@@ -42,30 +42,30 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA
         )
     {
         public ListOSAMetadata ExtractMetadata() => new(
-            ListOfPeopleRightToParticipate, 
-            ListOfPeopleRightOnPapers, 
-            ListOfPeopleRightToParticipateTwo, 
-            IsMeetingWillBeHeldByBoD, 
+            ListOfPeopleRightToParticipate,
+            ListOfPeopleRightOnPapers,
+            ListOfPeopleRightToParticipateTwo,
+            IsMeetingWillBeHeldByBoD,
             MettingWillBeHeldBy,
             MeetingNumber,
             DecisionDate,
-            StartRegistrationTime, 
-            StartMeetingTime, 
-            EndRegistrationTime, 
-            EndRegistrationDate, 
-            MeetingPlace, 
-            IsVotingPossible, 
-            AddressFilledBallots, 
+            StartRegistrationTime,
+            StartMeetingTime,
+            EndRegistrationTime,
+            EndRegistrationDate,
+            MeetingPlace,
+            IsVotingPossible,
+            AddressFilledBallots,
             Fcs,
             EmailAddress,
             PhoneNumber,
-            InfoReviewingProcedure, 
-            IsParticipatingInVote, 
+            InfoReviewingProcedure,
+            IsParticipatingInVote,
             AgendaNumber,
-            IsParticipatingInVoteOnNumber, 
+            IsParticipatingInVoteOnNumber,
             EmitentRepresentative,
             IsRegulationOrAttorney,
-            RegulationNumber 
+            RegulationNumber
             );
     }
 }

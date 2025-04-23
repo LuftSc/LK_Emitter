@@ -8,7 +8,6 @@ using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareh
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
-using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.DataAccess.Repositories;
 //using ExternalOrderReportsService.Contracts;

@@ -18,7 +18,7 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
     public sealed class RequestDividendListCommand : Command
     {
         public DateTime? SendingDate { get; set; }
-        public DividendListReportData RequestData { get; set; }
+        public GenerateDividendListRequest RequestData { get; set; }
         public string UserId { get; set; } = string.Empty;
     }
     public sealed class RequestDividendListCommandHandler

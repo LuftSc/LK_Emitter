@@ -15,7 +15,7 @@ export default function Page() {
 
   const [listPaperOwners, setListPaperOwners] = useState<boolean>(false)
   const [infoPeopleWithOpenAccount, setInfoPeopleWithOpenAccount] = useState<boolean>(false)
-  const [infoPeopleShort, setInfoPeopleShort] = useState<boolean>(false)
+  const [oneProcMode, setOneProcMode] = useState<boolean>(false)
   const [listFundPersentageOwners, setListFundPersentageOwners] = useState<boolean>(false)
   const [certificateAboutStructure, setCertificateAboutStructure] = useState<boolean>(false)
 
@@ -30,12 +30,12 @@ export default function Page() {
         emitId: emitterData.IssuerId, // код эмитента
         procUk: procUk, // цифра из поля процентов на 2 странице формы
         nomList: false, // флажок на раскрытие списков НД
-        dtMod: dtMod // Дата на которую необходимо предоставить информацию
+        dtMod: dtMod, // Дата на которую необходимо предоставить информацию
+        oneProcMode: oneProcMode
       }
       requestData.forDbSaving.stepTwo = {
         listPaperOwners: listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
         infoPeopleWithOpenAccount: infoPeopleWithOpenAccount, // Радио "Информация о людях, которым открыт лицевой счет"
-        infoPeopleShort: infoPeopleShort, // Чекбокс "Информация о людях в сокращенной форме"
         listFundPersentageOwners: listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         certificateAboutStructure: certificateAboutStructure // Чекбокс "Справка о структуре распределения акций"
       }
@@ -55,7 +55,7 @@ export default function Page() {
         </div>
         <div className="mb-[9px]"><RadioButton setState={setInfoPeopleWithOpenAccount} text="Информация о лицах, которым открыт лицевой счет, и о количестве ценных бумаг, которые учитываются на указанных лицевых счетах:" /></div>
         <div className="ml-[40px]">
-          <div className="mb-[9px]"><CheckBox setState={setInfoPeopleShort} text="в сокращенной форме на дату" /></div>
+          <div className="mb-[9px]"><CheckBox setState={setOneProcMode} text="в сокращенной форме на дату" /></div>
           <div className="flex items-center mb-[9px]">
             <CheckBox setState={setListFundPersentageOwners} text="на которых учитывается" />
             <div className="w-[50px] mx-[9px]"><InputFormNumber setState={setProcUk} placeholder="" /></div>

@@ -1,6 +1,6 @@
 ﻿namespace ExternalOrderReportsService.Contracts
 {
-    public record ReportAboutDividendListNotSignRequest(
+    /*public record ReportAboutDividendListNotSignRequest(
        string ReportName,
        int IssuerId,
        int DivPtr,
@@ -31,6 +31,42 @@
        bool IsViewCtrl,
        bool IsViewElecStamp,
        string Guid
+       )
+    { }*/
+
+    public record ReportAboutDividendListNotSignRequest(
+       string ReportName,
+       int IssuerId,
+       bool IsReestr,
+       int DivPtr,
+       bool IsPodr,
+       bool IsBr,
+       string TypPers,
+       string PostMan,
+       bool IsGroupTypNal,
+       bool IsBirthday,
+       bool IsRate,
+       bool IsOrderCoowner,
+       bool IsPostMan,
+       DateOnly DtClo,
+       bool IsAnnotation,
+       bool IsPrintNalog,
+       bool IsEstimationoN,
+       bool IsExcelFormat,
+       string Operator,
+       string Controler,
+       bool IsViewCtrl,
+       bool IsViewGenDirect,
+       bool IsViewInn,
+       bool IsViewOgrn,
+       bool IsViewAddress,
+       string Guid,
+       bool IsViewPrintUk,
+       string GeneralReportHeader,
+       string RegOutInfo,
+       bool PrintDt,
+       bool IsViewElecStamp,
+       string CurrentUser
        )
     { }
 }

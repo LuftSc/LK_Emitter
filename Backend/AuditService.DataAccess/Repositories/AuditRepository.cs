@@ -19,5 +19,11 @@ namespace AuditService.DataAccess.Repositories
         {
             this.context = context;
         }
+        public async Task SaveRangeAsync(List<UserActionLog> logs, CancellationToken cancellationToken)
+        {
+            await AddRangeAsync(logs, cancellationToken);
+
+            await context.SaveChangesAsync();
+        }
     }
 }

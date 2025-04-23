@@ -14,10 +14,11 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 //using Org.BouncyCastle.Asn1.Ocsp;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using static System.Net.WebRequestMethods;
 
@@ -34,6 +35,7 @@ namespace EmitterPersonalAccount.API.Controllers
         private readonly IRegistratorRepository registratorRepository;
         private readonly IUserRepository userRepository;
         private readonly IPasswordHasher passwordHasher;
+        private readonly IRabbitMqPublisher publisher;
 
         public UsersController(IMediator mediator, 
             IDistributedCache distributedCache, 
@@ -41,7 +43,8 @@ namespace EmitterPersonalAccount.API.Controllers
             IEmittersRepository emittersRepository, 
             IRegistratorRepository registratorRepository, 
             IUserRepository userRepository, 
-            IPasswordHasher passwordHasher)
+            IPasswordHasher passwordHasher, 
+            IRabbitMqPublisher publisher)
         {
             this.mediator = mediator;
             this.distributedCache = distributedCache;
@@ -50,6 +53,7 @@ namespace EmitterPersonalAccount.API.Controllers
             this.registratorRepository = registratorRepository;
             this.userRepository = userRepository;
             this.passwordHasher = passwordHasher;
+            this.publisher = publisher;
         }
 
         [HttpGet("get-current-user")]
@@ -62,7 +66,7 @@ namespace EmitterPersonalAccount.API.Controllers
             
             Guid.TryParse(userIdResult.Value, out Guid userGuid);
 
-            return Ok(JsonConvert.SerializeObject(userGuid));
+            return Ok(JsonSerializer.Serialize(userGuid));
         }
 
         [HttpPost("login-user")]
@@ -124,6 +128,7 @@ namespace EmitterPersonalAccount.API.Controllers
         [HttpPost("verify-code")]
         public async Task<ActionResult> VerifyCode([FromBody] VerifyConfirmationCodeQuery request)
         {
+            request.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
             // Ещё можно как-то запускать таймер(например, 5 минут, и через это время удалять код)
             var verificationResult = await mediator.Send(request);
 

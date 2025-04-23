@@ -30,14 +30,14 @@ export default function Page() {
         emitId: emitterData.IssuerId, // код эмитента
         procUk: procUk, // цифра из поля процентов на 2 странице формы
         nomList: true, // флажок на раскрытие списков НД
-        dtMod: dtMod // Дата на которую необходимо предоставить информацию
+        dtMod: dtMod, // Дата на которую необходимо предоставить информацию
+        oneProcMode: false
       }
       requestData.forDbSaving.stepTwoShown = {
         listPaperOwners: listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
         listFundPersentageOwners: listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         includeInfo: includeInfo, // Чекбокс "включая сведения о лицах..."
         infoPeopleWithOpenAccount: infoPeopleWithOpenAccount, // Чекбокс "Информация о людях, которым открыт лицевой счет"
-        infoPeopleShort: infoPeopleShort, // Чекбокс "Информация о людях в сокращенной форме"
         certificateAboutStructure: certificateAboutStructure // Чекбокс "Справка о структуре распределения акций"
       }
 

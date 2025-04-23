@@ -1,4 +1,7 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.DividendList;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.ListOSA;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.ReeRep;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -26,5 +29,7 @@ namespace ExternalOrderReportService.DataAccess
         }
         public DbSet<OrderReport> OrderReports { get; set; }
         public DbSet<ListOSAReport> ListOSAReports { get; set; }
+        public DbSet<ReeRepReport> ReeRepReports { get; set; }
+        public DbSet<DividendListReport> DividendListReports { get; set; }
     }
 }

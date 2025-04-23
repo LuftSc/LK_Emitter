@@ -1,7 +1,7 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
-using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO.ListOSA;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Contracts;
 using ExternalOrderReportsService.Services;
@@ -41,13 +41,13 @@ namespace ExternalOrderReportsService.Consumers
                         break;
                     case ReportType.ReeRepNotSign:
                         result = await orderReportsService.RequestReport(
-                            JsonSerializer.Deserialize<ReeRepNotSignRequest>(ev.RequestDataJSON),
+                            JsonSerializer.Deserialize<GenerateReeRepRequest>(ev.RequestDataJSON),
                             ev.SendingDate,
                             ev.UserId );
                         break;
                     case ReportType.DividendList:
                         result = await orderReportsService.RequestReport(
-                            JsonSerializer.Deserialize<ReportAboutDividendListNotSignRequest>(ev.RequestDataJSON),
+                            JsonSerializer.Deserialize<GenerateDividendListRequest>(ev.RequestDataJSON),
                             ev.SendingDate,
                             ev.UserId);
                         break;
