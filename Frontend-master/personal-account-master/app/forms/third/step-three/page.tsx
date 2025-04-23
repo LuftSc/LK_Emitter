@@ -21,18 +21,17 @@ export default function Page() {
       requestData.forDbSaving.stepThree = {
         emitentRepresentative: emitentRepresentative, // Уполномоченный представитель
         isRegulationOrAttorney: isRegulationOrAttorney, // 3 флажок Устав/Доверенность
-        regulationNumber: regulationNumber // номер Устава или Доверенности
+        regulationNumber: regulationNumber // номер Устава или Доверенн
       }
 
       localStorage.setItem('request_listEntitled', JSON.stringify(requestData))
-      await onRequestDividendList
+      await onRequestDividendList();
     }
   }
 
   const onRequestDividendList = async () => {
         const request = localStorage.getItem('request_listEntitled')
         const requestInfo = request ? JSON.parse(request) as RequestListOfEntitled : null
-    
         if (requestInfo) {
             const divListRequest = {
               requestData: {
@@ -76,6 +75,7 @@ export default function Page() {
           <div className="w-[129px]"><InputFormNumber setState={setRegulationNumber} placeholder="" /></div>
         </div>
       </div>
+  
       <NavigationButtons back="/forms/third/step-two" next="" onClick={onNextPageTransition} />
     </div>
   );

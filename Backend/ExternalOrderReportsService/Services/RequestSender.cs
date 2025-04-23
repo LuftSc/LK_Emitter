@@ -243,7 +243,7 @@ namespace ExternalOrderReportsService.Services
             );
 
             var jsonContent = new StringContent(
-                JsonSerializer.Serialize(request),
+                JsonSerializer.Serialize(apiRequest),
                 Encoding.UTF8,
                 "application/json"
             );

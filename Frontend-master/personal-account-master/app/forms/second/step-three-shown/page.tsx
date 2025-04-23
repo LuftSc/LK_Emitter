@@ -30,15 +30,15 @@ export default function Page() {
         emitId: emitterData.IssuerId, // код эмитента
         procUk: procUk, // цифра из поля процентов на 2 странице формы
         nomList: true, // флажок на раскрытие списков НД
-        dtMod: dtMod || '' // Дата на которую необходимо предоставить информацию
+        dtMod: dtMod || '', // Дата на которую необходимо предоставить информацию
+        oneProcMode: false, // Чекбокс "Информация о людях в сокращенной форме"
       }
-      requestData.forDbSaving.stepThreeShown = {
-        listPaperOwnersShown: listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
-        listFundPersentageOwnersShown: listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
+      requestData.forDbSaving.stepThree = {
+        listPaperOwners: listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
+        listFundPersentageOwners: listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         includeInfoShown: includeInfo, // Чекбокс "включая сведения о лицах..."
-        infoPeopleWithOpenAccountShown: infoPeopleWithOpenAccount, // Чекбокс "Информация о людях, которым открыт лицевой счет"
-        infoPeopleShortShown: infoPeopleShort, // Чекбокс "Информация о людях в сокращенной форме"
-        certificateAboutStructureShown: certificateAboutStructure // Чекбокс "Справка о структуре распределения акций"
+        infoPeopleWithOpenAccount: infoPeopleWithOpenAccount, // Чекбокс "Информация о людях, которым открыт лицевой счет"
+        certificateAboutStructure: certificateAboutStructure // Чекбокс "Справка о структуре распределения акций"
       }
 
       localStorage.setItem('request_regInfo', JSON.stringify(requestData))
@@ -49,7 +49,7 @@ export default function Page() {
   const onRequestReeRep = async () => {
       const request = localStorage.getItem('request_regInfo')
       const requestInfo = request ? JSON.parse(request) as RequestInfoFromRegistry : null
-  
+    
       if (requestInfo) {
           const regInfoRequest = {
             requestData: {
@@ -57,12 +57,13 @@ export default function Page() {
               procUk: requestInfo.forReportGenerating.procUk, // цифра из поля процентов на 2 странице формы
               nomList: requestInfo.forReportGenerating.nomList, // флажок на раскрытие списков НД
               dtMod: requestInfo.forReportGenerating.dtMod, // Дата на которую необходимо предоставить информацию
+              oneProcMode: requestInfo.forReportGenerating.oneProcMode,
               fullName: requestInfo.forDbSaving.stepOne.fullName, // полное наименование эмитента
               listPaperOwners: requestInfo.forDbSaving.stepThree.listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
               infoPeopleWithOpenAccount: requestInfo.forDbSaving.stepThree.infoPeopleWithOpenAccount, // Радио "Информация о людях, которым открыт лицевой счет"
-              infoPeopleShort: requestInfo.forDbSaving.stepThree.infoPeopleShort, // Чекбокс "Информация о людях в сокращенной форме"
               listFundPersentageOwners: requestInfo.forDbSaving.stepThree.listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
               certificateAboutStructure: requestInfo.forDbSaving.stepThree.certificateAboutStructure, // Чекбокс "Справка о структуре распределения акций"
+              includeInfoShown: requestInfo.forDbSaving.stepThree.includeInfoShown, // Чекбокс "включая сведения о лицах..."
               certificateAboutState: requestInfo.forDbSaving.stepThree.certificateAboutStructure, // Чекбокс о Справке о состоянии лицевого счета
               fcsName: requestInfo.forDbSaving.stepTwo.fcsName, // Наименование/ФИО
               ogrnPassport: requestInfo.forDbSaving.stepTwo.ogrnPassport, // ОГРН/Паспорт
@@ -77,13 +78,13 @@ export default function Page() {
               anotherSectionText: requestInfo.forDbSaving.stepTwo.anotherSectionText, // Иное после статей
               emitentRepresentative: requestInfo.forDbSaving.stepTwo.emitentRepresentative, // Уполномоченный представитель
               isRegulationOrAttorney: requestInfo.forDbSaving.stepTwo.isRegulationOrAttorney, // 3 флажок Устав/Доверенность
-              regulationNumber: requestInfo.forDbSaving.stepTwo.regulationNumber, // номер Устава или Доверенности
-              listPaperOwnersShown: requestInfo.forDbSaving.stepThreeShown.listPaperOwnersShown, // Чекбокс "Список владельцев ценных бумаг"
-              listFundPersentageOwnersShown: requestInfo.forDbSaving.stepThreeShown.listFundPersentageOwnersShown, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
-              includeInfoShown: requestInfo.forDbSaving.stepThreeShown.includeInfoShown, // Чекбокс "включая сведения о лицах..."
-              infoPeopleWithOpenAccountShown: requestInfo.forDbSaving.stepThreeShown.infoPeopleWithOpenAccountShown, // Чекбокс "Информация о людях, которым открыт лицевой счет"
-              infoPeopleShortShown: requestInfo.forDbSaving.stepThreeShown.infoPeopleShortShown, // Чекбокс "Информация о людях в сокращенной форме"
-              certificateAboutStructureShown: requestInfo.forDbSaving.stepThreeShown.certificateAboutStructureShown // Чекбокс "Справка о структуре распределения акций"
+              regulationNumber: requestInfo.forDbSaving.stepTwo.regulationNumber // номер Устава или Доверенности
+              
+              //listPaperOwnersShown: requestInfo.forDbSaving.stepThreeShown.listPaperOwnersShown, // Чекбокс "Список владельцев ценных бумаг"
+              //listFundPersentageOwnersShown: requestInfo.forDbSaving.stepThreeShown.listFundPersentageOwnersShown, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
+              
+              //infoPeopleWithOpenAccountShown: requestInfo.forDbSaving.stepThreeShown.infoPeopleWithOpenAccountShown, // Чекбокс "Информация о людях, которым открыт лицевой счет"
+              //certificateAboutStructureShown: requestInfo.forDbSaving.stepThreeShown.certificateAboutStructureShown // Чекбокс "Справка о структуре распределения акций"
             }
           }
           console.log(regInfoRequest)
@@ -126,7 +127,7 @@ export default function Page() {
         <div className="mb-[9px]"><CheckBox setState={setInfoPeopleShort} text="Информация о лицах в сокращенной форме" /></div>
         <CheckBox setState={setCertificateAboutStructure} text="Справка о структуре распределения акций" />
       </div>
-      <NavigationButtons back='/forms/second/step-two' next='' onClick={onNextPageTransition} />
+      <NavigationButtons back='/forms/second/step-two' next='/forms' onClick={onNextPageTransition} />
     </div>
   );
 }

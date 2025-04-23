@@ -71,15 +71,15 @@ export interface RegistryInfoSavingToDbData {
         infoPeopleWithOpenAccount: boolean // Радио "Информация о людях, которым открыт лицевой счет"
         listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
-    }
-    stepThreeShown: {
+        includeInfoShown: boolean // Чекбокс "включая сведения о лицах..."
+    },
+    /*stepThreeShown: {
         listPaperOwnersShown: boolean // Чекбокс "Список владельцев ценных бумаг"
         listFundPersentageOwnersShown: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         includeInfoShown: boolean // Чекбокс "включая сведения о лицах..."
         infoPeopleWithOpenAccountShown: boolean // Чекбокс "Информация о людях, которым открыт лицевой счет"
-        infoPeopleShortShown: boolean // Чекбокс "Информация о людях в сокращенной форме"
         certificateAboutStructureShown: boolean // Чекбокс "Справка о структуре распределения акций"
-    }
+    } */
     stepTwo: {
         certificateAboutState: boolean // Чекбокс о Справке о состоянии лицевого счета
         fcsName: string // Наименование/ФИО

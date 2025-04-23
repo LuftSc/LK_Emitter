@@ -9,7 +9,7 @@ import { InputFormNumber } from "@/app/ui/forms/inputNumbers";
 
 export default function Page() {
 
-  const [procUk, setProcUk] = useState<number>(0)
+  /*const [procUk, setProcUk] = useState<number>(0)
   const [dtMod, setDtMod] = useState<string>('')
 
   const [listPaperOwners, setListPaperOwners] = useState<boolean>(false)
@@ -33,7 +33,7 @@ export default function Page() {
         dtMod: dtMod, // Дата на которую необходимо предоставить информацию
         oneProcMode: false
       }
-      requestData.forDbSaving.stepTwoShown = {
+      requestData.forDbSaving.stepTwo = {
         listPaperOwners: listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
         listFundPersentageOwners: listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         includeInfo: includeInfo, // Чекбокс "включая сведения о лицах..."
@@ -81,5 +81,5 @@ export default function Page() {
       </div>
       <NavigationButtons back='/forms/second/step-one' next='/forms/second/step-three' onClick={onNextPageTransition} />
     </div>
-  );
+  ); */
 }

@@ -14,7 +14,6 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.ReeRep
         bool CertificateAboutStructure,    // Чекбокс "Справка о структуре распределения акций"
         bool IncludeInfo,                  // Чекбокс "включая сведения о лицах..."
         bool CertificateAboutState,        // Чекбокс "Справка о состоянии лицевого счета"
-        string DateStateOfAccount,         // Состояние счета на дату
         string FcsName,                    // Наименование/ФИО
         string OgrnPassport,               // ОГРН/Паспорт
         bool Another,                      // Чекбокс на Иное

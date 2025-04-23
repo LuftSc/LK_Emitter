@@ -18,9 +18,10 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal.DTO
         bool InfoPeopleWithOpenAccount,    // Радио "Информация о людях с открытым счетом"
         bool ListFundPercentageOwners,     // Чекбокс "Список лиц, владеющих % от УК"
         bool CertificateAboutStructure,    // Чекбокс "Справка о структуре распределения акций"
-        bool IncludeInfo,                  // Чекбокс "включая сведения о лицах..."
+        
+        bool IncludeInfoShown,                  // Чекбокс "включая сведения о лицах..."
         bool CertificateAboutState,        // Чекбокс "Справка о состоянии лицевого счета"
-        string DateStateOfAccount,         // Состояние счета на дату
+        
         string FcsName,                    // Наименование/ФИО
         string OgrnPassport,               // ОГРН/Паспорт
         bool Another,                      // Чекбокс на Иное
@@ -35,6 +36,7 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal.DTO
         string EmitentRepresentative,      // Уполномоченный представитель
         bool IsRegulationOrAttorney,       // Флажок Устав/Доверенность
         int RegulationNumber,               // номер Устава или Доверенности
+        
         string InternalDocumentId = ""
         )
     {
@@ -44,9 +46,8 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal.DTO
              InfoPeopleWithOpenAccount,
              ListFundPercentageOwners,
              CertificateAboutStructure,
-             IncludeInfo,
+             IncludeInfoShown,
              CertificateAboutState,
-             DateStateOfAccount,
              FcsName,
              OgrnPassport,
              Another,

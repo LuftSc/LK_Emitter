@@ -46,7 +46,7 @@ namespace ExternalOrderReportsService.Services
             await orderReportsRepository.SaveAsync(requestDataWithInternalId, default);
 
             var result = await RequestReportBase(
-                requestData,
+                requestDataWithInternalId,
                 fileName,
                 sendingDate,
                 issuerId,
@@ -70,7 +70,7 @@ namespace ExternalOrderReportsService.Services
             await orderReportsRepository.SaveAsync(requestDataWithInternalId, default);
 
             var result = await RequestReportBase(
-                requestData,
+                requestDataWithInternalId,
                 fileName,
                 sendingDate,
                 issuerId,
@@ -94,7 +94,7 @@ namespace ExternalOrderReportsService.Services
             await orderReportsRepository.SaveAsync(requestDataWithInternalId, default);
 
             var result = await RequestReportBase(
-                requestData,
+                requestDataWithInternalId,
                 fileName,
                 sendingDate,
                 issuerId,

@@ -30,14 +30,15 @@ export default function Page() {
         emitId: emitterData.IssuerId, // код эмитента
         procUk: procUk, // цифра из поля процентов на 2 странице формы
         nomList: false, // флажок на раскрытие списков НД
-        dtMod: dtMod || '' // Дата на которую необходимо предоставить информацию
+        dtMod: dtMod || '', // Дата на которую необходимо предоставить информацию
+        oneProcMode: infoPeopleShort
       }
       requestData.forDbSaving.stepThree = {
         listPaperOwners: listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
         infoPeopleWithOpenAccount: infoPeopleWithOpenAccount, // Радио "Информация о людях, которым открыт лицевой счет"
-        infoPeopleShort: infoPeopleShort, // Чекбокс "Информация о людях в сокращенной форме"
         listFundPersentageOwners: listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
-        certificateAboutStructure: certificateAboutStructure // Чекбокс "Справка о структуре распределения акций"
+        certificateAboutStructure: certificateAboutStructure, // Чекбокс "Справка о структуре распределения акций"
+        includeInfoShown: false
       }
 
       localStorage.setItem('request_regInfo', JSON.stringify(requestData))
@@ -57,12 +58,13 @@ export default function Page() {
             procUk: requestInfo.forReportGenerating.procUk, // цифра из поля процентов на 2 странице формы
             nomList: requestInfo.forReportGenerating.nomList, // флажок на раскрытие списков НД
             dtMod: requestInfo.forReportGenerating.dtMod, // Дата на которую необходимо предоставить информацию
+            oneProcMode: requestInfo.forReportGenerating.oneProcMode,
             fullName: requestInfo.forDbSaving.stepOne.fullName, // полное наименование эмитента
             listPaperOwners: requestInfo.forDbSaving.stepThree.listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
             infoPeopleWithOpenAccount: requestInfo.forDbSaving.stepThree.infoPeopleWithOpenAccount, // Радио "Информация о людях, которым открыт лицевой счет"
-            infoPeopleShort: requestInfo.forDbSaving.stepThree.infoPeopleShort, // Чекбокс "Информация о людях в сокращенной форме"
             listFundPersentageOwners: requestInfo.forDbSaving.stepThree.listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
             certificateAboutStructure: requestInfo.forDbSaving.stepThree.certificateAboutStructure, // Чекбокс "Справка о структуре распределения акций"
+            includeInfoShown: false, // Чекбокс "включая сведения о лицах..."
             certificateAboutState: requestInfo.forDbSaving.stepThree.certificateAboutStructure, // Чекбокс о Справке о состоянии лицевого счета
             fcsName: requestInfo.forDbSaving.stepTwo.fcsName, // Наименование/ФИО
             ogrnPassport: requestInfo.forDbSaving.stepTwo.ogrnPassport, // ОГРН/Паспорт
@@ -78,12 +80,15 @@ export default function Page() {
             emitentRepresentative: requestInfo.forDbSaving.stepTwo.emitentRepresentative, // Уполномоченный представитель
             isRegulationOrAttorney: requestInfo.forDbSaving.stepTwo.isRegulationOrAttorney, // 3 флажок Устав/Доверенность
             regulationNumber: requestInfo.forDbSaving.stepTwo.regulationNumber, // номер Устава или Доверенности
-            listPaperOwnersShown: false, // Чекбокс "Список владельцев ценных бумаг"
-            listFundPersentageOwnersShown: false, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
-            includeInfoShown: false, // Чекбокс "включая сведения о лицах..."
-            infoPeopleWithOpenAccountShown: false, // Чекбокс "Информация о людях, которым открыт лицевой счет"
-            infoPeopleShortShown: false, // Чекбокс "Информация о людях в сокращенной форме"
-            certificateAboutStructureShown: false // Чекбокс "Справка о структуре распределения акций"
+            
+            
+            
+            //listPaperOwnersShown: false, // Чекбокс "Список владельцев ценных бумаг"
+            //listFundPersentageOwnersShown: false, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
+            //includeInfoShown: false, // Чекбокс "включая сведения о лицах..."
+            //infoPeopleWithOpenAccountShown: false, // Чекбокс "Информация о людях, которым открыт лицевой счет"
+            //infoPeopleShortShown: false, // Чекбокс "Информация о людях в сокращенной форме"
+            //certificateAboutStructureShown: false // Чекбокс "Справка о структуре распределения акций"
           }
         }
         console.log(regInfoRequest)
@@ -111,7 +116,7 @@ export default function Page() {
           <CheckBox setState={setCertificateAboutStructure} text="в виде Справки о структуре распределения акций на дату " />
         </div>
       </div>
-      <NavigationButtons back='/forms/second/step-two' next='' onClick={onNextPageTransition} />
+      <NavigationButtons back='/forms/second/step-two' next='/forms' onClick={onNextPageTransition} />
     </div>
   );
 }
