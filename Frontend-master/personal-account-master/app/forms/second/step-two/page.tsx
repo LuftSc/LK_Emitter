@@ -1,70 +1,114 @@
 'use client'
 
-import { CheckBox } from "@/app/ui/forms/checkbox";
-import { RadioButton } from "@/app/ui/forms/radiobtn";
 import { NavigationButtons } from "@/app/ui/forms/nav-btn";
+import { CheckBox } from "@/app/ui/forms/checkbox";
+import { InputForm } from "@/app/ui/forms/input";
 import { RequestInfoFromRegistry } from "@/app/services/orderReportsService";
 import { useState } from "react";
-import { InputFormNumber } from "@/app/ui/forms/inputNumbers";
 import Calendar from "@/app/ui/forms/calendar-new";
+import { RadioGroup } from "@/app/ui/forms/radioGroup";
+import { InputFormNumber } from "@/app/ui/forms/inputNumbers";
 
 export default function Page() {
 
-  const [procUk, setProcUk] = useState<number>(0)
-  const [dtMod, setDtMod] = useState<string>('')
+  const next = localStorage.getItem('showNDlists')
 
-  const [listPaperOwners, setListPaperOwners] = useState<boolean>(false)
-  const [infoPeopleWithOpenAccount, setInfoPeopleWithOpenAccount] = useState<boolean>(false)
-  const [oneProcMode, setOneProcMode] = useState<boolean>(false)
-  const [listFundPersentageOwners, setListFundPersentageOwners] = useState<boolean>(false)
-  const [certificateAboutStructure, setCertificateAboutStructure] = useState<boolean>(false)
+  const [certificateAboutState, setCertificateAboutState] = useState<boolean>(false)
+  const [dtMod, setDtMod] = useState<string>('')
+  const [fcsName, setFcsName] = useState<string>('')
+  const [ogrnPassport, setOgrnPassport] = useState<string>('')
+  const [another, setAnother] = useState<boolean>(false)
+  const [anotherText, setAnotherText] = useState<string>('')
+  const [section61, setSection61] = useState<boolean>(false)
+  const [section51, setSection51] = useState<boolean>(false)
+  const [section30, setSection30] = useState<boolean>(false)
+  const [section20, setSection20] = useState<boolean>(false)
+  const [section17, setSection17] = useState<boolean>(false)
+  const [anotherSection, setAnotherSection] = useState<boolean>(false)
+  const [anotherSectionText, setAnotherSectionText] = useState<string>('')
+  const [emitentRepresentative, setEmitentRepresentative] = useState<string>('')
+  const [isRegulationOrAttorney, setIsRegulationOrAttorney] = useState<boolean>(false)
+  const [regulationNumber, setRegulationNumber] = useState<number>(0)
 
   const onNextPageTransition = () => {
     const request = localStorage.getItem('request_regInfo')
     const requestData = request ? JSON.parse(request) as RequestInfoFromRegistry : null
-    const emitter = localStorage.getItem('emitter')
-    const emitterData = emitter ? JSON.parse(emitter) : null
 
     if (requestData) {
-      requestData.forReportGenerating = {
-        emitId: emitterData.IssuerId, // код эмитента
-        procUk: procUk, // цифра из поля процентов на 2 странице формы
-        nomList: false, // флажок на раскрытие списков НД
-        dtMod: dtMod, // Дата на которую необходимо предоставить информацию
-        oneProcMode: oneProcMode
-      }
       requestData.forDbSaving.stepTwo = {
-        listPaperOwners: listPaperOwners, // Чекбокс "Список владельцев ценных бумаг"
-        infoPeopleWithOpenAccount: infoPeopleWithOpenAccount, // Радио "Информация о людях, которым открыт лицевой счет"
-        listFundPersentageOwners: listFundPersentageOwners, // Чекбокс "Список лиц, владеющих % от Уставного капитала"
-        certificateAboutStructure: certificateAboutStructure // Чекбокс "Справка о структуре распределения акций"
+        certificateAboutState: certificateAboutState, // Чекбокс о Справке о состоянии лицевого счета
+        fcsName: fcsName, // Наименование/ФИО
+        ogrnPassport: ogrnPassport, // ОГРН/Паспорт
+        another: another, // Чекбокс на Иное
+        anotherText: anotherText, // Иное
+        section61: section61, // статья 6.1
+        section51: section51,// статья 51
+        section30: section30, // статья 30
+        section20: section20, // статья 20
+        section17: section17, // статья 17 
+        anotherSection: anotherSection, // Чекбокс на Иное после статей
+        anotherSectionText: anotherSectionText, // Иное после статей
+        emitentRepresentative: emitentRepresentative, // Уполномоченный представитель
+        isRegulationOrAttorney: isRegulationOrAttorney, // 3 флажок Устав/Доверенность
+        regulationNumber: regulationNumber // номер Устава или Доверенности
       }
 
       localStorage.setItem('request_regInfo', JSON.stringify(requestData))
+      localStorage.setItem('dtMod', dtMod)
     }
   }
 
   return (
-    <div className="relative w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
+    <div className="relative w-[1104px] h-[944px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[45px]" >
       <p className="text-[#B82116] text-[15px]/[19px] font-bold text-center mb-[31px]">Распоряжение Эмитента на предоставление информации из реестра</p>
-      <div className="border-[0.5px] border-black rounded-[28px] pt-[29px] pl-[35px] pb-[32px]">
-        <p className="text-[14px]/[18px] font-bold mb-[9px]">Описание требуемой информации:</p>
+      <div className="border-[0.5px] border-black rounded-[28px] pt-[21px] pl-[26px] pb-[26px] mb-[45px]">
         <div className="flex items-center mb-[9px]">
-          <CheckBox setState={setListPaperOwners} text="Список владельцев ценных бумаг на дату" />
+          <div className="mt-[-4px]"><CheckBox setState={setCertificateAboutState} text="" /></div>
+          <p className="text-[14px]/[18px] font-bold mr-[26px]">Справка о состоянии лицевого счета зарегистрированного лица на дату</p>
           <Calendar setDate={setDtMod} />
         </div>
-        <div className="mb-[9px]"><RadioButton setState={setInfoPeopleWithOpenAccount} text="Информация о лицах, которым открыт лицевой счет, и о количестве ценных бумаг, которые учитываются на указанных лицевых счетах:" /></div>
-        <div className="ml-[40px]">
-          <div className="mb-[9px]"><CheckBox setState={setOneProcMode} text="в сокращенной форме на дату" /></div>
+        <div className="ml-[39px] mb-[9px]">
           <div className="flex items-center mb-[9px]">
-            <CheckBox setState={setListFundPersentageOwners} text="на которых учитывается" />
-            <div className="w-[50px] mx-[9px]"><InputFormNumber setState={setProcUk} placeholder="" /></div>
-            <p className="text-[14px]/[18px]">и более % от Уставного капитала на дату</p>
+            <p className="text-[14px]/[18px] mr-[50px]">Наименование/ФИО</p>
+            <div className="w-[424px]"><InputForm setState={setFcsName} placeholder="" /></div>
           </div>
-          <CheckBox setState={setCertificateAboutStructure} text="в виде Справки о структуре распределения акций на дату " />
+          <div className="flex items-center">
+            <p className="text-[14px]/[18px] mr-[88px]">ОГРН/Паспорт</p>
+            <div className="w-[424px]"><InputForm setState={setOgrnPassport} placeholder="" /></div>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <CheckBox setState={setAnother} text="Иное:" />
+          <div className="w-[407px] ml-[26px]"><InputForm setState={setAnotherText} placeholder="" /></div>
         </div>
       </div>
-      <NavigationButtons back='/forms/second/step-one' next='/forms/second/step-three' onClick={onNextPageTransition} />
+      <div className="border-[0.5px] border-black rounded-[28px] p-[26px] mb-[45px]">
+        <p className="max-w-[795px] text-[14px]/[18px] font-bold mb-[7px]">Данная информация необходима Эмитенту для исполнения следующих требований законодательства Российской Федерации
+          (выбрать предложенный вариант или указать свой, руководствуясь нормативными правовыми актами Российской Федерации):</p>
+        <div className="max-w-[920px] mb-[5px]">
+          <CheckBox setState={setSection61} text="статья 6.1 Федерального закона от 07.08.2001 №115-ФЗ 'О противодействии легализации (отмыванию) доходов, полученных преступным путем, и финансированию терроризма';" />
+          <CheckBox setState={setSection51} text="статья 51 Федерального закона от 05.04.2013 N 44-ФЗ 'О контрактной системе в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд';" />
+          <CheckBox setState={setSection30} text="статья 30 Федерального закона от 22.04.1996 №39-ФЗ 'О рынке ценных бумаг';" />
+          <CheckBox setState={setSection20} text="статья 20 Федерального закона от 30.12.2004 №214-ФЗ 'Об участии в долевом строительстве многоквартирных домов и иных объектов недвижимости и о внесении изменений в некоторые законодательные акты РФ' (только для эмитентов - застройщиков);" />
+          <CheckBox setState={setSection17} text="статья 17 Федеральный закон от 08.03.2022 N 46-ФЗ (ред. от 14.03.2022) 'О внесении изменений в отдельные законодательные акты Российской Федерации'" />
+        </div>
+        <div className="flex items-center">
+          <CheckBox setState={setAnotherSection} text="Иное:" />
+          <div className="w-[557px] ml-[26px]"><InputForm setState={setAnotherSectionText} placeholder="" /></div>
+        </div>
+      </div>
+      <div className="border-[0.5px] border-black rounded-[28px] pt-[21px] pl-[26px] pb-[26px]">
+        <div className="flex items-center mb-[5px]">
+          <p className="text-[14px]/[18px] mr-[50px]">Уполномоченный представитель эмитента:</p>
+          <div className="w-[424px]"><InputForm setState={setEmitentRepresentative} placeholder="Введите ФИО" /></div>
+        </div>
+        <div className="flex items-center">
+          <RadioGroup firstText="Устав" secondText="Доверенность" setState={setIsRegulationOrAttorney} />
+          <p className="text-[14px]/[18px] mr-[20px] ml-[59px]">№, от</p>
+          <div className="w-[129px]"><InputFormNumber setState={setRegulationNumber} placeholder="" /></div>
+        </div>
+      </div>
+      <NavigationButtons back='/forms/second/step-one' next={next == 'true' ? '/forms/second/step-three-shown' : '/forms/second/step-three' } onClick={onNextPageTransition} />
     </div>
   );
 }

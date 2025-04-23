@@ -66,22 +66,22 @@ export interface RegistryInfoSavingToDbData {
     stepOne: {
         fullName: string // полное наименование эмитента
     }
-    stepTwo: {
+    stepThree: {
         listPaperOwners: boolean // Чекбокс "Список владельцев ценных бумаг"
         infoPeopleWithOpenAccount: boolean // Радио "Информация о людях, которым открыт лицевой счет"
         listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
     }
-    stepTwoShown: {
-        listPaperOwners: boolean // Чекбокс "Список владельцев ценных бумаг"
-        listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
-        includeInfo: boolean // Чекбокс "включая сведения о лицах..."
-        infoPeopleWithOpenAccount: boolean // Чекбокс "Информация о людях, которым открыт лицевой счет"
-        certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
+    stepThreeShown: {
+        listPaperOwnersShown: boolean // Чекбокс "Список владельцев ценных бумаг"
+        listFundPersentageOwnersShown: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
+        includeInfoShown: boolean // Чекбокс "включая сведения о лицах..."
+        infoPeopleWithOpenAccountShown: boolean // Чекбокс "Информация о людях, которым открыт лицевой счет"
+        infoPeopleShortShown: boolean // Чекбокс "Информация о людях в сокращенной форме"
+        certificateAboutStructureShown: boolean // Чекбокс "Справка о структуре распределения акций"
     }
-    stepThree: {
+    stepTwo: {
         certificateAboutState: boolean // Чекбокс о Справке о состоянии лицевого счета
-        dateStateOfAccount: string // Состояние счета на дату
         fcsName: string // Наименование/ФИО
         ogrnPassport: string // ОГРН/Паспорт
         another: boolean // Чекбокс на Иное
@@ -317,7 +317,6 @@ export const downloadReportOrder = async (request: ReportOrder) => {
     .catch(error => console.error(error))
 }
 
-// ПОМЕНЯТЬ!!!!!!!!!!!
 export const sendRequestListOfShareholders = async (request: any) => {
     await fetch('http://localhost:5000/OrderReports/list-of-shareholders', {
         method: 'POST',
