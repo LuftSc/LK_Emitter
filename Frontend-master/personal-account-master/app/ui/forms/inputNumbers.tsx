@@ -19,7 +19,7 @@ export const InputFormNumber = ({
   const [show, setShow] = useState<boolean>(false)
   const onChange = (e: any) => {
     let value = e.target.value
-    if (/^[0-9]+$/.test(value)) {
+    if (/^[0-9 ]+$/.test(value)) {
       setState(Number(value))
       setError(false)
       setShow(false)
