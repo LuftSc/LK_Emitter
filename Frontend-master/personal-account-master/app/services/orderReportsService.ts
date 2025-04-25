@@ -66,36 +66,12 @@ export interface RegistryInfoSavingToDbData {
     stepOne: {
         fullName: string // полное наименование эмитента
     }
-    stepThree: {
+    stepTwo: {
         listPaperOwners: boolean // Чекбокс "Список владельцев ценных бумаг"
         infoPeopleWithOpenAccount: boolean // Радио "Информация о людях, которым открыт лицевой счет"
         listFundPersentageOwners: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
         certificateAboutStructure: boolean // Чекбокс "Справка о структуре распределения акций"
         includeInfoShown: boolean // Чекбокс "включая сведения о лицах..."
-    },
-    /*stepThreeShown: {
-        listPaperOwnersShown: boolean // Чекбокс "Список владельцев ценных бумаг"
-        listFundPersentageOwnersShown: boolean // Чекбокс "Список лиц, владеющих % от Уставного капитала"
-        includeInfoShown: boolean // Чекбокс "включая сведения о лицах..."
-        infoPeopleWithOpenAccountShown: boolean // Чекбокс "Информация о людях, которым открыт лицевой счет"
-        certificateAboutStructureShown: boolean // Чекбокс "Справка о структуре распределения акций"
-    } */
-    stepTwo: {
-        certificateAboutState: boolean // Чекбокс о Справке о состоянии лицевого счета
-        fcsName: string // Наименование/ФИО
-        ogrnPassport: string // ОГРН/Паспорт
-        another: boolean // Чекбокс на Иное
-        anotherText: string // Иное
-        section61: boolean // статья 6.1
-        section51: boolean // статья 51
-        section30: boolean // статья 30
-        section20: boolean // статья 20
-        section17: boolean // статья 17 
-        anotherSection: boolean // Чекбокс на Иное после статей
-        anotherSectionText: string // Иное после статей
-        emitentRepresentative: string // Уполномоченный представитель
-        isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
-        regulationNumber: number // номер Устава или Доверенности
     }
 }
 
@@ -109,26 +85,23 @@ export interface ListOfEntitledGeneratingData {
     dtClo: string // Дата на которую необходимо предоставить информацию
 }
 
-/* 
-issuerId: number // код эмитента
-dtClo: string // Дата на которую необходимо предоставить информацию
-fullEmName: string // Полное наименование эмитента
-decidingAuthority: string // Орган, управления эмитента, принявший решение...
-dateOfProtocol: string // Дата протокола
-numberOfProtocol: number // Номер протокола
-papersCategory: string // Категории ценных бумаг
-formOfPayment: string // Форма выплат
-paymentForOne: string // Выплачиваемый доход на одну акцию
-paymentForAll: string // Выплачиваемый доход, общий объем
-dateOfPayment: string // Дата выплаты
-fullOfficialName: string // Полное оф. наименование агента(ов)
-placeOfAgents: string // Место нахождения агента(ов)
-mailAddress: string // Почтовый адрес агента(ов)
-includeCalcInfo: boolean // Включить инорфмацию о расчете налога
-emitentRepresentative: string // Уполномоченный представитель
-isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
-regulationNumber: number // номер Устава или Доверенности
-*/
+export interface CertificateOnDate {
+    dtMod: string // Дата на которую оформляется справка
+    fcsName: string // Наименование/ФИО
+    ogrnPassport: string // ОГРН/Паспорт
+    another: boolean // Чекбокс на Иное
+    anotherText: string // Иное
+    section61: boolean // статья 6.1
+    section51: boolean // статья 51
+    section30: boolean // статья 30
+    section20: boolean // статья 20
+    section17: boolean // статья 17 
+    anotherSection: boolean // Чекбокс на Иное после статей
+    anotherSectionText: string // Иное после статей
+    emitentRepresentative: string // Уполномоченный представитель
+    isRegulationOrAttorney: boolean // 3 флажок Устав/Доверенность
+    regulationNumber: number // номер Устава или Доверенности
+}
 
 export interface ListOfEntitledSavingToDbData {
     stepOne: {
@@ -169,8 +142,8 @@ export interface ReeRepRequest {
     fields: string;
     filter: string;
     numStoc: number;
-    procUk: number; 
-    dtMod: string; 
+    procUk: number;
+    dtMod: string;
     isPodr: number;
     isCateg: number;
     nomList: number;
@@ -242,41 +215,41 @@ export interface DividendListRequest {
     isPostMan: boolean;
     regOutInfo: string;
     generalReportHeader: string;
-    dtClo: string; 
+    dtClo: string;
     isAnnotation: boolean;
     isPrintNalog: boolean;
-    isEstimationoN: boolean; 
+    isEstimationoN: boolean;
     isExcelFormat: boolean;
     isViewGenDirect: boolean;
     isViewPrintUk: boolean;
     isViewInn: boolean;
     isViewOgrn: boolean;
     isViewAddress: boolean;
-    printDt: boolean; 
+    printDt: boolean;
     operator: string;
-    controler: string; 
+    controler: string;
     isViewCtrl: boolean;
     isViewElecStamp: boolean;
-    guid: string; 
+    guid: string;
 }
 
 export interface ListOfShareholdersRequest {
-    reportName : string,
-    isSaveToStorage : boolean,
-    issuerId : number,
-    regOutInfo : string,
-    generalReportHeader : string,
-    typKls : string,
-    dtMod : string,
-    nomList : boolean,
+    reportName: string,
+    isSaveToStorage: boolean,
+    issuerId: number,
+    regOutInfo: string,
+    generalReportHeader: string,
+    typKls: string,
+    dtMod: string,
+    nomList: boolean,
     isPodr: boolean,
     viewCb: boolean,
     isCateg: boolean,
     isOneRecAllNomin: boolean,
     isCategMeeting: boolean,
     isRangeMeeting: boolean,
-    dt_Begsobr : string,
-    isSocr : boolean,
+    dt_Begsobr: string,
+    isSocr: boolean,
     isFillSchNd: boolean,
     isBirthday: boolean,
     isViewPhone: boolean,
@@ -288,13 +261,13 @@ export interface ListOfShareholdersRequest {
     isSignBox: boolean,
     offNumbers: boolean,
     isExcelFormat: boolean,
-    currentUser : string,
-    operator : string,
-    controler : string,
-    isViewDirect : boolean,
+    currentUser: string,
+    operator: string,
+    controler: string,
+    isViewDirect: boolean,
     isViewCtrl: boolean,
     isViewElecStamp: boolean,
-    guid : string
+    guid: string
 }
 
 export interface RequestListOfShareholders_OLD {
@@ -314,14 +287,14 @@ export const downloadReportOrder = async (request: ReportOrder) => {
         method: "GET",
         credentials: 'include'
     })
-    .catch(error => console.error(error))
+        .catch(error => console.error(error))
 }
 
 export const sendRequestListOfShareholders = async (request: any) => {
     await fetch('http://localhost:5000/OrderReports/list-of-shareholders', {
         method: 'POST',
         credentials: 'include',
-        headers:{
+        headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(request)
@@ -332,7 +305,7 @@ export const sendRequestReeRep = async (request: any) => {
     await fetch('http://localhost:5000/OrderReports/ree-rep', {
         method: 'POST',
         credentials: 'include',
-        headers:{
+        headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(request)
@@ -343,7 +316,7 @@ export const sendRequestDividendList = async (request: any) => {
     await fetch('http://localhost:5000/OrderReports/dividend-list', {
         method: 'POST',
         credentials: 'include',
-        headers:{
+        headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(request)
@@ -355,53 +328,53 @@ export const getAllOrderReportsByEmitterId = async (emitterId: string) => {
         method: "GET",
         credentials: 'include'
     })
-    .catch(error => console.error(error))
+        .catch(error => console.error(error))
 }
 //http://localhost:5000/OrderReports/get-report-orders/3fa85f64-5717-4562-b3fc-2c963f66afa6?Page=1&PageSize=10
-export const getOrderReportsByEmitterId = async (issuerId: number, page:number, pageSize: number) => {
+export const getOrderReportsByEmitterId = async (issuerId: number, page: number, pageSize: number) => {
     return await fetch(`http://localhost:5000/OrderReports/get-report-orders/${issuerId}?Page=${page}&PageSize=${pageSize}`, {
         method: "GET",
         credentials: 'include'
     })
-    .catch(error => console.error(error))
+        .catch(error => console.error(error))
 }
 
 
-    
-    /*reportName : string,
-    isSaveToStorage : boolean,
-    issuerId : number,
-    regOutInfo : string,
-    generalReportHeader : string,
-    typKls : string,
-    dtMod : string,
-    nomList : boolean,
-    isPodr: boolean,
-    viewCb: boolean,
-    isCateg: boolean,
-    isOneRecAllNomin: boolean,
-    isCategMeeting: boolean,
-    isRangeMeeting: boolean,
-    dt_Begsobr : string,
-    isSocr : boolean,
-    isFillSchNd: boolean,
-    isBirthday: boolean,
-    isViewPhone: boolean,
-    isViewEmail: boolean,
-    isViewMeetNotify: boolean,
-    isViewGenDirect: boolean,
-    isViewInn: boolean,
-    viewLs: boolean,
-    isSignBox: boolean,
-    offNumbers: boolean,
-    isExcelFormat: boolean,
-    currentUser : string,
-    operator : string,
-    controler : string,
-    isViewDirect : boolean,
-    isViewCtrl: boolean,
-    isViewElecStamp: boolean,
-    guid : string */
+
+/*reportName : string,
+isSaveToStorage : boolean,
+issuerId : number,
+regOutInfo : string,
+generalReportHeader : string,
+typKls : string,
+dtMod : string,
+nomList : boolean,
+isPodr: boolean,
+viewCb: boolean,
+isCateg: boolean,
+isOneRecAllNomin: boolean,
+isCategMeeting: boolean,
+isRangeMeeting: boolean,
+dt_Begsobr : string,
+isSocr : boolean,
+isFillSchNd: boolean,
+isBirthday: boolean,
+isViewPhone: boolean,
+isViewEmail: boolean,
+isViewMeetNotify: boolean,
+isViewGenDirect: boolean,
+isViewInn: boolean,
+viewLs: boolean,
+isSignBox: boolean,
+offNumbers: boolean,
+isExcelFormat: boolean,
+currentUser : string,
+operator : string,
+controler : string,
+isViewDirect : boolean,
+isViewCtrl: boolean,
+isViewElecStamp: boolean,
+guid : string */
 
 // ЛИСТ УЧАСТНИКОВ СОБРАНИЯ АКЦИОНЕРОВ
 

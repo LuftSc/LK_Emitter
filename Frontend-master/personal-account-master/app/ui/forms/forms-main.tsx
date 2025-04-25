@@ -13,17 +13,17 @@ import Table, { ColumnsType } from "antd/es/table";
 import { HubConnection } from "@microsoft/signalr";
 
 const links = [
-    {name: 'Распоряжение Эмитента на список к ОСА', href: '/forms/first/step-one'},
-    {name: 'Распоряжение Эмитента на предоставление информации из реестра', href: '/forms/second/step-one'},
-    {name: 'Распоряжение Эмитента о предоставлении Списка лиц , имеющих право на получение доходов по ценным бумагам', href: '/forms/third/step-one'},
+    { name: 'Распоряжение Эмитента на список к ОСА', href: '/forms/first/step-one' },
+    { name: 'Распоряжение Эмитента на предоставление информации из реестра', href: '/forms/second/step-one' },
+    { name: 'Распоряжение Эмитента о предоставлении Списка лиц , имеющих право на получение доходов по ценным бумагам', href: '/forms/third/step-one' },
+    { name: 'Справка о состоянии лицевого счета зарегистрированного лица на определенную дату', href: '/forms/fourth' },
 ];
 
-export default function FormsMain () {
-    //const [orderReports, setOrderReports] = useState<ReportOrder[]>([])
+export default function FormsMain() {
     const [orderReports, setOrderReports] = useState<{
-        totalSize: number, 
-        orderReports:ReportOrder[]
-    }>({totalSize: 0, orderReports:[]})
+        totalSize: number,
+        orderReports: ReportOrder[]
+    }>({ totalSize: 0, orderReports: [] })
 
     const { connection } = useSignalR();
     const { startConnection } = useSignalR();
@@ -38,7 +38,7 @@ export default function FormsMain () {
     });
 
     useEffect(() => {
-        
+
         const emitter = localStorage.getItem('emitter')
         const emitterData = emitter ? JSON.parse(emitter) : null
 
@@ -51,13 +51,13 @@ export default function FormsMain () {
             setEmitterId(emitterData.IssuerId)
 
             console.log("кидаем запрос на отчёты по id: " + emitterData.IssuerId)
-            getOrderReportsByPage(emitterData.IssuerId, pagination) 
-            
+            getOrderReportsByPage(emitterData.IssuerId, pagination)
+
         }
     }, [])
 
     useEffect(() => {
-        setPagination(prev => ({...prev, total: orderReports.totalSize}))
+        setPagination(prev => ({ ...prev, total: orderReports.totalSize }))
         console.log('обновился размер')
     }, [orderReports])
 
@@ -74,20 +74,20 @@ export default function FormsMain () {
         await subscribeOnReceiveListReports()
         //await subscribeOnReceiveReport()
 
-        const orderReportsResponse = await 
+        const orderReportsResponse = await
             getOrderReportsByEmitterId(issuerId, pagination.current, pagination.pageSize)
 
         if (orderReportsResponse?.ok) {
             console.log('Отправили запрос на отчёты')
-            
+
         } else if (orderReportsResponse?.status === 400) {
             console.error('контролируемая ошибка')
         } else {
             console.error('НЕконтролируемая ошибка')
         }
-    } 
+    }
 
-    const formatDate = (dateTime: string) : string => {
+    const formatDate = (dateTime: string): string => {
         const splitDate = dateTime.split('T');
         const date = splitDate[0];
         const splitTime = splitDate[1].split('.')
@@ -96,7 +96,7 @@ export default function FormsMain () {
         return `${time} ${date}`
     }
 
-    const formatStatus = (status: number) : string => {
+    const formatStatus = (status: number): string => {
         if (ReportOrderStatus.Successfull === status) return "Выполнено";
         else if (ReportOrderStatus.Processing === status) return "В процессе"
         else return "Возникла ошибка";
@@ -105,92 +105,94 @@ export default function FormsMain () {
     const updateReportOrder = (id: string, updatedData: Partial<ReportOrder>) => {
         setOrderReports(prevState => ({
             ...prevState,
-            orderReports: prevState.orderReports.map(report => 
-              report.internalId === id ? { ...report, ...updatedData } : report
+            orderReports: prevState.orderReports.map(report =>
+                report.internalId === id ? { ...report, ...updatedData } : report
             )
-          }));
-      };
+        }));
+    };
 
     const addReportOrder = (
         reportOrder: ReportOrder) => {
         setOrderReports(prev => {
-        // Если мы на первой странице
-        if (pagination.current === 1) {
-            const newReports = [reportOrder, ...prev.orderReports];
-            
-            // Обрезаем массив, если превысили pageSize
-            if (newReports.length > pagination.pageSize) {
-                newReports.pop();
+            // Если мы на первой странице
+            if (pagination.current === 1) {
+                const newReports = [reportOrder, ...prev.orderReports];
+
+                // Обрезаем массив, если превысили pageSize
+                if (newReports.length > pagination.pageSize) {
+                    newReports.pop();
+                }
+
+                return {
+                    totalSize: prev.totalSize + 1,
+                    orderReports: newReports
+                };
             }
-            
+
+            // Если не на первой странице, просто увеличиваем totalSize
             return {
-                totalSize: prev.totalSize + 1,
-                orderReports: newReports
+                ...prev,
+                totalSize: prev.totalSize + 1
             };
-        }
-        
-        // Если не на первой странице, просто увеличиваем totalSize
-        return {
-            ...prev,
-            totalSize: prev.totalSize + 1
-        };
         });
     }
-    
+
     const subscribeOnReceiveReport = async () => {
-        
+
         const currentConnection = connection ? connection : await startConnection()
 
         if (currentConnection)
             console.log(isSubscribed(currentConnection, 'ReceiveReport'))
 
-        currentConnection?.on('ReceiveReport', 
-                (orderReport: ReportOrder) => {
-            if (orderReport.status === ReportOrderStatus.Successfull) {
-                updateReportOrder(orderReport.internalId, {
-                        status: orderReport.status, 
+        currentConnection?.on('ReceiveReport',
+            (orderReport: ReportOrder) => {
+                if (orderReport.status === ReportOrderStatus.Successfull) {
+                    updateReportOrder(orderReport.internalId, {
+                        status: orderReport.status,
                         idForDownload: orderReport.idForDownload
-                    } )
-                currentConnection.off('ReceiveReport');
-            } else if (orderReport.status === ReportOrderStatus.Failed) {
-                updateReportOrder(orderReport.internalId, {
-                    status: orderReport.status
-                } )
-                currentConnection.off('ReceiveReport');
-            } else {
-                addReportOrder(orderReport)
-            }
-        })
+                    })
+                    currentConnection.off('ReceiveReport');
+                } else if (orderReport.status === ReportOrderStatus.Failed) {
+                    updateReportOrder(orderReport.internalId, {
+                        status: orderReport.status
+                    })
+                    currentConnection.off('ReceiveReport');
+                } else {
+                    addReportOrder(orderReport)
+                }
+            })
     }
 
     const subscribeOnReceiveListReports = async () => {
         const currentConnection = connection ? connection : await startConnection()
 
-        currentConnection?.on('ReceiveReports', (orderReports: {totalSize: number, 
-            orderReports:ReportOrder[]}) => {
-                setOrderReports(orderReports)
-                setLoading(false)
-                console.log(orderReports)
+        currentConnection?.on('ReceiveReports', (orderReports: {
+            totalSize: number,
+            orderReports: ReportOrder[]
+        }) => {
+            setOrderReports(orderReports)
+            setLoading(false)
+            console.log(orderReports)
             currentConnection?.off('ReceiveReports')
         })
 
-        currentConnection?.on('ReceiveReport', 
+        currentConnection?.on('ReceiveReport',
             (orderReport: ReportOrder) => {
-        if (orderReport.status === ReportOrderStatus.Successfull) {
-            updateReportOrder(orderReport.internalId, {
-                    status: orderReport.status, 
-                    idForDownload: orderReport.idForDownload
-                } )
-            currentConnection.off('ReceiveReport');
-        } else if (orderReport.status === ReportOrderStatus.Failed) {
-            updateReportOrder(orderReport.internalId, {
-                status: orderReport.status
-            } )
-            currentConnection.off('ReceiveReport');
-        } else {
-            addReportOrder(orderReport)
-        }
-    })
+                if (orderReport.status === ReportOrderStatus.Successfull) {
+                    updateReportOrder(orderReport.internalId, {
+                        status: orderReport.status,
+                        idForDownload: orderReport.idForDownload
+                    })
+                    currentConnection.off('ReceiveReport');
+                } else if (orderReport.status === ReportOrderStatus.Failed) {
+                    updateReportOrder(orderReport.internalId, {
+                        status: orderReport.status
+                    })
+                    currentConnection.off('ReceiveReport');
+                } else {
+                    addReportOrder(orderReport)
+                }
+            })
     }
 
     const onRequestDividendList = async () => {
@@ -217,19 +219,19 @@ export default function FormsMain () {
                     isPostMan: false,
                     regOutInfo: "",
                     generalReportHeader: "",
-                    dtClo:  "2000-01-01",
+                    dtClo: "2000-01-01",
                     isAnnotation: false,
                     isPrintNalog: false,
-                    isEstimationoN: false, 
+                    isEstimationoN: false,
                     isExcelFormat: false,
                     isViewGenDirect: false,
                     isViewPrintUk: false,
                     isViewInn: false,
                     isViewOgrn: false,
                     isViewAddress: false,
-                    printDt: false, 
+                    printDt: false,
                     operator: "",
-                    controler: "", 
+                    controler: "",
                     isViewCtrl: false,
                     isViewElecStamp: false,
                     guid: ""
@@ -247,7 +249,7 @@ export default function FormsMain () {
         const currentConnection = connection ? connection : await startConnection()
 
         await subscribeOnReceiveReport();
-        
+
         if (emitterData) {
             const defaultReeRepRequest = {
                 requestData: {
@@ -330,7 +332,7 @@ export default function FormsMain () {
         const currentConnection = connection ? connection : await startConnection()
 
         await subscribeOnReceiveReport();
-        
+
         const defaultListOSRequest = {
             requestData: {
                 reportName: "string",
@@ -370,12 +372,12 @@ export default function FormsMain () {
                 guid: "string"
             } as ListOfShareholdersRequest
         } as RequestListOfShareholders_OLD
-    
+
         console.log(defaultListOSRequest)
-        await sendRequestListOfShareholders(defaultListOSRequest) 
+        await sendRequestListOfShareholders(defaultListOSRequest)
     }
 
-    const columns : ColumnsType<ReportOrder> = [
+    const columns: ColumnsType<ReportOrder> = [
         {
             title: 'Тип распоряжения',
             dataIndex: 'fileName',
@@ -400,7 +402,7 @@ export default function FormsMain () {
             title: "Ссылка для скачивания",
             key: "download",
             render: (_, record) => (
-                <ReportOrderDownloadLink reportOrder={record}  />
+                <ReportOrderDownloadLink reportOrder={record} />
             ),
             width: 200
         }
@@ -418,21 +420,28 @@ export default function FormsMain () {
                     <p className="text-[#B82116] text-base/[21px] font-bold">{links[0].name}</p>
                 </Link>
             </div>
-            <div>
+            <div className="mb-[54px]">
                 <h2 className="text-xl/[26px] font-bold mb-5">5.3 Распоряжения на предоставление информации Эмитенту</h2>
-                <div className="mb-[18px]">
-                    <Link
-                        key={links[1].name}
-                        href={links[1].href}
-                        className={clsx(pathname === links[1].href)}>
-                        <p className="text-[#B82116] text-base/[21px] font-bold">{links[1].name}</p>
-                    </Link>
-                </div>
+                <Link
+                    key={links[1].name}
+                    href={links[1].href}
+                    className={clsx(pathname === links[1].href)}>
+                    <p className="text-[#B82116] text-base/[21px] font-bold mb-[18px]">{links[1].name}</p>
+                </Link>
                 <Link
                     key={links[2].name}
                     href={links[2].href}
                     className={clsx(pathname === links[2].href)}>
                     <p className="text-[#B82116] text-base/[21px] font-bold">{links[2].name}</p>
+                </Link>
+            </div>
+            <div>
+                <h2 className="text-xl/[26px] font-bold mb-5">Справки о состоянии лицевого счета</h2>
+                <Link
+                    key={links[3].name}
+                    href={links[3].href}
+                    className={clsx(pathname === links[3].href)}>
+                    <p className="text-[#B82116] text-base/[21px] font-bold mb-[18px]">{links[3].name}</p>
                 </Link>
             </div>
             <div className="mt-[54px] mr-[50px]">
@@ -442,13 +451,13 @@ export default function FormsMain () {
                 <Button onClick={onRequestReeRep}>Запросить информацию из реестра</Button>
                 <br />
                 <Button onClick={onRequestDividendList}> Запросить дивидендный список</Button>
-                
+
                 <Table rowKey="internalId" columns={columns} dataSource={orderReports.orderReports}
                     pagination={pagination}
                     loading={loading}
                     onChange={(newPagination, filters, sorter) => getOrderReportsByPage(emitterId, newPagination)}
                 />
-                
+
             </div>
         </div>
     );
