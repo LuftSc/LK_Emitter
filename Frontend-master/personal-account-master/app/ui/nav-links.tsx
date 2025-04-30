@@ -8,7 +8,7 @@ const links = [
   {name: 'Главная', href: '/'},
   {name: 'Запросы/Поручения', href: '/forms'},
   {name: 'Документы', href: '/userDocuments'},
-  {name: 'Проведенные операции', href: '/'},
+  {name: 'Проведенные операции', href: '/admin/first'},
   {name: 'Задать вопрос', href: '/'},
   {name: 'Помощь', href: '/forms/hidden/firstFirst'},
 ];

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "5.x",
     "@ant-design/v5-patch-for-react-19": "^1.0.3",
     "@microsoft/signalr": "^8.0.7",
     "@types/react": "19.0.0",
@@ -20,6 +21,7 @@
     "react": "19.0.0",
     "react-datetime": "^3.3.1",
     "react-dom": "19.0.0",
+    "react-highlight-words": "^0.21.0",
     "vanilla-calendar-pro": "^3.0.3",
     "zustand": "^5.0.3"
   },
@@ -27,6 +29,7 @@
     "@eslint/eslintrc": "^3",
     "@svgr/webpack": "^8.1.0",
     "@types/node": "^20",
+    "@types/react-highlight-words": "^0.20.0",
     "eslint": "^9",
     "eslint-config-next": "15.1.4",
     "postcss": "^8",

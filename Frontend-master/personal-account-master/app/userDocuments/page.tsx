@@ -1,6 +1,6 @@
 "use client"
 
-import { Button, Pagination, Table } from "antd";
+import { Button, Pagination, Table } from "antd/es";
 //import { useSimpleStorage } from "../hooks/useLocalStorage";
 import DocumentsTable from "../ui/documents-page/documents-table";
 import { ColumnsType } from "antd/es/table";
@@ -26,10 +26,12 @@ export default function Page() {
         AuthPerson: string,
         IssuerId: number}>
         ({Id: "", Name: "", AuthPerson: "", IssuerId: 0})
+
     const [pagination, setPagination] = useState({
         current: 1,
         pageSize: 10
-    });
+    })
+
     const [loading, setLoading] = useState<boolean>(false)
 
     const { connection } = useSignalR();
