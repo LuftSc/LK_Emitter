@@ -2,13 +2,22 @@
 
 import { Select } from 'antd';
 
-export default function SelectForUserRoles() {
+interface Props {
+    setNewRole: React.Dispatch<React.SetStateAction<string>>
+}
 
-    const defaultValue = 'Представитель эмитента'
+export default function SelectForUserRoles({setNewRole}: Props) {
+
+    const onChange = (value: any) => {
+        setNewRole(value)
+    }
+
+    // const defaultValue = 'Представитель эмитента'
     return (
         <Select
             showSearch
-            defaultValue={defaultValue}
+            onChange={onChange}
+            // defaultValue={defaultValue}
             className=''
             placeholder="Выберите роль пользователя"
             filterOption={(input, option) =>

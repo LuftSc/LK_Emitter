@@ -198,7 +198,7 @@ const rowSelection = {
 }
 
 return (
-    <div>
+    <div className='w-full'>
         <Table columns={ columns } rowSelection={rowSelection} dataSource = { data } />
         <Button onClick={(e) => selectedRowKeys.map((value) => console.log(value))}>Показать</Button>
     </div>
