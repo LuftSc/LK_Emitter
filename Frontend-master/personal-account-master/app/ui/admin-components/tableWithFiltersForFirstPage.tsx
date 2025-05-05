@@ -70,138 +70,139 @@ export default function TableForDocumentsInAdmin() {
 
     const getColumnSearchProps = (dataIndex: DataIndex): TableColumnType<DataType> => ({
         filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
-            <div style= {{ padding: 8 }} onKeyDown = {(e) => e.stopPropagation()}>
+            <div style={{ padding: 8 }} onKeyDown={(e) => e.stopPropagation()}>
                 <Input
-                    ref={ searchInput }
-                    placeholder = {`Найти`}
-                    value = { selectedKeys[0]}
-                    onChange = {(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-                    onPressEnter = {() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
-                    style = {{ marginBottom: 8, display: 'block' }}
+                    ref={searchInput}
+                    placeholder={`Найти`}
+                    value={selectedKeys[0]}
+                    onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+                    onPressEnter={() => handleSearch(selectedKeys as string[], confirm, dataIndex)}
+                    style={{ marginBottom: 8, display: 'block' }}
                 />
                 <Space>
-                <Button
-                  type="primary"
-                    onClick = {() => 
-                        {
+                    <Button
+                        type="primary"
+                        onClick={() => {
                             handleSearch(selectedKeys as string[], confirm, dataIndex)
                             console.log(selectedKeys as string[])
                         }
-                    }
-                    icon = {< SearchOutlined />}
-                    size = "small"
-                    style = {{ width: 90 }}
-                >
-                    Поиск
-                </Button>
-                <Button
-                    onClick = {() => clearFilters && handleReset(clearFilters)}
-                    size = "small"
-                    style = {{ width: 90 }}
-                >
-                    Сбросить
-                </Button>
-                < Button
-                    type = "link"
-                    size = "small"
-                    onClick = {() => {
-                        confirm({ closeDropdown: false });
-                        setSearchText((selectedKeys as string[])[0]);
-                        setSearchedColumn(dataIndex);
-                    }}
-                >
-                    Отфильтровать
-                </Button>
-                < Button
-                    type = "link"
-                    size = "small"
-                    onClick = {() => {
-                        close();
-                    }}
-                >
-                    Закрыть
-                </Button>
+                        }
+                        icon={< SearchOutlined />}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        Поиск
+                    </Button>
+                    <Button
+                        onClick={() => clearFilters && handleReset(clearFilters)}
+                        size="small"
+                        style={{ width: 90 }}
+                    >
+                        Сбросить
+                    </Button>
+                    < Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            confirm({ closeDropdown: false });
+                            setSearchText((selectedKeys as string[])[0]);
+                            setSearchedColumn(dataIndex);
+                        }}
+                    >
+                        Отфильтровать
+                    </Button>
+                    < Button
+                        type="link"
+                        size="small"
+                        onClick={() => {
+                            close();
+                        }}
+                    >
+                        Закрыть
+                    </Button>
                 </Space>
             </div>
         ),
         filterIcon: (filtered: boolean) => (
-            <SearchOutlined style= {{ color: filtered ? '#1677ff' : undefined }} />
+            <SearchOutlined style={{ color: filtered ? '#1677ff' : undefined }} />
         ),
         onFilter: (value, record) =>
             record[dataIndex]
                 .toString()
                 .toLowerCase()
                 .includes((value as string).toLowerCase()),
-            filterDropdownProps: {
-                onOpenChange(open) {
-                    if (open) {
-                        setTimeout(() => searchInput.current?.select(), 100)
-                    }
+        filterDropdownProps: {
+            onOpenChange(open) {
+                if (open) {
+                    setTimeout(() => searchInput.current?.select(), 100)
                 }
+            }
         },
         render: (text) =>
             searchedColumn === dataIndex ? (
                 <Highlighter
-                  highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-                  searchWords={[searchText]}
-                  autoEscape
-                  textToHighlight={text ? text.toString() : ''}
+                    highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
+                    searchWords={[searchText]}
+                    autoEscape
+                    textToHighlight={text ? text.toString() : ''}
                 />
-              ) : (text)
-        })
+            ) : (text)
+    })
 
-const columns: TableColumnsType<DataType> = [
-    {
-        title: 'Название Эмитента',
-        dataIndex: 'emitentName',
-        key: 'emitentName',
-        width: '30%',
-        ...getColumnSearchProps('emitentName'),
-    },
-    {
-        title: 'Имя Представителя',
-        dataIndex: 'representativeName',
-        key: 'representativeName',
-        width: '30%',
-        ...getColumnSearchProps('representativeName'),
-    },
-    {
-        title: 'Дата операции',
-        dataIndex: 'date',
-        key: 'date',
-        width: '10%',
-        ...getColumnSearchProps('date'),
-    },
-    {
-        title: 'Тип операции',
-        dataIndex: 'operationType',
-        key: 'operationType',
-        ...getColumnSearchProps('operationType'),
-    },
-    Table.SELECTION_COLUMN,
-]
+    const columns: TableColumnsType<DataType> = [
+        {
+            title: 'Название Эмитента',
+            dataIndex: 'emitentName',
+            key: 'emitentName',
+            width: '30%',
+            ...getColumnSearchProps('emitentName'),
+        },
+        {
+            title: 'Имя Представителя',
+            dataIndex: 'representativeName',
+            key: 'representativeName',
+            width: '30%',
+            ...getColumnSearchProps('representativeName'),
+        },
+        {
+            title: 'Дата операции',
+            dataIndex: 'date',
+            key: 'date',
+            width: '10%',
+            ...getColumnSearchProps('date'),
+        },
+        {
+            title: 'Тип операции',
+            dataIndex: 'operationType',
+            key: 'operationType',
+            ...getColumnSearchProps('operationType'),
+        },
+        Table.SELECTION_COLUMN,
+    ]
 
-const [select, setSelect] = useState({
-    selectedRowKeys: []
-});
+    const [select, setSelect] = useState({
+        selectedRowKeys: []
+    });
 
-const { selectedRowKeys } = select
+    const { selectedRowKeys } = select
 
-const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelects: any) => {
-      setSelect({
-        ...select,
-        selectedRowKeys: newSelects
-      });
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: (newSelects: any) => {
+            setSelect({
+                ...select,
+                selectedRowKeys: newSelects
+            });
+        }
     }
-}
 
-return (
-    <div className='w-full'>
-        <Table columns={ columns } rowSelection={rowSelection} dataSource = { data } />
-        <Button onClick={(e) => selectedRowKeys.map((value) => console.log(value))}>Показать</Button>
-    </div>
-)
-      
+    return (
+        <Table
+            className='w-full'
+            columns={columns}
+            rowSelection={rowSelection}
+            dataSource={data} 
+        />
+    )
+
 }
