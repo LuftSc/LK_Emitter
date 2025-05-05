@@ -6,7 +6,7 @@ import AdminNavButtonsSecond from "@/app/ui/admin-components/navBttnsForAdminSec
 
 export default function Page() {
     return (
-        <div className="py-[60px] px-[100px]">
+        <div className="py-[60px] px-[160px]">
             <AdminNavButtonsSecond />
             <MainContentSecond />
         </div>

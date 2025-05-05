@@ -6,11 +6,11 @@ import clsx from 'clsx';
 
 const links = [
   {name: 'Главная', href: '/'},
-  {name: 'Запросы/Поручения', href: '/forms'},
+  {name: 'Запросы/Поручения', href: '/forms/mainFirst'},
   {name: 'Документы', href: '/userDocuments'},
   {name: 'Проведенные операции', href: '/admin/first'},
   {name: 'Задать вопрос', href: '/'},
-  {name: 'Помощь', href: '/forms/hidden/firstFirst'},
+  {name: 'Помощь', href: '/'},
 ];
 
 export default function NavLinks () {

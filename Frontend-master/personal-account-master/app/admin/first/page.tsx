@@ -3,7 +3,7 @@ import AdminNavButtonsFirst from "@/app/ui/admin-components/navBttnsForAdminFirs
 
 export default function Page() {
     return (
-        <div className="py-[60px] px-[100px]">
+        <div className="py-[60px] px-[160px]">
             <AdminNavButtonsFirst />
             <MainContentFirst />
         </div>
