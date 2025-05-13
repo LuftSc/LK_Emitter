@@ -1,14 +1,9 @@
-
-import MainContentSecond from "@/app/ui/admin-components/mainContentSecond";
-import AdminNavButtonsSecond from "@/app/ui/admin-components/navBttnsForAdminSecond";
-
-
+import MainContentNewEmitent from "@/app/ui/admin-components/mainContentNewEmitent";
 
 export default function Page() {
     return (
-        <div className="py-[60px] px-[160px]">
-            <AdminNavButtonsSecond />
-            <MainContentSecond />
+        <div className="">
+            <MainContentNewEmitent />
         </div>
     )
 }
