@@ -97,7 +97,7 @@ export default function Page() {
           <span className="text-[14px]/[18px]">{dtMod}</span>
         </div>
       </div>
-      <NavigationButtons back='/forms/second/step-one' next='/forms' onClick={onNextPageTransition} />
+      <NavigationButtons back='/forms/second/step-one' next='/forms/mainSecond' onClick={onNextPageTransition} />
     </div>
   );
 }

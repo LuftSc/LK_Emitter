@@ -19,7 +19,7 @@ const data: any = [
     },
 ];
 
-export default function SearchForAdmin({setUserName}: Props) {
+export default function UserSearchFilters({setUserName}: Props) {
 
 
 
@@ -27,7 +27,7 @@ export default function SearchForAdmin({setUserName}: Props) {
         <Select
             showSearch
             onChange={(value) => setUserName(value)}
-            className='w-[400px] h-[36px] mb-[30px]'
+            className='w-[320px] h-[36px'
             placeholder="Введите ФИО нужного пользователя"
             filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())

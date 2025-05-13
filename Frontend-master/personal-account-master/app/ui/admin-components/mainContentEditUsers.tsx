@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 import CardForUserInfo from "./cardForUserInfo"
-import SearchForAdmin from "./searchForSecondPage"
 import ListOfEmitents from "./listOfEmitents"
+import SearchForUsers from "./searchForUsers"
 
 export default function MainContentEditUsers() {
 
@@ -13,7 +13,7 @@ export default function MainContentEditUsers() {
     return (
         <div className="w-full flex flex-col items-center">
             <p className="text-[24px] mb-[20px]">Редактирование информации существующих пользователей</p>
-            <SearchForAdmin setUserName={setUserName}/>
+            <SearchForUsers setUserName={setUserName}/>
             <CardForUserInfo userName={userName} setNewRole={setNewRole}/>
             <ListOfEmitents newRole={newRole}/>
         </div>

@@ -155,7 +155,7 @@ export default function Page() {
           </div>
         </div>
       </div> 
-      <NavigationButtons back={back == 'true' ? '/forms/first/step-three-shown' : '/forms/first/step-one'} next='/forms' onClick={onNextPageTransition} />
+      <NavigationButtons back={back == 'true' ? '/forms/first/step-three-shown' : '/forms/first/step-one'} next='/forms/mainSecond' onClick={onNextPageTransition} />
     </div>
   );
 }

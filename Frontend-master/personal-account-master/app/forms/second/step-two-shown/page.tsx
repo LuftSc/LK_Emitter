@@ -107,7 +107,7 @@ export default function Page() {
         <div className="mb-[9px]"><CheckBox setState={setInfoPeopleShort} text="Информация о лицах в сокращенной форме" /></div>
         <CheckBox setState={setCertificateAboutStructure} text="Справка о структуре распределения акций" />
       </div>
-      <NavigationButtons back='/forms/second/step-two' next='/forms' onClick={onNextPageTransition} />
+      <NavigationButtons back='/forms/second/step-two' next='/forms/mainSecond' onClick={onNextPageTransition} />
     </div>
   );
 }
