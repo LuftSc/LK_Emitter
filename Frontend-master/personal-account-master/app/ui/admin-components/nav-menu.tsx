@@ -44,8 +44,8 @@ export default function AdminNavMenu () {
     <Menu
         className='w-[280px]'
         onSelect={onSelect}
-        defaultSelectedKeys={['logs']}
-        defaultOpenKeys={['logs']}
+        defaultSelectedKeys={['/admin']}
+        defaultOpenKeys={['/admin']}
         mode="inline"
         items={items}
     />
