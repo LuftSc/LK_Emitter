@@ -13,18 +13,44 @@ using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.DataAccess.Repositories
 {
-    public sealed class EmittersRepository 
+    public sealed class EmittersRepository
         : EFRepository<Emitter, EmitterPersonalAccountDbContext>, IEmittersRepository
     {
         private readonly EmitterPersonalAccountDbContext context;
 
-        public EmittersRepository(EmitterPersonalAccountDbContext context) 
+        public EmittersRepository(EmitterPersonalAccountDbContext context)
             : base(context)
         {
             this.context = context;
         }
 
-        public async Task<Result> BindUser(Guid emitterId, Guid userId)
+        public async Task<List<Tuple<Guid, EmitterInfo, int>>> SearchEmitter(string searchTerm, int page = 1, int pageSize = 20)
+        {
+            var query = context.Emitters
+                .Where(e => EF.Functions.ILike(e.EmitterInfo.ShortName, $"%{searchTerm}%"))
+                .OrderBy(e => e.EmitterInfo.ShortName)
+                .Select(e => Tuple.Create(e.Id, e.EmitterInfo, e.IssuerId));
+
+            var results = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return results;
+        }
+
+        public async Task<Result<List<Tuple<Guid, EmitterInfo>>>> GetProjections()
+        {
+            var emittersProjections = new List<Tuple<Guid, EmitterInfo>>();
+
+            emittersProjections = await context.Emitters
+                .Select(e => Tuple.Create(e.Id, e.EmitterInfo))
+                .ToListAsync();
+
+            return Result<List<Tuple<Guid, EmitterInfo>>>.Success(emittersProjections);
+        }
+
+       /*public async Task<Result> BindUser(Guid emitterId, Guid userId)
         {
             var user = await context.Users
                 .Include(u => u.Emitters)
@@ -50,7 +76,7 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
             await context.SaveChangesAsync();
 
             return Result.Success();
-        }
+        }*/
         public async Task<Result<List<Tuple<Guid, EmitterInfo, int>>>> GetAllByUserId(Guid userId)
         {
             var user = await context.Users

@@ -10,8 +10,27 @@ export interface ConfirmationCodeRequest {
     confiramtionCode: string
 }
 
+export interface RegisterUserRequest {
+    email: string,
+    password: string,
+    emittersGuids: string[],
+    role: number
+}
+
 export const loginUser = async (request: LoginUserRequest) => {
     return await fetch('http://localhost:5000/Users/login-user', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(request)
+    })
+    .catch(error => console.error(error))
+}
+
+export const registerUser = async (request: RegisterUserRequest) => {
+    return await fetch('http://localhost:5000/Users/register-new-user', {
         method: 'POST',
         credentials: 'include',
         headers: {

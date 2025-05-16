@@ -23,6 +23,8 @@ namespace AuditService
 
             builder.Services.AddSingleton<IAuditLogService, AuditLogService>();
             builder.Services.RegisterRepository<IAuditRepository, AuditRepository>();
+            builder.Services.RegisterRepository<IUsersRepository, UsersRepository>();
+            builder.Services.RegisterRepository<IEmittersRepository, EmittersRepository>();
 
             // Add services to the container.
             builder.Services.AddAuthorization();

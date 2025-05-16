@@ -23,6 +23,191 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.PermissionEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PermissionEntity");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "ProfileActions"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "ChoiceOfEmitters"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "DocumentsActions"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "OrderReportsActions"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "AdminActions"
+                        });
+                });
+
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.RoleEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "User"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Emitter"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Registrator"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Admin"
+                        });
+                });
+
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.RolePermission", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermission");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            RoleId = 3,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 3,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 3,
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            RoleId = 3,
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            RoleId = 4,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 4,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 4,
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            RoleId = 4,
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            RoleId = 4,
+                            PermissionId = 5
+                        });
+                });
+
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.UserRole", b =>
+                {
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRole");
+                });
+
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Document", b =>
                 {
                     b.Property<Guid>("Id")
@@ -85,7 +270,6 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                         .HasColumnName("UK");
 
                     b.Property<string>("FieldOfActivity")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("TYP_KLS");
 
@@ -109,19 +293,14 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                         .HasColumnName("MEET_NOTIFY");
 
                     b.Property<string>("MethodGettingInfoFromRegistry")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("POST_INF");
-
-                    b.Property<Guid>("RegistratorId")
-                        .HasColumnType("uuid");
 
                     b.ComplexProperty<Dictionary<string, object>>("BankDetails", "EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter.BankDetails#BankDetails", b1 =>
                         {
                             b1.IsRequired();
 
                             b1.Property<string>("BIK")
-                                .IsRequired()
                                 .HasMaxLength(10)
                                 .HasColumnType("character varying(10)")
                                 .HasColumnName("BIC");
@@ -131,12 +310,10 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                                 .HasColumnName("BINN");
 
                             b1.Property<string>("BankName")
-                                .IsRequired()
                                 .HasColumnType("text")
                                 .HasColumnName("BNAME");
 
                             b1.Property<string>("CorrespondentAccount")
-                                .IsRequired()
                                 .HasColumnType("text")
                                 .HasColumnName("BCOR_SCH");
 
@@ -145,7 +322,6 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                                 .HasColumnName("FOREIGN_BCOUNTRY");
 
                             b1.Property<string>("CustomerAccount")
-                                .IsRequired()
                                 .HasMaxLength(21)
                                 .HasColumnType("character varying(21)")
                                 .HasColumnName("R_S");
@@ -160,7 +336,6 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                                 .HasColumnName("BR_SCH");
 
                             b1.Property<string>("TaxBenefits")
-                                .IsRequired()
                                 .HasColumnType("text")
                                 .HasColumnName("TYP_PERS");
                         });
@@ -241,13 +416,11 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                             b1.IsRequired();
 
                             b1.Property<string>("Address")
-                                .IsRequired()
                                 .HasMaxLength(110)
                                 .HasColumnType("character varying(110)")
                                 .HasColumnName("ADDRESS");
 
                             b1.Property<string>("Country")
-                                .IsRequired()
                                 .HasMaxLength(15)
                                 .HasColumnType("character varying(15)")
                                 .HasColumnName("COD_COUNTRY");
@@ -257,7 +430,6 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                                 .HasColumnName("IND");
 
                             b1.Property<string>("Region")
-                                .IsRequired()
                                 .HasMaxLength(25)
                                 .HasColumnType("character varying(25)")
                                 .HasColumnName("COD_REGION");
@@ -276,13 +448,11 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                                     b2.IsRequired();
 
                                     b2.Property<string>("Address")
-                                        .IsRequired()
                                         .HasMaxLength(110)
                                         .HasColumnType("character varying(110)")
                                         .HasColumnName("PADDRESS");
 
                                     b2.Property<string>("Country")
-                                        .IsRequired()
                                         .HasMaxLength(15)
                                         .HasColumnType("character varying(15)")
                                         .HasColumnName("COD_PCOUNTRY");
@@ -292,7 +462,6 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                                         .HasColumnName("PIND");
 
                                     b2.Property<string>("Region")
-                                        .IsRequired()
                                         .HasMaxLength(25)
                                         .HasColumnType("character varying(25)")
                                         .HasColumnName("COD_PREGION");
@@ -320,9 +489,34 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RegistratorId");
-
                     b.ToTable("Emitters", (string)null);
+                });
+
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ContentJSON")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Error")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsMessageHasBeenProcessed")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OutboxMessages");
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", b =>
@@ -424,6 +618,36 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                     b.ToTable("UserEmitter");
                 });
 
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.RolePermission", b =>
+                {
+                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.PermissionEntity", null)
+                        .WithMany()
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.RoleEntity", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.UserRole", b =>
+                {
+                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.RoleEntity", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Document", b =>
                 {
                     b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", null)
@@ -439,21 +663,10 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", b =>
-                {
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", "Registrator")
-                        .WithMany("Emitters")
-                        .HasForeignKey("RegistratorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Registrator");
-                });
-
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", b =>
                 {
                     b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", "Registrator")
-                        .WithMany("Users")
+                        .WithMany()
                         .HasForeignKey("RegistratorId");
 
                     b.Navigation("Registrator");
@@ -477,13 +690,6 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", b =>
                 {
                     b.Navigation("Documents");
-                });
-
-            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", b =>
-                {
-                    b.Navigation("Emitters");
-
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

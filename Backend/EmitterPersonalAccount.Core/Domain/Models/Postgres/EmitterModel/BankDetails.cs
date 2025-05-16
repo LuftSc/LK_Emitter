@@ -36,6 +36,7 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel
             TaxBenefits = taxBenefits;
             Country = country;
         }
+        public static readonly BankDetails Empty = new();
         public string BIK { get; private set; }
         public string BankName { get; private set; }
         public string SettlementAccount { get; private set; } = null!;

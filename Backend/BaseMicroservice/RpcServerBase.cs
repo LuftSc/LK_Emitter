@@ -32,15 +32,6 @@ namespace BaseMicroservice
             connection = await factory.CreateConnectionAsync();
             channel = await connection.CreateChannelAsync();
 
-            // Объявляем очередь для получения запросов
-            /*await channel.QueueDeclareAsync(
-                queue: queueName,
-                durable: false,
-                exclusive: false,
-                autoDelete: false,
-                arguments: null
-                );*/
-
             // Настраиваем так, чтобы за раз обрабатывалось только 1 сообщение
             await channel.BasicQosAsync(prefetchSize: 0, prefetchCount: 1, global: false);
 
@@ -55,7 +46,6 @@ namespace BaseMicroservice
         }
         private async Task Handler(object model, BasicDeliverEventArgs args)
         {
-            Console.WriteLine("Попали в Handler serverBAse документов");
             //string response = null;
             TResult response = null;
 

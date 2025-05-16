@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.LocationVO
 {
-    [Owned]
     public class Address : ValueObject
     {
         private Address()

@@ -20,8 +20,10 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel
             Location = location;
             Contacts = contacts;
         }
-        public Location Location { get; private set; }
-        public Contacts Contacts { get; private set; }
+
+        public static readonly MailingAddress Empty = new();
+        public Location Location { get; private set; } = Location.Empty;
+        public Contacts Contacts { get; private set; } = Contacts.Empty;
         
         public static Result<MailingAddress> Create(Location location,
             Contacts contacts)

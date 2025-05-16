@@ -31,7 +31,8 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal.Storage
             return entry.Entity;
         }
 
-        public override Task AddRangeAsync(IReadOnlyList<TAggregateRoot> aggregateRoots, CancellationToken cancellationToken)
+        public override Task AddRangeAsync(IReadOnlyList<TAggregateRoot> aggregateRoots, 
+            CancellationToken cancellationToken)
         {
             return _items.AddRangeAsync(aggregateRoots, cancellationToken);
         }

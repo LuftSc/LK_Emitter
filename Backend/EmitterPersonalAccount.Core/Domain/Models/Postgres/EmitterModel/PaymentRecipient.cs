@@ -19,6 +19,9 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel
             INN = inn;
             Assignment = assignment;
         }
+
+        public static readonly PaymentRecipient Empty = new ();
+
         public string Name { get; private set; }
         public string INN { get; private set; }
         public string Assignment { get; private set; }

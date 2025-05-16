@@ -4,15 +4,19 @@ using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.EmitterVO;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using EmitterPersonalAccount.DataAccess.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 //using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -36,6 +40,7 @@ namespace EmitterPersonalAccount.API.Controllers
         private readonly IUserRepository userRepository;
         private readonly IPasswordHasher passwordHasher;
         private readonly IRabbitMqPublisher publisher;
+        private readonly IOutboxService outboxService;
 
         public UsersController(IMediator mediator, 
             IDistributedCache distributedCache, 
@@ -44,7 +49,8 @@ namespace EmitterPersonalAccount.API.Controllers
             IRegistratorRepository registratorRepository, 
             IUserRepository userRepository, 
             IPasswordHasher passwordHasher, 
-            IRabbitMqPublisher publisher)
+            IRabbitMqPublisher publisher, 
+            IOutboxService outboxService)
         {
             this.mediator = mediator;
             this.distributedCache = distributedCache;
@@ -54,6 +60,7 @@ namespace EmitterPersonalAccount.API.Controllers
             this.userRepository = userRepository;
             this.passwordHasher = passwordHasher;
             this.publisher = publisher;
+            this.outboxService = outboxService;
         }
 
         [HttpGet("get-current-user")]
@@ -125,6 +132,92 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
+        [HttpPost("add-new-role/{userId:guid}")]
+        public async Task<ActionResult> AddNewRole(
+            Guid userId, 
+            Role role, 
+            List<Guid>? emittersId, 
+            CancellationToken cancellation)
+        {
+            var result = await userRepository
+                .AddRoleToUser(userId, role, emittersId, cancellation);
+
+            if (!result.IsSuccessfull) return BadRequest(result.GetErrors());
+
+            return Ok();
+        }
+
+        [HttpPost("bind-to-emitters")]
+        public async Task<ActionResult> BindToEmitters(
+            [FromBody] BindToEmittersDTO request,
+            CancellationToken cancellation
+            )
+        {
+            var result = await userRepository
+                .BindToEmitters(request.UserId, request.EmittersIdList, cancellation);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            var outboxSavingResult = await outboxService.CreateAndSaveOutboxMessage(
+                OutboxMessageType.AddUserEmitterBinding,
+                JsonSerializer.Serialize(Tuple.Create(request.EmittersIdList, request.UserId)),
+                cancellation
+                );
+
+            if (!outboxSavingResult.IsSuccessfull)
+                return BadRequest(outboxSavingResult.GetErrors());
+
+            return Ok();
+        }
+
+       /* [HttpPost("bind-to-emitter/{emitterId:guid}")]
+        public async Task<ActionResult> BindToEmitterById
+            (Guid emitterId, Guid userId, CancellationToken cancellation)
+        {
+            var result = await emittersRepository.BindUser(emitterId, userId);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            var outboxSavingResult = await outboxService.CreateAndSaveOutboxMessage(
+                OutboxMessageType.AddUserEmitterBinding,
+                JsonSerializer.Serialize(Tuple.Create(emitterId, userId)),
+                cancellation
+                );
+
+            if (!outboxSavingResult.IsSuccessfull) 
+                return BadRequest(outboxSavingResult.GetErrors());
+
+            return Ok();
+        }
+*/
+        /*[HttpPost("register-new-emitter")]
+        public async Task<ActionResult> RegisterEmitter([FromBody] EmitterInfo emitterInfo, 
+            CancellationToken cancellation)
+        {
+            var emitter = Emitter.Create(emitterInfo);
+
+            if (!emitter.IsSuccessfull) return BadRequest();
+
+            await emittersRepository.AddAsync(emitter.Value, cancellation);
+            await emittersRepository.UnitOfWork.SaveChangesAsync(cancellation);
+
+            return Ok();
+        }*/
+        [HttpGet("get-projections")]
+        public async Task<ActionResult> GetEmittersProjections()
+        {
+            var projections = await emittersRepository.GetProjections();
+
+            if (projections.IsSuccessfull)
+            {
+                return Ok(projections);
+            }
+
+            return BadRequest(projections.GetErrors());
+        }
+
         [HttpPost("verify-code")]
         public async Task<ActionResult> VerifyCode([FromBody] VerifyConfirmationCodeQuery request)
         {
@@ -153,7 +246,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [HttpPost("bind-to-emitter/{emitterId:guid}")]
+       /* [HttpPost("bind-to-emitter/{emitterId:guid}")]
         public async Task<ActionResult> BindToEmitterById(Guid emitterId, Guid userId)
         {
             var result = await emittersRepository.BindUser(emitterId, userId);
@@ -162,8 +255,8 @@ namespace EmitterPersonalAccount.API.Controllers
                 return BadRequest(result.GetErrors());
 
             return Ok();
-        }
-        [HttpPost("register-and-bind-to-emitter/{emitterId:guid}")]
+        }*/
+        /*[HttpPost("register-and-bind-to-emitter/{emitterId:guid}")]
         public async Task<ActionResult> RegisterAndBindToEmitter(Guid emitterId, 
             [FromBody] RegisterUserCommand request)
         {
@@ -175,8 +268,6 @@ namespace EmitterPersonalAccount.API.Controllers
             if (!userCreateResult.IsSuccessfull)
                 return BadRequest(userCreateResult.GetErrors());
 
-            
-
             await userRepository.AddAsync(userCreateResult.Value, default);
             await userRepository.UnitOfWork.SaveChangesAsync(default);
 
@@ -186,7 +277,7 @@ namespace EmitterPersonalAccount.API.Controllers
                 return BadRequest(result.GetErrors());
 
             return Ok();
-        }
+        }*/
 
         [HttpPost("bind-to-registrator/{registratorId:guid}")]
         public async Task<ActionResult> BindToRegistratorById(Guid registratorId, Guid userId)
@@ -199,7 +290,22 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [HttpGet("search-emitters")]
+        public async Task<ActionResult<List<EmitterInfoDTO>>> SearchEmitters(string searchTerm, int page = 1, int pageSize = 20)
+        {
+            var result = await emittersRepository.SearchEmitter(searchTerm, page, pageSize);
+
+            if (result is null) return BadRequest();
+
+            var response = result
+                .Select(t => new EmitterInfoDTO(t.Item1, t.Item2, t.Item3))
+                .ToList();
+
+            return Ok(response);
+        }
+
+        //[Authorize]
+        //[Permission(Permission.ChoiceOfEmitters)]
         [HttpGet("get-emitters")]
         public async Task<ActionResult<List<EmitterInfoDTO>>> GetAllUserEmitters()
         {

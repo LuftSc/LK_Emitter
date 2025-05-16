@@ -15,7 +15,7 @@ namespace DocumentsService.DataAccess.Configurations
         {
             builder.ToTable("Users").HasKey(u => u.Id);
 
-            builder.HasOne(u => u.Registrator).WithMany(r => r.Users);
+            //builder.HasOne(u => u.Registrator).WithMany(r => r.Users);
         }
     }
 }

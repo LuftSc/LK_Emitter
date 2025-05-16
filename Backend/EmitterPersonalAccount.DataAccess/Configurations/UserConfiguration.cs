@@ -1,4 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -25,7 +26,13 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
                     r => r.HasOne<User>().WithMany().HasForeignKey(entity => entity.UserId)
                 );
 
-            builder.HasOne(u => u.Registrator).WithMany(r => r.Users);
+            //builder.HasOne(u => u.Registrator).WithMany(r => r.Users);
+
+            builder.HasMany(u => u.Roles).WithMany(r => r.Users).UsingEntity<UserRole>(
+                left => left.HasOne<RoleEntity>().WithMany().HasForeignKey(r => r.RoleId),
+                right => right.HasOne<User>().WithMany().HasForeignKey(u => u.UserId)
+            );
+        
         }
     }
 }

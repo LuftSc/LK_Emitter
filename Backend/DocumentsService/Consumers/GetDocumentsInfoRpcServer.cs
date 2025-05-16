@@ -47,20 +47,7 @@ namespace DocumentsService.Consumers
                             .ToList());
                     return Result<DocumentPaginationList>.Success(paginationList);
                 }
-                /*var documentsService = scope.ServiceProvider
-                    .GetRequiredService<IDocumentsService>();
-                serviceResult = await documentsService
-                    .GetDocumentsInfoByEmitterId(query.IssuerId);*/
             }
-            /*if (result.IsSuccessfull)
-            {
-                var documents = serviceResult.Value
-                    .Select(d => new DocumentInfoResponse
-                        (d.Id, d.Title, d.Type, d.UploadDate, d.GetSize(), d.IsEmitterSended))
-                    .ToList();
-
-                return Result<DocumentPaginationList>.Success(documents);
-            }*/
 
             return Result<DocumentPaginationList>.Error(new GettingDocumentError());
         }

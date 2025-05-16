@@ -1,4 +1,5 @@
-﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
+﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using System;
@@ -26,6 +27,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         //public List<Document> Documents { get; private set; } = [];
         public List<Emitter> Emitters { get; private set; } = [];
         public Registrator? Registrator { get; set; } = null!;
+
+        public ICollection<RoleEntity> Roles = [];
         public static Result<User> Create(string email, string passwordHash)
         {
             if (string.IsNullOrEmpty(email)) 
@@ -39,6 +42,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
                     $"{nameof(passwordHash)} can not be empty or null!"));
 
             var user = new User(email, passwordHash);
+
+            
 
             return Result<User>.Success(user);
         }
