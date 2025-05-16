@@ -1,10 +1,6 @@
 'use client'
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import clsx from 'clsx';
-import { DividendListRequest, getAllOrderReportsByEmitterId, getOrderReportsByEmitterId, ListOfShareholdersRequest, ReeRepRequest, RequestDividendList_OLD, RequestListOfShareholders, RequestListOfShareholders_OLD, RequestReeRep_OLD, sendRequestDividendList, sendRequestListOfShareholders, sendRequestReeRep } from "@/app/services/orderReportsService";
-import { Button, List } from "antd";
+import { getOrderReportsByEmitterId } from "@/app/services/orderReportsService";
 import { ReportOrder, ReportOrderStatus } from "@/app/models/ReportOrder";
 import { useEffect, useState } from "react";
 import { ReportOrderDownloadLink } from "./reportOrder-dwn-btn";
@@ -188,208 +184,26 @@ export default function FormsMainSecond() {
             })
     }
 
-    const onRequestDividendList = async () => {
-        // Если соединения не установлено - устанавливаем
-        const emitter = localStorage.getItem('emitter')
-        const emitterData = emitter ? JSON.parse(emitter) : null
-
-        await subscribeOnReceiveReport();
-
-        if (emitterData) {
-            const defaultDividendListRequest = {
-                requestData: {
-                    reportName: "",
-                    issuerId: emitterData.IssuerId,
-                    divPtr: 0,
-                    isPodr: false,
-                    isBr: false,
-                    typPers: "",
-                    postMan: "",
-                    isGroupTypNal: false,
-                    isBirthday: false,
-                    isRate: false,
-                    isOrderCoowner: false,
-                    isPostMan: false,
-                    regOutInfo: "",
-                    generalReportHeader: "",
-                    dtClo: "2000-01-01",
-                    isAnnotation: false,
-                    isPrintNalog: false,
-                    isEstimationoN: false,
-                    isExcelFormat: false,
-                    isViewGenDirect: false,
-                    isViewPrintUk: false,
-                    isViewInn: false,
-                    isViewOgrn: false,
-                    isViewAddress: false,
-                    printDt: false,
-                    operator: "",
-                    controler: "",
-                    isViewCtrl: false,
-                    isViewElecStamp: false,
-                    guid: ""
-                } as DividendListRequest
-            } as RequestDividendList_OLD
-            console.log(defaultDividendListRequest)
-            await sendRequestDividendList(defaultDividendListRequest)
-        }
-    }
-
-    const onRequestReeRep = async () => {
-        const emitter = localStorage.getItem('emitter')
-        const emitterData = emitter ? JSON.parse(emitter) : null
-
-        const currentConnection = connection ? connection : await startConnection()
-
-        await subscribeOnReceiveReport();
-
-        if (emitterData) {
-            const defaultReeRepRequest = {
-                requestData: {
-                    reportName: "",
-                    isSaveToStorage: false,
-                    emitId: emitterData.IssuerId,
-                    svipId: 0,
-                    categ: "",
-                    fields: "",
-                    filter: "",
-                    numStoc: 0,
-                    procUk: 0,
-                    dtMod: "2000-01-01", // Особое условие
-                    isPodr: 0,
-                    isCateg: 0,
-                    nomList: 0,
-                    isZalog: 0,
-                    isNullSch: 0,
-                    estimation1: 0,
-                    estimation2: 0,
-                    isNotOblig: 0,
-                    isFillSchNd: 0,
-                    isFullAnketa: 0,
-                    isViewBorn: 0,
-                    typeReport: 0,
-                    isExcludeListZl: 0,
-                    listZl: "",
-                    isBr: 0,
-                    isControlModifyPerson: 0,
-                    isTrustManager: 0,
-                    isPawnGolos: 0,
-                    isPawnDivid: 0,
-                    isIssuerAccounts: 0,
-                    isEmissionAccounts: 0,
-                    isViewPhone: 0,
-                    isViewEmail: 0,
-                    corporateId: "",
-                    isClosedAccount: 0,
-                    isViewMeetNotify: 0,
-                    oneProcMode: false,
-                    isBenef: 0,
-                    isAgent: 0,
-                    procCat: 0,
-                    isReestr: false,
-                    operator: "",
-                    controler: "",
-                    isViewCtrl: false,
-                    isViewGenDirect: false,
-                    isViewUk: false,
-                    isZl: false,
-                    isViewInn: false,
-                    isPcateg: false,
-                    isCheckGroupCb: false,
-                    isViewDirect: false,
-                    viewGroupCb: "",
-                    diagn: "",
-                    printDt: "",
-                    strParams: "",
-                    isRiskEst: false,
-                    spisZl: "",
-                    isPrintDtRegIssueOfSecurities: false,
-                    guid: "",
-                    isPrintUk: false,
-                    generalReportHeader: "",
-                    regOutInfo: "",
-                    isViewElecStamp: false,
-                    currentUser: ""
-                } as ReeRepRequest
-            } as RequestReeRep_OLD
-
-            console.log(defaultReeRepRequest)
-
-            await sendRequestReeRep(defaultReeRepRequest)
-        }
-    }
-    const onRequestListOSA = async () => {
-        const emitter = localStorage.getItem('emitter')
-        const emitterData = emitter ? JSON.parse(emitter) : null
-
-        const currentConnection = connection ? connection : await startConnection()
-
-        await subscribeOnReceiveReport();
-
-        const defaultListOSRequest = {
-            requestData: {
-                reportName: "string",
-                isSaveToStorage: true,
-                issuerId: emitterData ? emitterData.IssuerId : 9999,
-                regOutInfo: "string",
-                generalReportHeader: "string",
-                typKls: "string",
-                dtMod: "2025-03-18",
-                nomList: true,
-                isPodr: true,
-                viewCb: true,
-                isCateg: true,
-                isOneRecAllNomin: true,
-                isCategMeeting: true,
-                isRangeMeeting: true,
-                dt_Begsobr: "2025-03-18",
-                isSocr: true,
-                isFillSchNd: true,
-                isBirthday: true,
-                isViewPhone: true,
-                isViewEmail: true,
-                isViewMeetNotify: true,
-                isViewGenDirect: true,
-                isViewInn: true,
-                viewLs: true,
-                isSignBox: true,
-                offNumbers: true,
-                isExcelFormat: true,
-                printDt: true,
-                currentUser: "string",
-                operator: "string",
-                controler: "string",
-                isViewDirect: true,
-                isViewCtrl: true,
-                isViewElecStamp: true,
-                guid: "string"
-            } as ListOfShareholdersRequest
-        } as RequestListOfShareholders_OLD
-
-        console.log(defaultListOSRequest)
-        await sendRequestListOfShareholders(defaultListOSRequest)
-    }
-
     const columns: ColumnsType<ReportOrder> = [
         {
             title: 'Тип распоряжения',
             dataIndex: 'fileName',
             key: 'fileName',
-            width: 300,
+            width: '30%',
         },
         {
             title: 'Дата запроса',
             dataIndex: 'requestDate',
             key: 'requestDate',
             render: (date) => formatDate(date),
-            width: 150
+            width: '20%',
         },
         {
             title: 'Статус выполнения',
             dataIndex: 'status',
             key: 'status',
             render: (status) => formatStatus(status),
-            width: 100
+            width: '20%',
         },
         {
             title: "Ссылка для скачивания",
@@ -397,7 +211,7 @@ export default function FormsMainSecond() {
             render: (_, record) => (
                 <ReportOrderDownloadLink reportOrder={record} />
             ),
-            width: 200
+            width: '30%',
         }
     ]
 
@@ -405,11 +219,6 @@ export default function FormsMainSecond() {
         <div className="border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[25px] px-[60px] py-[60px]">
             <div className="">
                 <h2 className="text-xl/[26px] font-bold mb-5">Распоряжения по эмитенту {emitterName}</h2>
-                <Button onClick={onRequestListOSA}>Запросить тестовый лист участников собрания</Button>
-                <br />
-                <Button onClick={onRequestReeRep}>Запросить информацию из реестра</Button>
-                <br />
-                <Button onClick={onRequestDividendList}> Запросить дивидендный список</Button>
 
                 <Table rowKey="internalId" columns={columns} dataSource={orderReports.orderReports}
                     pagination={pagination}

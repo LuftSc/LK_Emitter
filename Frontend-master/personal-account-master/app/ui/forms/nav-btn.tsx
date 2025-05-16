@@ -22,7 +22,7 @@ export const NavigationButtons = ({
       </Link>
       <Link href={next} onClick={onClick || (() => {})}>
         <p className='bg-[#FBCB18] border border-[#BDBDBD] rounded-2xl w-[167px] h-[41px] drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)] text-center text-xl pt-[6px]'>
-          {next == '/forms' ? "Отправить" : "Продолжить"}
+          {next == '/forms/mainSecond' ? "Отправить" : "Продолжить"}
         </p>
       </Link>
     </div>

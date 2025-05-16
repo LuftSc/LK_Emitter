@@ -6,15 +6,17 @@ import { ConfigProvider, DatePicker } from 'antd';
 import 'dayjs/locale/ru';
 
 interface Props {
+    placeholder?: string,
     setDate: React.Dispatch<React.SetStateAction<string>>
 }
 
-export default function Calendar({setDate}: Props) {
+export default function Calendar({setDate, placeholder}: Props) {
     dayjs.locale('ru');
     return (
         <div>
             <ConfigProvider locale={locale}>
                 <DatePicker
+                    placeholder={placeholder || 'Выберите дату'}
                     format={{
                     format: 'YYYY-MM-DD',
                     type: 'mask',

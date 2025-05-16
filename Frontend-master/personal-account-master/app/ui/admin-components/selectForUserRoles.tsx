@@ -18,15 +18,16 @@ export default function SelectForUserRoles({setNewRole}: Props) {
             showSearch
             onChange={onChange}
             // defaultValue={defaultValue}
-            className=''
+            className='w-full'
             placeholder="Выберите роль пользователя"
             filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
             options={[
-                {value: 'noRole', label: 'Нет роли'},
+                {value: 'noRole', label: 'Пользователь'},
                 {value: 'representative', label: 'Представитель эмитента'},
-                {value: 'registrator', label: 'Регистратор'},
+                {value: 'registrator', label: 'Сотрудник регистратора'},
+                {value: 'admin', label: 'Администратор'},
             ]}
         />
     )

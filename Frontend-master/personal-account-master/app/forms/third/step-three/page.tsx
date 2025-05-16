@@ -76,7 +76,7 @@ export default function Page() {
         </div>
       </div>
   
-      <NavigationButtons back="/forms/third/step-two" next="" onClick={onNextPageTransition} />
+      <NavigationButtons back="/forms/third/step-two" next='/forms/mainSecond' onClick={onNextPageTransition} />
     </div>
   );
 }

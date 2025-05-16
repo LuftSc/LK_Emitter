@@ -99,7 +99,7 @@ export default function Page() {
           <div className="w-[129px]"><InputFormNumber setState={setRegulationNumber} placeholder="" /></div>
         </div>
       </div>
-      <NavigationButtons back='' next='/forms' onClick={onNextPageTransition} />
+      <NavigationButtons back='' next='/forms/mainSecond' onClick={onNextPageTransition} />
     </div>
   )
 }
