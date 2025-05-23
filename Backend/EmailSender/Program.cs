@@ -20,12 +20,12 @@ namespace EmailSender
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             // Регистриурем медиатР
-            builder.Services.AddMediatR(x =>
+            /*builder.Services.AddMediatR(x =>
             {
                 // Указываем маркерный интерфейс
                 // Он зарегистрирует хэндлеры
                 x.RegisterServicesFromAssemblyContaining<Program>();
-            });
+            });*/
 
             // Конфигурация для сообщений, отправляемых по почте
             builder.Services.Configure<MessageSettings>(builder.Configuration.GetSection(nameof(MessageSettings)));

@@ -17,7 +17,25 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
         {
             builder.HasKey(u => u.Id);
             /*builder.HasMany(u => u.Documents)
-                .WithOne(d => d.User);*/
+                .WithOne(d => d.User);
+            public string EncryptedEmail { get; private set; } = string.Empty;
+        public string EncryptedPhone { get; private set; } = string.Empty;
+        public string EncryptedBirthDate { get; private set; } = string.Empty;
+        public EncryptedPassport EncryptedPassport { get; private set; } = EncryptedPassport.Empty;
+        public string EncryptedFullName { get; private set; } = string.Empty;
+        public string FullNameSearchHash { get; private set; } = string.Empty;
+        public string PasswordHash { get; private set; } = string.Empty;
+             
+             */
+
+            builder.ComplexProperty(p => p.EncryptedPassport, passportBuilder =>
+            {
+                passportBuilder.Property(f => f.Issuer).HasColumnName("PassportIssuer").IsRequired(false);
+                passportBuilder.Property(f => f.Series).HasColumnName("Series").IsRequired(false);
+                passportBuilder.Property(f => f.UnitCode).HasColumnName("UnitCode").IsRequired(false);
+                passportBuilder.Property(f => f.DateOfIssue).HasColumnName("DateOfIssue").IsRequired(false);
+                passportBuilder.Property(f => f.Number).HasColumnName("Number").IsRequired(false);
+            });
 
             builder.HasMany(u => u.Emitters)
                 .WithMany(e => e.Users)

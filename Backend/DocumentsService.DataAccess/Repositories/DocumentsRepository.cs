@@ -1,4 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Repositories;
@@ -27,22 +28,30 @@ namespace DocumentsService.DataAccess.Repositories
             this.context = context;
             this.hashService = hashService;
         }
-        public async Task<Result<List<DocumentDTO>>> CreateDocumentsAsync(Guid senderId, int issuerId, 
-            List<DocumentInfo> documentsInfo, CancellationToken cancellationToken,
+        public async Task<Result<List<DocumentDTO>>> CreateDocumentsAsync(
+            Guid senderId, 
+            Role senderRole,
+            int issuerId, 
+            List<DocumentInfo> documentsInfo, 
+            CancellationToken cancellationToken,
             bool withDigitalSignature = false)
         {
-            var sender = await context.Users
+            /*var sender = await context.Users
                 .Include(u => u.Registrator)
                 .FirstOrDefaultAsync(u => u.Id == senderId);
 
             if (sender is null)
-                return Result<List<DocumentDTO>>.Error(new DocumentSenderNotFoundError());
+                return Result<List<DocumentDTO>>.Error(new DocumentSenderNotFoundError());*/
 
             var documents = new List<Document>(documentsInfo.Count);
 
             var documentsResults = documentsInfo
-                .Select(d => Document.Create(sender, d.FileName,
-                    DateTime.Now.ToUniversalTime().AddHours(5), d.Content,
+                .Select(d => Document.Create(
+                    senderId, 
+                    senderRole, 
+                    d.FileName,
+                    DateTime.Now.ToUniversalTime().AddHours(5), 
+                    d.Content,
                     withDigitalSignature
                         ? hashService.ComputeHash(d.Content)
                         : string.Empty, 
@@ -59,8 +68,14 @@ namespace DocumentsService.DataAccess.Repositories
 
             await context.SaveChangesAsync(cancellationToken);
 
-            var docsDTO = documents.Select(d => new DocumentDTO
-                (d.Id, d.Title, d.Type, d.UploadDate, d.GetSize(), d.IsEmitterSended))
+            var docsDTO = documents
+                .Select(d => new DocumentDTO
+                    (d.Id,
+                    d.SenderRole,
+                    d.Title, 
+                    d.Type, 
+                    d.UploadDate, 
+                    d.GetSize()))
                 .ToList();
 
             return Result<List<DocumentDTO>>.Success(docsDTO);    
@@ -85,16 +100,11 @@ namespace DocumentsService.DataAccess.Repositories
                 .Success(Tuple.Create(totalSize, documents));
         }
 
-        public async Task<Result<List<Document>>> GetByUserId(Guid userId)
+        /*public async Task<Result<List<Document>>> GetByUserId(Guid userId)
         {
-            var user = await context.Users.FindAsync(userId);
-
-            if (user is null)
-                return Result<List<Document>>
-                    .Error(new UserNotFoundError());
-
             var documents = await context.Documents
-                .Where(d => d.User == user)
+                .AsNoTracking()
+                .Where(d => d.SenderId == userId)
                 .ToListAsync();
 
             if (documents == null)
@@ -102,16 +112,9 @@ namespace DocumentsService.DataAccess.Repositories
                     .Error(new EmitterNotFoundError());
 
             return Result<List<Document>>.Success(documents);
-        }
+        }*/
         public async Task<Result<List<Document>>> GetByEmitterId(int issuerId)
         {
-            /*var emitter = await context.Emitters
-                .Include(e => e.Documents)
-                .FirstOrDefaultAsync(e => e.Id == emitterId);*/
-
-            /* if (emitter is null)
-                 return Result<List<Document>>
-                     .Error(new EmitterNotFoundError());*/
             var documents = await context.Documents
                 .AsNoTracking()
                 .Where(d => d.IssuerId == issuerId)

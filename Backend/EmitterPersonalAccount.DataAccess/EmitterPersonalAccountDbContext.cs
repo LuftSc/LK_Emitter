@@ -6,6 +6,7 @@ using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using EmitterPersonalAccount.DataAccess.Configurations;
 using MassTransit.Configuration;
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Options;
@@ -19,7 +20,9 @@ namespace EmitterPersonalAccount.DataAccess
 {
     public class EmitterPersonalAccountDbContext(
         DbContextOptions<EmitterPersonalAccountDbContext> options,
-        IOptions<AuthorizationOptions> authOptions) : DbContext(options), IUnitOfWork
+        IOptions<AuthorizationOptions> authOptions) : DbContext(options), 
+        IUnitOfWork,
+        IDataProtectionKeyContext
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Emitter> Emitters { get; set; }
@@ -27,6 +30,9 @@ namespace EmitterPersonalAccount.DataAccess
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
         public DbSet<RoleEntity> Roles { get; set; }
         public DbSet<UserEmitter> UserEmitter { get; set; }
+
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(EmitterPersonalAccountDbContext).Assembly);

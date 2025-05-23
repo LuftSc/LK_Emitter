@@ -15,6 +15,8 @@ namespace ResultHubService
             // Add services to the container.
             builder.Services.AddAuthorization();
 
+            builder.Configuration.AddEnvironmentVariables();
+
             builder.Services.AddSignalR();
 
             builder.Services.AddMemoryCache();

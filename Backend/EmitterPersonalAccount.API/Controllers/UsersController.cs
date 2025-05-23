@@ -11,6 +11,7 @@ using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.EmitterVO;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using EmitterPersonalAccount.DataAccess.Repositories;
 using MediatR;
@@ -20,11 +21,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 //using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Linq;
+
 //using Org.BouncyCastle.Asn1.Ocsp;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using static System.Net.WebRequestMethods;
+
 
 namespace EmitterPersonalAccount.API.Controllers
 {
@@ -41,6 +45,7 @@ namespace EmitterPersonalAccount.API.Controllers
         private readonly IPasswordHasher passwordHasher;
         private readonly IRabbitMqPublisher publisher;
         private readonly IOutboxService outboxService;
+        private readonly IUsersService usersService;
 
         public UsersController(IMediator mediator, 
             IDistributedCache distributedCache, 
@@ -50,7 +55,8 @@ namespace EmitterPersonalAccount.API.Controllers
             IUserRepository userRepository, 
             IPasswordHasher passwordHasher, 
             IRabbitMqPublisher publisher, 
-            IOutboxService outboxService)
+            IOutboxService outboxService, 
+            IUsersService usersService)
         {
             this.mediator = mediator;
             this.distributedCache = distributedCache;
@@ -61,6 +67,7 @@ namespace EmitterPersonalAccount.API.Controllers
             this.passwordHasher = passwordHasher;
             this.publisher = publisher;
             this.outboxService = outboxService;
+            this.usersService = usersService;
         }
 
         [HttpGet("get-current-user")]
@@ -74,6 +81,50 @@ namespace EmitterPersonalAccount.API.Controllers
             Guid.TryParse(userIdResult.Value, out Guid userGuid);
 
             return Ok(JsonSerializer.Serialize(userGuid));
+        }
+
+        [Permission(Permission.ProfileActions)]
+        [HttpGet("get-personal-data-current")]
+        public async Task<ActionResult<UserDataDTO>> GetPersonalDataCurrentUser
+            (CancellationToken cancellation)
+        {
+            var userIdResult = ClaimService.Get(HttpContext, CustomClaims.UserId);
+
+            if (!userIdResult.IsSuccessfull)
+                return BadRequest(userIdResult.GetErrors());
+
+            Guid.TryParse(userIdResult.Value, out Guid userGuid);
+
+            var decryptedUserDataGettingResult = await usersService
+                .GetUserPersonalData(userGuid, cancellation);
+
+            if (!decryptedUserDataGettingResult.IsSuccessfull)
+                return BadRequest(decryptedUserDataGettingResult.GetErrors());
+
+            var userData = decryptedUserDataGettingResult.Value;
+
+            var splittedFullName = new string[] { string.Empty, string.Empty, string.Empty };
+
+            if (userData.FullName.Length > 0)
+            {
+                var words = userData.FullName.Split(' ');
+                for (int i = 0; i < words.Length; i++)
+                {
+                    splittedFullName[i] = words[i];
+                }
+            }
+
+            return new UserDataDTO(
+                userData.Id,
+                splittedFullName[1],
+                splittedFullName[0],
+                splittedFullName[2],
+                userData.Email,
+                userData.Phone,
+                userData.BirthDate,
+                userData.Passport,
+                userData.Role
+            );
         }
 
         [HttpPost("login-user")]
@@ -110,14 +161,19 @@ namespace EmitterPersonalAccount.API.Controllers
             if (!loginResult.IsSuccessfull)
                 return BadRequest(loginResult.GetErrors());
 
-            var token = jwtProvider.GenerateToken(loginResult.Value);
+            var claimsData = JsonSerializer
+                .Deserialize<UserClaimsData>(loginResult.Value);
+
+            var token = jwtProvider.GenerateToken(
+                claimsData.UserId.ToString(), 
+                claimsData.Role);
 
             HttpContext.Response.Cookies.Append("tasty-cookies", token);
 
             return Ok();
         }
 
-        [HttpPost("register-new-user")]
+       /* [HttpPost("register-new-user")]
         public async Task<ActionResult> Register([FromBody] RegisterUserCommand request)
         {
             if (string.IsNullOrEmpty(request.Email)) 
@@ -130,6 +186,61 @@ namespace EmitterPersonalAccount.API.Controllers
             if (!result.IsSuccessfull) return BadRequest(result.GetErrors());
 
             return Ok();
+        }*/
+
+        [HttpPost("register")]
+        public async Task<ActionResult> RegisterNewUser(
+            [FromBody] RegisterUserRequest request, 
+            CancellationToken cancellation)
+        {
+            var userSavingResult = await usersService.EncryptAndSaveToDb(
+                request.Email,
+                request.Password,
+                request.EmittersGuids,
+                request.BirthDate,
+                request.Passport?.DateOfIssuer,
+                request.Passport?.Series,
+                request.Passport?.Number,
+                request.Passport?.Issuer,
+                request.Passport?.UnitCode,
+                request.Role,
+                request.FullName,
+                request.Phone
+            );
+
+            if (!userSavingResult.IsSuccessfull)
+                return BadRequest(userSavingResult.GetErrors());
+
+            return Ok();
+        }
+
+        [HttpGet("search-users")]
+        public async Task<ActionResult<List<UserWithEmittersDTO>>> SearchUsersByName(string searchTerm, int page = 1, int pageSize = 20)
+        {
+            var gettingResult = await usersService
+                .SearchUsersByFullName(searchTerm, page, pageSize);
+
+            if (!gettingResult.IsSuccessfull) 
+                return BadRequest(gettingResult.GetErrors());
+
+            var result = gettingResult.Value
+                .Select(user => new UserWithEmittersDTO(
+                    user.Id,
+                    user.FullName,
+                    user.Email,
+                    user.Phone,
+                    user.BirthDate,
+                    user.Passport,
+                    user.Role,
+                    user.Emitters
+                        .Select(emitter => new EmitterInfoDTO(
+                            emitter.Id,
+                            emitter.EmitterInfo,
+                            emitter.IssuerId))
+                        .ToList()))
+                .ToList();
+
+            return Ok(result);
         }
 
         [HttpPost("add-new-role/{userId:guid}")]
@@ -147,6 +258,21 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
+        [HttpDelete("unbind-from-emitter")]
+        public async Task<ActionResult> UnbindFromEmitter(
+            Guid userId, 
+            Guid emitterId, 
+            CancellationToken cancellation)
+        {
+            var result = await userRepository
+                .UnbindFromEmitter(userId, emitterId, cancellation);
+
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
+
+            return Ok();
+        }
+
         [HttpPost("bind-to-emitters")]
         public async Task<ActionResult> BindToEmitters(
             [FromBody] BindToEmittersDTO request,
@@ -159,39 +285,39 @@ namespace EmitterPersonalAccount.API.Controllers
             if (!result.IsSuccessfull)
                 return BadRequest(result.GetErrors());
 
-            var outboxSavingResult = await outboxService.CreateAndSaveOutboxMessage(
+           /* var outboxSavingResult = await outboxService.CreateAndSaveOutboxMessage(
                 OutboxMessageType.AddUserEmitterBinding,
                 JsonSerializer.Serialize(Tuple.Create(request.EmittersIdList, request.UserId)),
                 cancellation
                 );
 
             if (!outboxSavingResult.IsSuccessfull)
-                return BadRequest(outboxSavingResult.GetErrors());
+                return BadRequest(outboxSavingResult.GetErrors());*/
 
             return Ok();
         }
 
-       /* [HttpPost("bind-to-emitter/{emitterId:guid}")]
-        public async Task<ActionResult> BindToEmitterById
-            (Guid emitterId, Guid userId, CancellationToken cancellation)
-        {
-            var result = await emittersRepository.BindUser(emitterId, userId);
+        /* [HttpPost("bind-to-emitter/{emitterId:guid}")]
+         public async Task<ActionResult> BindToEmitterById
+             (Guid emitterId, Guid userId, CancellationToken cancellation)
+         {
+             var result = await emittersRepository.BindUser(emitterId, userId);
 
-            if (!result.IsSuccessfull)
-                return BadRequest(result.GetErrors());
+             if (!result.IsSuccessfull)
+                 return BadRequest(result.GetErrors());
 
-            var outboxSavingResult = await outboxService.CreateAndSaveOutboxMessage(
-                OutboxMessageType.AddUserEmitterBinding,
-                JsonSerializer.Serialize(Tuple.Create(emitterId, userId)),
-                cancellation
-                );
+             var outboxSavingResult = await outboxService.CreateAndSaveOutboxMessage(
+                 OutboxMessageType.AddUserEmitterBinding,
+                 JsonSerializer.Serialize(Tuple.Create(emitterId, userId)),
+                 cancellation
+                 );
 
-            if (!outboxSavingResult.IsSuccessfull) 
-                return BadRequest(outboxSavingResult.GetErrors());
+             if (!outboxSavingResult.IsSuccessfull) 
+                 return BadRequest(outboxSavingResult.GetErrors());
 
-            return Ok();
-        }
-*/
+             return Ok();
+         }
+ */
         /*[HttpPost("register-new-emitter")]
         public async Task<ActionResult> RegisterEmitter([FromBody] EmitterInfo emitterInfo, 
             CancellationToken cancellation)
@@ -205,6 +331,29 @@ namespace EmitterPersonalAccount.API.Controllers
 
             return Ok();
         }*/
+        [HttpPut("update")]
+        public async Task<ActionResult> Update(
+            [FromBody] UserDataDTO request)
+        {
+            var result = await usersService.UpdateUser(
+                request.Id,
+                request.BirthDate,
+                request.Passport.DateOfIssuer,
+                $"{request.Surname} {request.Name} {request.Patronymic}",
+                request.Email,
+                request.Phone,
+                request.Passport.Series,
+                request.Passport.Number,
+                request.Passport.Issuer,
+                request.Passport.UnitCode
+            );
+
+            if (!result.IsSuccessfull) 
+                return BadRequest(result.GetErrors());
+
+            return Ok();
+        }
+
         [HttpGet("get-projections")]
         public async Task<ActionResult> GetEmittersProjections()
         {
@@ -279,7 +428,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }*/
 
-        [HttpPost("bind-to-registrator/{registratorId:guid}")]
+       /* [HttpPost("bind-to-registrator/{registratorId:guid}")]
         public async Task<ActionResult> BindToRegistratorById(Guid registratorId, Guid userId)
         {
             var result = await registratorRepository.BindUser(registratorId, userId);
@@ -288,7 +437,7 @@ namespace EmitterPersonalAccount.API.Controllers
                 return BadRequest(result.GetErrors());
 
             return Ok();
-        }
+        }*/
 
         [HttpGet("search-emitters")]
         public async Task<ActionResult<List<EmitterInfoDTO>>> SearchEmitters(string searchTerm, int page = 1, int pageSize = 20)
@@ -305,7 +454,7 @@ namespace EmitterPersonalAccount.API.Controllers
         }
 
         //[Authorize]
-        //[Permission(Permission.ChoiceOfEmitters)]
+        /*[Permission(Permission.ChoiceOfEmitters)]
         [HttpGet("get-emitters")]
         public async Task<ActionResult<List<EmitterInfoDTO>>> GetAllUserEmitters()
         {
@@ -325,6 +474,33 @@ namespace EmitterPersonalAccount.API.Controllers
                 .ToList();
 
             return Ok(response);
+        }*/
+
+        [Permission(Permission.ChoiceOfEmitters)]
+        [HttpGet("get-binding-emitters")]
+        public async Task<ActionResult<List<EmitterInfoDTO>>> GetBindingToUserEmitters
+            (
+            int page = 1,
+            int pageSize = 10,
+            CancellationToken cancellation = default)
+        {
+            var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
+
+            if (userId == null) return BadRequest("user id can not be null");
+
+            Guid.TryParse(userId, out Guid userGuid);
+
+            var emitters = await userRepository
+                .GetEmittersCurrentUser(userGuid, page, pageSize, cancellation);
+
+            if (!emitters.IsSuccessfull) 
+                return BadRequest(emitters.GetErrors());
+
+            var result = emitters.Value
+                .Select(e => new EmitterInfoDTO(e.Id, e.EmitterInfo, e.IssuerId));
+
+            return Ok(result);
+
         }
         /*public async Task<ActionResult> GetUserInfo()
         {// Получается вся информация о пользователе

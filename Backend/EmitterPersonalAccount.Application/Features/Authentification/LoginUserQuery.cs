@@ -1,12 +1,15 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.Repositories;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using MediatR;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Application.Features.Authentification
@@ -22,32 +25,42 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
         private readonly IUserRepository userRepository;
         private readonly IMediator mediator;
         private readonly IPasswordHasher passwordHasher;
+        private readonly IProtectDataService protectService;
 
         public LoginUserQueryHandler(IUserRepository userRepository, 
-            IMediator mediator, IPasswordHasher passwordHasher)
+            IMediator mediator, IPasswordHasher passwordHasher, 
+            IProtectDataService protectService)
         {
             this.userRepository = userRepository;
             this.mediator = mediator;
             this.passwordHasher = passwordHasher;
+            this.protectService = protectService;
         }
         public override async Task<Result<string>> Handle
             (LoginUserQuery request, CancellationToken cancellationToken)
         {
-            var user = await userRepository
-                .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+            var emailHash = protectService.HashForSearch(request.Email);
 
-            if (user == null) return
+
+            var userGettingResult = await userRepository
+                .GetUserWithRoles(u => u.EmailSearchHash == emailHash);
+
+            if (!userGettingResult.IsSuccessfull) return
                     Error(new UserNotFoundError() 
                     { Data = { { "User", "User not found!!" } } });
 
             var isPasswordCorrect = passwordHasher
-                .Verify(request.Password, user.PasswordHash);
+                .Verify(request.Password, userGettingResult.Value.PasswordHash);
 
             if (!isPasswordCorrect) 
                 return Result<string>
                     .Error(new WrongUserPasswordError() { });
 
-            return Result<string>.Success(user.Id.ToString());
+            var claimsData = new UserClaimsData(
+                userGettingResult.Value.Id, 
+                (Role)userGettingResult.Value.Roles.Max(r => r.Id));
+
+            return Result<string>.Success(JsonSerializer.Serialize(claimsData));
         }
     }
 

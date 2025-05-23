@@ -1,5 +1,4 @@
-﻿using EmitterPersonalAccount.Application.Features.Documents;
-using EmitterPersonalAccount.Core.Abstractions;
+﻿using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
@@ -23,12 +22,17 @@ namespace DocumentsService.Services
             this.hashService = hashService;
             this.publisher = publisher;
         }
-        public async Task<Result> SendToRecipientAsync(SendDocumentEvent sendDocumentEvent,
+        public async Task<Result> SendToRecipientAsync(SendDocumentEvent ev,
             CancellationToken cancellationToken)
         {
-            var saveToDbResult =  await documentRepository.CreateDocumentsAsync(sendDocumentEvent.SenderId,
-                sendDocumentEvent.IssuerId,sendDocumentEvent.Documents, cancellationToken,
-                sendDocumentEvent.WithDigitalSignature);
+            var saveToDbResult =  await documentRepository
+                .CreateDocumentsAsync(
+                    ev.SenderId,
+                    ev.Role,
+                    ev.IssuerId,
+                    ev.Documents, 
+                    cancellationToken,
+                    ev.WithDigitalSignature);
 
             if (!saveToDbResult.IsSuccessfull) return saveToDbResult;
 
@@ -37,19 +41,23 @@ namespace DocumentsService.Services
                 MethodForResultSending = MethodResultSending.ReceiveDocuments,
                 ContentJSON = JsonSerializer.Serialize(new DocumentsContent(
                     saveToDbResult.Value,
-                    sendDocumentEvent.SenderId.ToString()
+                    ev.SenderId.ToString()
                 ))
             });
-            Console.WriteLine("Отпраляем результат из документ сервиса");
+            
             var delResult = await publisher
-                .SendMessageAsync(signalREvent, RabbitMqAction.SendResultToClient, cancellationToken);
-            Console.WriteLine($"Результат был отправлен {delResult}");
+                .SendMessageAsync(
+                    signalREvent, 
+                    RabbitMqAction.SendResultToClient, 
+                    cancellationToken);
+
+            
             return Result.Success();
         }
-        public async Task<Result<List<Document>>> GetDocumentsInfoByUserId(Guid userId)
+       /* public async Task<Result<List<Document>>> GetDocumentsInfoByUserId(Guid userId)
         {
             return await documentRepository.GetByUserId(userId);    
-        }
+        }*/
         public async Task<Result<List<Document>>> GetDocumentsInfoByEmitterId(int issuerId)
         {
             return await documentRepository.GetByEmitterId(issuerId);

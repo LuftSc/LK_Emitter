@@ -11,6 +11,7 @@ import { getDocumentsByPageByIssuerId } from "../services/documentsService";
 import { errorMessages } from "../services/errorMessages";
 import { UploadDocumentArea } from "../ui/documents-page/upload-area";
 import { useSignalR } from "../signalR/SignalRContext";
+import { Role } from "../services/usersService";
 
 export default function Page() {
     const [documents, setDocuments] = useState<Document[]>([])
@@ -52,7 +53,7 @@ export default function Page() {
             }))
             setEmitterInfo(emitterData)
 
-            console.log("кидаем запрос на отчёты по id: " + emitterData.IssuerId)
+            //console.log("кидаем запрос на отчёты по id: " + emitterData.IssuerId)
             getDocumentsByPage(emitterData.IssuerId, pagination) 
             
             subscribeOnReceiveDocuments()
@@ -102,6 +103,7 @@ export default function Page() {
 
     const withDocumentsUploadAction = async () => {
         const currentConnection = connection ? connection : await startConnection()
+        
 
         currentConnection?.off('ReceiveDocuments')
 
@@ -110,6 +112,11 @@ export default function Page() {
 
     const subscribeOnReceiveDocuments = async (unSubscribe: boolean = false) => {
         const currentConnection = connection ? connection : await startConnection()
+        const emitter = localStorage.getItem('emitter')
+        const emitterData = emitter ? JSON.parse(emitter) : null
+
+        await currentConnection?.invoke('EmitterSelected', emitterData.Id)
+
 
         if (unSubscribe) {
             currentConnection?.off('ReceiveDocuments')
@@ -206,12 +213,13 @@ export default function Page() {
             title: 'Размер файла',
             dataIndex: 'size',
             key: 'size',
+            render: (size) => `${size} КБ`
         },
         {
-            title: 'Отправитель',
-            dataIndex: 'isEmitterSended',
-            key: 'isEmitterSended',
-            render: (value) => value ? 'Эмитент' : 'Регистратор'
+            title: 'Роль отправителя',
+            dataIndex: 'senderRole',
+            key: 'senderRole',
+            render: (role: Role) => Role[role]
         },
         {
             title: "Скачать",

@@ -5,6 +5,7 @@ using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using Registrator.API.Services;
 using Registrator.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using PdfSharp.Fonts;
 
 namespace Registrator.API
 {
@@ -20,6 +21,8 @@ namespace Registrator.API
             // Add services to the container.
             builder.Services.AddAuthorization();
 
+            builder.Configuration.AddEnvironmentVariables();
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -29,7 +32,10 @@ namespace Registrator.API
                 options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(RegistratorDbContext)));
             });
 
+            builder.Services.AddHostedService<MigrationHostedService>();
             builder.Services.RegisterRepository<IDirectivesRepository, DirectiveRepository>();
+
+            GlobalFontSettings.FontResolver = new PDFSharpBuiltinResolver();
 
             builder.Services.AddScoped<PdfGeneratorService>();
 
@@ -47,27 +53,6 @@ namespace Registrator.API
             app.UseAuthorization();
 
             app.AddMappedEndpoints();
-/*
-            var summaries = new[]
-            {
-                "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-            };
-
-            
-            app.MapGet("/weatherforecast", (HttpContext httpContext) =>
-            {
-                var forecast = Enumerable.Range(1, 5).Select(index =>
-                    new WeatherForecast
-                    {
-                        Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                        TemperatureC = Random.Shared.Next(-20, 55),
-                        Summary = summaries[Random.Shared.Next(summaries.Length)]
-                    })
-                    .ToArray();
-                return forecast;
-            })
-            .WithName("GetWeatherForecast")
-            .WithOpenApi();*/
 
             app.Run();
         }

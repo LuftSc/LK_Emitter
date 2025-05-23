@@ -1,5 +1,4 @@
 ﻿using BaseMicroservice;
-using EmitterPersonalAccount.Application.Features.Documents;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
@@ -21,8 +20,8 @@ namespace DocumentsService.Consumers
         public override async Task<Result<DocumentInfo>> 
             OnMessageProcessingAsync(string message)
         {
-            var query = JsonSerializer
-                .Deserialize<DownloadDocumnetQuery>(message);
+            var documentId = JsonSerializer
+                .Deserialize<Guid>(message);
 
             Result<Document> serviceResult;
 
@@ -32,7 +31,7 @@ namespace DocumentsService.Consumers
                     .GetRequiredService<IDocumentsService>();
 
                 serviceResult = await documentService
-                    .DownloadDocumentById(query.DocumentId, default);
+                    .DownloadDocumentById(documentId, default);
 
                 if (serviceResult.IsSuccessfull && 
                     !string.IsNullOrEmpty(serviceResult.Value.Hash))

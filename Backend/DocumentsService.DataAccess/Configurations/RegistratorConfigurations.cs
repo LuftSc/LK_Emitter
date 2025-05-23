@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace DocumentsService.DataAccess.Configurations
 {
-    public class RegistratorConfigurations : IEntityTypeConfiguration<Registrator>
+    /*public class RegistratorConfigurations : IEntityTypeConfiguration<Registrator>
     {
         public void Configure(EntityTypeBuilder<Registrator> builder)
         {
@@ -39,5 +39,5 @@ namespace DocumentsService.DataAccess.Configurations
                     ).HasMaxLength(110);
             });
         }
-    }
+    }*/
 }

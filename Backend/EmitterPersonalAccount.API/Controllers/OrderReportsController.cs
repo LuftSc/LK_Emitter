@@ -21,12 +21,14 @@ namespace EmitterPersonalAccount.API.Controllers
     {
         private readonly IMediator mediator;
         private readonly IRabbitMqPublisher publisher;
+        private readonly IRpcClient rpcClient;
 
         public OrderReportsController(IMediator mediator, 
-            IRabbitMqPublisher publisher)
+            IRabbitMqPublisher publisher, IRpcClient rpcClient)
         {
             this.mediator = mediator;
             this.publisher = publisher;
+            this.rpcClient = rpcClient;
         }
 
        /* [Authorize]
@@ -60,15 +62,16 @@ namespace EmitterPersonalAccount.API.Controllers
                 PageSize = pagination.PageSize
             };
 
-            var isSuccesfull = await publisher
-                .SendMessageAsync(
-                    JsonSerializer.Serialize(getReportsEvent), 
-                    RabbitMqAction.GetOrderReports, 
+            var result = await rpcClient
+                .CallAsync<OrderReportPaginationList>
+                    (JsonSerializer.Serialize(getReportsEvent),
+                    RabbitMqAction.GetOrderReports,
                     default);
 
-            if (!isSuccesfull) return BadRequest();
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
 
-            return Ok(isSuccesfull);
+            return Ok(result.Value);
         }
 
         [Authorize]

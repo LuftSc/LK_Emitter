@@ -3,6 +3,7 @@
 import { List } from "antd";
 import AddEmitentName from "./addEmitentSelect";
 import { useState } from "react";
+import { Role } from "@/app/services/usersService";
 
 const data = [
     'ООО такое-то',
@@ -12,7 +13,7 @@ const data = [
 ]
 
 interface Props {
-    newRole: string
+    newRole: Role
 }
 
 export default function ListOfEmitents({newRole}: Props) {
@@ -21,8 +22,8 @@ export default function ListOfEmitents({newRole}: Props) {
 
     return (
         <List
-            className={newRole == 'representative' ? "w-[550px]" : "hidden"}
-            header={<div className="font-semibold">Список организаций, представляемых выбранным пользователем:</div>}
+            className={newRole == Role.Emitter ? "w-[550px]" : "hidden"}
+            header={<div className="font-semibold">Список эмитентов, к которым будет прикреплён пользователь:</div>}
             footer={<AddEmitentName setEmitentName={setEmitentName} />}
             bordered
             dataSource={data}

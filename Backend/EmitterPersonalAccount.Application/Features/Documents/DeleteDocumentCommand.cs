@@ -28,7 +28,7 @@ namespace EmitterPersonalAccount.Application.Features.Documents
         public override async Task<Result> Handle
             (DeleteDocumentCommand request, CancellationToken cancellationToken)
         {
-            var message = JsonSerializer.Serialize(request);
+            var message = JsonSerializer.Serialize(request.DocumentId);
 
             var isSuccessfull = await publisher
                 .SendMessageAsync(message, RabbitMqAction.DeleteDocument, cancellationToken);

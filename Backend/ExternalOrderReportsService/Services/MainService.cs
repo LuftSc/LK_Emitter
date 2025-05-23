@@ -6,23 +6,20 @@ namespace ExternalOrderReportsService.Services
 {
     public class MainService : IHostedService
     {
-        //private readonly RequestListOfShareholdersConsumer requestShareholdersConsumer;
-        //private readonly RequestReeRepConsumer requestReeRepConsumer;
-        //private readonly RequestDividendListConsumer requestDividendListConsumer;
-        private readonly GetOrderReportsConsumer getOrderReportsConsumer;
+        //private readonly GetOrderReportsConsumer getOrderReportsConsumer;
 
         private readonly RequestOrderReportConsumer requestOrderReportConsumer;
 
         private readonly DownloadReportOrderRpcServer downloadReportOrderRpcServer;
+
+        private readonly GetOrderReportsRpcServer getOrderReportsRpcServer;
         public MainService(IConfiguration configuration, IServiceProvider provider)
         {
             var rabbitUri = configuration.GetConnectionString("RabbitMqUri");
             ArgumentNullException.ThrowIfNull(rabbitUri, "Rabbit URI can not be null!");
 
-            //requestShareholdersConsumer = new RequestListOfShareholdersConsumer(rabbitUri, provider);
-            //requestReeRepConsumer = new RequestReeRepConsumer(rabbitUri, provider);
-            //requestDividendListConsumer = new RequestDividendListConsumer(rabbitUri, provider);
-            getOrderReportsConsumer = new GetOrderReportsConsumer(rabbitUri, provider);
+            //getOrderReportsConsumer = new GetOrderReportsConsumer(rabbitUri, provider);
+            getOrderReportsRpcServer = new GetOrderReportsRpcServer(rabbitUri, provider);
 
             requestOrderReportConsumer = new RequestOrderReportConsumer(rabbitUri, provider);
 
@@ -30,14 +27,10 @@ namespace ExternalOrderReportsService.Services
         }
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-           /* await requestShareholdersConsumer
-                .ExecuteAsync(RabbitMqAction.RequestListOfShareholders, cancellationToken);
-            await requestReeRepConsumer
-                .ExecuteAsync(RabbitMqAction.RequestReeRep, cancellationToken);
-            await requestDividendListConsumer
-                .ExecuteAsync(RabbitMqAction.RequestDividendList, cancellationToken);*/
-            await getOrderReportsConsumer
-                .ExecuteAsync(RabbitMqAction.GetOrderReports, cancellationToken);
+            /*await getOrderReportsConsumer
+                .ExecuteAsync(RabbitMqAction.GetOrderReports, cancellationToken);*/
+            await getOrderReportsRpcServer
+                .StartAsync(RabbitMqAction.GetOrderReports, cancellationToken);
 
             await requestOrderReportConsumer
                 .ExecuteAsync(RabbitMqAction.RequestOrderReport, cancellationToken);
@@ -47,10 +40,11 @@ namespace ExternalOrderReportsService.Services
         }
         public Task StopAsync(CancellationToken cancellationToken)
         {
-           /* requestShareholdersConsumer.Dispose();
-            requestReeRepConsumer.Dispose();
-            requestDividendListConsumer.Dispose();*/
-            getOrderReportsConsumer.Dispose();
+            /* requestShareholdersConsumer.Dispose();
+             requestReeRepConsumer.Dispose();
+             requestDividendListConsumer.Dispose();*/
+            //getOrderReportsConsumer.Dispose();
+            getOrderReportsRpcServer.Dispose();
             requestOrderReportConsumer.Dispose();
             downloadReportOrderRpcServer.Dispose();
 

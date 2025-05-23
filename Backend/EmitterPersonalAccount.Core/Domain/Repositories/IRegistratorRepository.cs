@@ -11,6 +11,6 @@ namespace EmitterPersonalAccount.Core.Domain.Repositories
 {
     public interface IRegistratorRepository : IRepository<Registrator>
     {
-        Task<Result> BindUser(Guid registratorId, Guid userId);
+        //Task<Result> BindUser(Guid registratorId, Guid userId);
     }
 }

@@ -19,7 +19,7 @@ namespace EmitterPersonalAccount.Application.Services
             if (!isClaimExist)
                 return Result<string>.Error(new UserClaimNotFoundError());
 
-            var claim = context.User.FindFirst(CustomClaims.UserId).Value;
+            var claim = context.User.FindFirst(type).Value;
 
             if (claim is null)
                 return Result<string>.Error(new UserClaimGettingError());

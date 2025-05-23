@@ -3,6 +3,7 @@ using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Logs;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -47,23 +48,26 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
             if (savedCode != request.ConfiramtionCode)
                 return Error(new WrongConfirmationCodeError());
 
-            var userId = await distributedCache.GetStringAsync($"id-{request.Email}");
+            var claimsDataString = await distributedCache.GetStringAsync($"id-{request.Email}");
 
-            if (userId is null)
+            if (claimsDataString is null)
                  return Error(new ExpiredConfirmationCodeError());
 
             await distributedCache.RemoveAsync(request.Email);
             await distributedCache.RemoveAsync($"id-{request.Email}");
 
+            var claimsData = JsonSerializer
+                .Deserialize<UserClaimsData>(claimsDataString);
+
             var loggingActionEvent = new UserActionLogEvent
-                (userId, ActionLogType.LoginToSystem.Type, request.IpAddress);
+                (claimsData.UserId.ToString(), ActionLogType.LoginToSystem.Type, request.IpAddress);
 
             var deliveryResult = await publisher.SendMessageAsync(
                 JsonSerializer.Serialize(loggingActionEvent),
                 RabbitMqAction.Audit,
                 default);
 
-            var token = jwtProvider.GenerateToken(userId);
+            var token = jwtProvider.GenerateToken(claimsData.UserId.ToString(), claimsData.Role);
 
             return Success(token);
         }

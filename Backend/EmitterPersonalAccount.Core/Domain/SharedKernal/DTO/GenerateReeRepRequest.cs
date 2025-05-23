@@ -22,20 +22,20 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal.DTO
         bool IncludeInfoShown,                  // Чекбокс "включая сведения о лицах..."
         bool CertificateAboutState,        // Чекбокс "Справка о состоянии лицевого счета"
         
-        string FcsName,                    // Наименование/ФИО
-        string OgrnPassport,               // ОГРН/Паспорт
-        bool Another,                      // Чекбокс на Иное
-        string AnotherText,                // Текст иного
-        bool Section61,                    // статья 6.1
-        bool Section51,                    // статья 51
-        bool Section30,                    // статья 30
-        bool Section20,                    // статья 20
-        bool Section17,                    // статья 17
-        bool AnotherSection,               // Чекбокс на Иное после статей
-        string AnotherSectionText,         // Текст иного после статей
-        string EmitentRepresentative,      // Уполномоченный представитель
-        bool IsRegulationOrAttorney,       // Флажок Устав/Доверенность
-        int RegulationNumber,               // номер Устава или Доверенности
+        string FcsName = "",                    // Наименование/ФИО
+        string OgrnPassport = "",               // ОГРН/Паспорт
+        bool Another = false,                      // Чекбокс на Иное
+        string AnotherText = "",                // Текст иного
+        bool Section61 = false,                    // статья 6.1
+        bool Section51 = false,                    // статья 51
+        bool Section30 = false,                    // статья 30
+        bool Section20 = false,                    // статья 20
+        bool Section17 = false,                    // статья 17
+        bool AnotherSection = false,               // Чекбокс на Иное после статей
+        string AnotherSectionText = "",         // Текст иного после статей
+        string EmitentRepresentative = "",      // Уполномоченный представитель
+        bool IsRegulationOrAttorney = false,       // Флажок Устав/Доверенность
+        int RegulationNumber = -1,               // номер Устава или Доверенности
         
         string InternalDocumentId = ""
         )

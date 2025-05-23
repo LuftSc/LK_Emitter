@@ -51,7 +51,7 @@ export default function Home() {
   }, [])
 
   const onAuthSucces = async () => {
-    const emittersResponse = await getUserEmitters()
+    const emittersResponse = await getUserEmitters(1, 15)
       console.log(emittersResponse)
 
       if (emittersResponse?.ok) { // Случай, когда запрос выполнился успешно
@@ -75,7 +75,7 @@ export default function Home() {
         <h1 className="text-4xl mt-[40px] ml-[54px]">
           Личный кабинет Эмитента
         </h1>
-        <div className="flex flex-col items-center max-w-[1104px] h-[744px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[27px]">
+        <div className="flex flex-col items-center max-w-[1104px] h-[1500px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[27px]">
           <ConfirmationForm email={email} visCon={visCon} setVisCon={setVisCon} onLoginSuccess={onAuthSucces}/>
           {/*<LogInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} visLog={visLog} setVisLog={setVisLog} setVisCon={setVisCon}/> */}
           <LogInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} visLog={visLog} setVisLog={setVisLog} setVisCon={setVisCon} onLoginSuccess={onAuthSucces}/>

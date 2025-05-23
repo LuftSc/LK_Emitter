@@ -1,4 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -17,7 +18,7 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
         // В свойстве Value хранится объект, который передаётся через generic
         // <JwtOpions>
         private readonly JwtOptions options = options.Value;
-        public string GenerateToken(string userId)
+        public string GenerateToken(string userId, Role role)
         {
             var signingCredentials = new SigningCredentials(
                 // Так получать секретный ключ небезопасно, потом поправим это
@@ -27,7 +28,8 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
 
             Claim[] claims =
             [
-                new (CustomClaims.UserId, userId)
+                new (CustomClaims.UserId, userId),
+                new (CustomClaims.Role, role.ToString())
             ];
 
             // claims - словарь ключ - значение, куда мы можем поместить дополнительную информацию о пользователе

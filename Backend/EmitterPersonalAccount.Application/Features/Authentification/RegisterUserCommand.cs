@@ -22,7 +22,7 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
     {
         public string Email { get; set; }
         public string Password { get; set; }
-        public List<Guid>? EmittersGuids { get; set; }
+        public List<Guid> EmittersGuids { get; set; } = [];
         public Role Role { get; set; } = Role.User;
     }
 
@@ -46,7 +46,7 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
         public override async Task<Result> Handle
             (RegisterUserCommand request, CancellationToken cancellationToken)
         {
-            var passwordHash = passwordHasher.Generate(request.Password);
+            /*var passwordHash = passwordHasher.Generate(request.Password);
 
             var userCreateResult = User.Create(request.Email, passwordHash);
 
@@ -67,6 +67,8 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
                     cancellationToken);
 
             if (!outboxSavingResult.IsSuccessfull) return outboxSavingResult;
+
+            return Result.Success();*/
 
             return Result.Success();
         }

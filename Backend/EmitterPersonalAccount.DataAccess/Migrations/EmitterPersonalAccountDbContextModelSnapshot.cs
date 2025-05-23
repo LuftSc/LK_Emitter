@@ -225,10 +225,13 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsEmitterSended")
-                        .HasColumnType("boolean");
-
                     b.Property<int>("IssuerId")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SenderRole")
                         .HasColumnType("integer");
 
                     b.Property<string>("Title")
@@ -242,14 +245,9 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                     b.Property<DateTime>("UploadDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("EmitterId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Document");
                 });
@@ -585,7 +583,27 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Email")
+                    b.Property<string>("EmailSearchHash")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EncryptedBirthDate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EncryptedEmail")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EncryptedFullName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EncryptedPhone")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FullNameSearchHash")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -593,12 +611,32 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("RegistratorId")
-                        .HasColumnType("uuid");
+                    b.ComplexProperty<Dictionary<string, object>>("EncryptedPassport", "EmitterPersonalAccount.Core.Domain.Models.Postgres.User.EncryptedPassport#EncryptedPassport", b1 =>
+                        {
+                            b1.IsRequired();
+
+                            b1.Property<string>("DateOfIssue")
+                                .HasColumnType("text")
+                                .HasColumnName("DateOfIssue");
+
+                            b1.Property<string>("Issuer")
+                                .HasColumnType("text")
+                                .HasColumnName("PassportIssuer");
+
+                            b1.Property<string>("Number")
+                                .HasColumnType("text")
+                                .HasColumnName("Number");
+
+                            b1.Property<string>("Series")
+                                .HasColumnType("text")
+                                .HasColumnName("Series");
+
+                            b1.Property<string>("UnitCode")
+                                .HasColumnType("text")
+                                .HasColumnName("UnitCode");
+                        });
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RegistratorId");
 
                     b.ToTable("Users");
                 });
@@ -616,6 +654,25 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                     b.HasIndex("EmitterId");
 
                     b.ToTable("UserEmitter");
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FriendlyName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Xml")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("DataProtectionKeys");
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.Authorization.RolePermission", b =>
@@ -653,23 +710,6 @@ namespace EmitterPersonalAccount.DataAccess.Migrations
                     b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitter", null)
                         .WithMany("Documents")
                         .HasForeignKey("EmitterId");
-
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.User", b =>
-                {
-                    b.HasOne("EmitterPersonalAccount.Core.Domain.Models.Postgres.Registrator", "Registrator")
-                        .WithMany()
-                        .HasForeignKey("RegistratorId");
-
-                    b.Navigation("Registrator");
                 });
 
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.UserEmitter", b =>

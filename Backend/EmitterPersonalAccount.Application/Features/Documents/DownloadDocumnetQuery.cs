@@ -29,7 +29,7 @@ namespace EmitterPersonalAccount.Application.Features.Documents
         public override async Task<Result<DocumentInfo>> 
             Handle(DownloadDocumnetQuery request, CancellationToken cancellationToken)
         {
-            var message = JsonSerializer.Serialize(request);
+            var message = JsonSerializer.Serialize(request.DocumentId);
 
             var result = await rpcClient.CallAsync<DocumentInfo>(message,
                 RabbitMqAction.DownloadDocument, cancellationToken);

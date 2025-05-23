@@ -23,7 +23,8 @@ namespace DocumentsService.Consumers
 
             using (var scope = provider.CreateScope())
             {
-                var documentsService = scope.ServiceProvider.GetRequiredService<IDocumentsService>();
+                var documentsService = scope.ServiceProvider
+                    .GetRequiredService<IDocumentsService>();
 
                 response = await documentsService
                     .SendToRecipientAsync(sendDocumentEvent, default);

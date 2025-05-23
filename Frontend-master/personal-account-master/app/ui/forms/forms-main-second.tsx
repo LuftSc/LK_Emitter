@@ -14,6 +14,11 @@ export default function FormsMainSecond() {
         orderReports: ReportOrder[]
     }>({ totalSize: 0, orderReports: [] })
 
+    // const [paginationDocuments, setPaginationDocuments] = useState<{
+    //             totalSize: number, 
+    //             documents:Document[]
+    //         }>({totalSize: 0, documents:[]})
+
     const { connection } = useSignalR();
     const { startConnection } = useSignalR();
 
@@ -60,16 +65,21 @@ export default function FormsMainSecond() {
         setLoading(true)
         setPagination(pagination)
 
-        await subscribeOnReceiveListReports()
-        //await subscribeOnReceiveReport()
+        //await subscribeOnReceiveListReports()
+        await subscribeOnReceiveReport()
 
-        const orderReportsResponse = await
+        const response = await
             getOrderReportsByEmitterId(issuerId, pagination.current, pagination.pageSize)
 
-        if (orderReportsResponse?.ok) {
-            console.log('Отправили запрос на отчёты')
+        if (response?.ok) {
+            const orderReports = await response.json();
+            setOrderReports(orderReports)
+            
+            // const docs = await documentsResponse.json();
+            // setPaginationDocuments(docs);
+            setLoading(false)
 
-        } else if (orderReportsResponse?.status === 400) {
+        } else if (response?.status === 400) {
             console.error('контролируемая ошибка')
         } else {
             console.error('НЕконтролируемая ошибка')
@@ -105,8 +115,10 @@ export default function FormsMainSecond() {
         setOrderReports(prev => {
             // Если мы на первой странице
             if (pagination.current === 1) {
-                const newReports = [reportOrder, ...prev.orderReports];
-
+                const newReports = 
+                    !prev.orderReports.some(item => item.internalId === reportOrder.internalId) 
+                        ? [reportOrder, ...prev.orderReports] 
+                        : prev.orderReports;
                 // Обрезаем массив, если превысили pageSize
                 if (newReports.length > pagination.pageSize) {
                     newReports.pop();
@@ -130,8 +142,8 @@ export default function FormsMainSecond() {
 
         const currentConnection = connection ? connection : await startConnection()
 
-        if (currentConnection)
-            console.log(isSubscribed(currentConnection, 'ReceiveReport'))
+        //if (currentConnection)
+           // console.log( `подписка: ${isSubscribed(currentConnection, 'ReceiveReport')}` )
 
         currentConnection?.on('ReceiveReport',
             (orderReport: ReportOrder) => {

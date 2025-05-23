@@ -1,5 +1,6 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -40,7 +41,8 @@ namespace EmitterPersonalAccount.Application.Features.Documents
         public override async Task<Result<DocumentPaginationList>> Handle
             (GetDocumentsInfoQuery request, CancellationToken cancellationToken)
         {
-            var message = JsonSerializer.Serialize(request);
+            var message = JsonSerializer.Serialize(
+                new GetDocumentsEvent(request.IssuerId, request.Page, request.PageSize));
 
             var result = await rpcClient
                 .CallAsync<DocumentPaginationList> 

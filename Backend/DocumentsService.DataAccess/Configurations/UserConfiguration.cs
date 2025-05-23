@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DocumentsService.DataAccess.Configurations
 {
-    public class UserConfiguration : IEntityTypeConfiguration<User>
+   /* public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
@@ -17,5 +17,5 @@ namespace DocumentsService.DataAccess.Configurations
 
             //builder.HasOne(u => u.Registrator).WithMany(r => r.Users);
         }
-    }
+    }*/
 }

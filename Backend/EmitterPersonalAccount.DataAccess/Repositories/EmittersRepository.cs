@@ -77,11 +77,11 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
 
             return Result.Success();
         }*/
-        public async Task<Result<List<Tuple<Guid, EmitterInfo, int>>>> GetAllByUserId(Guid userId)
+       /* public async Task<Result<List<Tuple<Guid, EmitterInfo, int>>>> GetAllByUserId(Guid userId)
         {
             var user = await context.Users
                 .Include(u => u.Emitters)
-                .Include(u => u.Registrator)
+                //.Include(u => u.Registrator)
                 .FirstOrDefaultAsync(x => x.Id == userId);
 
             if (user is null)
@@ -106,7 +106,7 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
             }
 
             return Result<List<Tuple<Guid, EmitterInfo, int>>>.Success(emittersInfo);
-        }
+        }*/
     }
 
     public class EmitterNotFoundError : Error

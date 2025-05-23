@@ -1,14 +1,15 @@
 'use client'
 
+import { Role } from '@/app/services/usersService';
 import { Select } from 'antd';
 
 interface Props {
-    setNewRole: React.Dispatch<React.SetStateAction<string>>
+    setNewRole: React.Dispatch<React.SetStateAction<Role>>
 }
 
 export default function SelectForUserRoles({setNewRole}: Props) {
 
-    const onChange = (value: any) => {
+    const onChange = (value: Role) => {
         setNewRole(value)
     }
 
@@ -24,10 +25,10 @@ export default function SelectForUserRoles({setNewRole}: Props) {
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }
             options={[
-                {value: 'noRole', label: 'Пользователь'},
-                {value: 'representative', label: 'Представитель эмитента'},
-                {value: 'registrator', label: 'Сотрудник регистратора'},
-                {value: 'admin', label: 'Администратор'},
+                {value: Role.User, label: 'Пользователь'},
+                {value: Role.Emitter, label: 'Представитель эмитента'},
+                {value: Role.Registrator, label: 'Сотрудник регистратора'},
+                {value: Role.Admin, label: 'Администратор'},
             ]}
         />
     )

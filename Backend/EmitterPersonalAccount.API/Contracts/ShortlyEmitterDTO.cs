@@ -4,7 +4,7 @@ namespace EmitterPersonalAccount.API.Contracts
 {
     public record ShortlyEmitterDTO(
         EmitterInfoRecord EmitterInfo,
-        int? IssuerId
+        int IssuerId
         )
     {
     }

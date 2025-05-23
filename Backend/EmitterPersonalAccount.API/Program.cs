@@ -19,6 +19,7 @@ using EmitterPersonalAccount.DataAccess.Repositories;
 using MassTransit;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,12 @@ namespace EmitterPersonalAccount.API
                     .GetConnectionString(nameof(EmitterPersonalAccountDbContext))
             ));
 
+            builder.Services.AddDataProtection()
+                .PersistKeysToDbContext<EmitterPersonalAccountDbContext>()
+                .SetApplicationName("Edge.API");
+
+            builder.Services.AddScoped<IProtectDataService, ProtectDataService>();
+            
             /*builder.Services.AddMassTransit(x =>
             {
                 x.AddBus(provider =>
@@ -100,6 +107,8 @@ namespace EmitterPersonalAccount.API
 
             builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 
+            builder.Services.AddScoped<IUsersService, UsersService>();
+
             builder.Services.AddStackExchangeRedisCache(options =>
             {
                 var connection = builder.Configuration.GetConnectionString("Redis");
@@ -113,7 +122,7 @@ namespace EmitterPersonalAccount.API
             builder.Services.AddHostedService<RabbitMqInitializer>();
             builder.Services.AddHostedService<RpcClientInitializer>();
 
-            builder.Services.AddHostedService<OutboxPublisherService>();
+            //builder.Services.AddHostedService<OutboxPublisherService>();
 
             /*builder.Services.AddHostedService<ConsumerRunService>(provider => new ConsumerRunService(
                 builder.Configuration,

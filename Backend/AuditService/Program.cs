@@ -17,6 +17,8 @@ namespace AuditService
             builder.Configuration.AddJsonFile
                 ("appsettings.Audit.json", optional: false, reloadOnChange: true);
 
+            builder.Configuration.AddEnvironmentVariables();
+
             builder.Services.AddDbContext<AuditServiceDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(AuditServiceDbContext))),
                 contextLifetime: ServiceLifetime.Scoped);
@@ -29,6 +31,7 @@ namespace AuditService
             // Add services to the container.
             builder.Services.AddAuthorization();
 
+            builder.Services.AddHostedService<MigrationHostedService>();
             
             builder.Services.AddHostedService<MainService>(provider =>
                 new MainService(builder.Configuration, provider));
