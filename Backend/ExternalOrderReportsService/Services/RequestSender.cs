@@ -4,23 +4,28 @@ using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Contracts;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
+using Microsoft.Extensions.Options;
+using ExternalOrderReportsService.Configurations;
 
 namespace ExternalOrderReportsService.Services
 {
     public class RequestSender : IRequestSender
     {
         private readonly HttpClient httpClient;
+        private readonly RegistratorEndpointOptions options;
 
-        public RequestSender(HttpClient httpClient)
+        public RequestSender(HttpClient httpClient, 
+            IOptions<RegistratorEndpointOptions> options)
         {
             this.httpClient = httpClient;
+            this.options = options.Value;
         }
 
         public async Task<Result<DocumentInfo>> SendDownloadReportRequest
             (Guid reportOrderId)
         {
-            var url = $"https://localhost:7024/api/LoadPdfFromStorage?code_doc={reportOrderId}";
-
+            //var url = $"https://localhost:7024/api/LoadPdfFromStorage?code_doc={reportOrderId}";
+            var url = $"{options.Download}{reportOrderId}";
             var response = await httpClient.GetAsync(url);
 
             if (!response.IsSuccessStatusCode)
@@ -48,7 +53,8 @@ namespace ExternalOrderReportsService.Services
             var dateString = requestDate.ToString("yyyy-MM-dd HH:mm:ss");
             // Заменить на URL вашего API: 
             // http://host:port/api/ListOfShareholdersForMeetingNotSign?r=2023-07-11 09:15:15
-            var url = $"https://localhost:7024/api/ListOfShareholdersForMeetingNotSign?r={dateString}";
+            //var url = $"https://localhost:7024/api/ListOfShareholdersForMeetingNotSign?r={dateString}";
+            var url = $"{options.ListOfShareholders}{dateString}";
 
             var apiRequest = new ListOfShareholdersRequest(
                 ReportName: "ListOfMeetingShareholdersCb",
@@ -112,7 +118,8 @@ namespace ExternalOrderReportsService.Services
             var dateString = requestDate.ToString("yyyy-MM-dd HH:mm:ss");
             // Заменить на URL вашего API: 
             // http://host:port/api/ReeRepNotSign?r=2023-07-11 09:15:15
-            var url = $"https://localhost:7024/api/ReeRepNotSign?r={dateString}";
+            //var url = $"https://localhost:7024/api/ReeRepNotSign?r={dateString}";
+            var url = $"{options.ReeRep}{dateString}";
 
             var apiRequest = new ReeRepNotSignRequest(
                 ReportName: "ReeRep",
@@ -205,7 +212,8 @@ namespace ExternalOrderReportsService.Services
             var dateString = requestDate.ToString("yyyy-MM-dd HH:mm:ss");
             // Заменить на URL вашего API: 
             // http://host:port/api/ReportAboutDividendListNotSignController?r=2023-07-11 09:15:15
-            var url = $"https://localhost:7024/api/ReportAboutDividendListNotSignController?r={dateString}";
+            //var url = $"https://localhost:7024/api/ReportAboutDividendListNotSignController?r={dateString}";
+            var url = $"{options.DividendList}{dateString}";
 
             var apiRequest = new ReportAboutDividendListNotSignRequest(
                 ReportName: "DividendList",

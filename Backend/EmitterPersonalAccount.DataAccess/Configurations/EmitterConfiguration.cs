@@ -19,7 +19,7 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
             builder.Property(e => e.IssuerId).HasColumnName("ISSUER_ID");
             builder.Property(e => e.Id).HasColumnName("EMIT_ID");
 
-            builder.HasOne(e => e.Registrator).WithMany(r => r.Emitters);
+            //builder.HasOne(e => e.Registrator).WithMany(r => r.Emitters);
             /*builder.HasMany(e => e.Documents)
                 .WithOne(d => d.Emitter)
                 .OnDelete(DeleteBehavior.Cascade); */
@@ -52,28 +52,30 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
             // Конфигурация VO Location
             builder.ComplexProperty(e => e.Location, locBuilder =>
             {
-                locBuilder.Property(p => p.Country).HasColumnName("COD_COUNTRY").HasMaxLength(15);
+                locBuilder.Property(p => p.Country).HasColumnName("COD_COUNTRY").HasMaxLength(15).IsRequired(false);
                 locBuilder.Property(p => p.Index).HasColumnName("IND");
-                locBuilder.Property(p => p.Region).HasColumnName("COD_REGION").HasMaxLength(25);
+                locBuilder.Property(p => p.Region).HasColumnName("COD_REGION").HasMaxLength(25).IsRequired(false); ;
                 // Конфигурация для VO Address
                 locBuilder.Property(p => p.Address).HasColumnName("ADDRESS").HasConversion(
                     a => a.ToString(), // Когда ложим объект в БД
                     a => Address.Parse(a) // Когда достаём из БД
-                    ).HasMaxLength(110);
+                    ).HasMaxLength(110).IsRequired(false);
+
+                //locBuilder.IsRequired(false);
             });
             // Конфигурация VO MailingAddress
             builder.ComplexProperty(e => e.MailingAddress, mailBuilder =>
             {
                 mailBuilder.ComplexProperty(m => m.Location, locBuilder =>
                 {
-                    locBuilder.Property(p => p.Country).HasColumnName("COD_PCOUNTRY").HasMaxLength(15);
+                    locBuilder.Property(p => p.Country).HasColumnName("COD_PCOUNTRY").HasMaxLength(15).IsRequired(false);
                     locBuilder.Property(p => p.Index).HasColumnName("PIND");
-                    locBuilder.Property(p => p.Region).HasColumnName("COD_PREGION").HasMaxLength(25);
+                    locBuilder.Property(p => p.Region).HasColumnName("COD_PREGION").HasMaxLength(25).IsRequired(false);
                     // Конфигурация для почтового VO Address
                     locBuilder.Property(p => p.Address).HasColumnName("PADDRESS").HasConversion(
                         a => a.ToString(), // Когда ложим объект в БД
                         a => Address.Parse(a) // Когда достаём из БД
-                        ).HasMaxLength(110);
+                        ).HasMaxLength(110).IsRequired(false);
                 });
                 // Конфигурация VO Contacts
                 mailBuilder.Property(p => p.Contacts)
@@ -82,25 +84,29 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
                         contacts => contacts.ToXml(),
                         contacts => Contacts.FromXml(contacts)
                     ).IsRequired(false);
+
+
+
+                //mailBuilder.IsRequired(false);
             });
 
             builder.Property(e => e.IsPersonalDocumentsReception).HasColumnName("ONLY_PERS");
             builder.Property(e => e.AuthorizedCapital).HasColumnName("UK");
             builder.Property(e => e.IsInformationDisclosure).HasColumnName("PUBLIC_INFO");
-            builder.Property(e => e.MethodGettingInfoFromRegistry).HasColumnName("POST_INF");
+            builder.Property(e => e.MethodGettingInfoFromRegistry).HasColumnName("POST_INF").IsRequired(false); ;
             builder.Property(e => e.MeetNotifyXML).HasColumnName("MEET_NOTIFY").IsRequired(false);
             // Конфигурация VO BankDetails
             builder.ComplexProperty(property => property.BankDetails, bankBuilder =>
             {
-                bankBuilder.Property(p => p.BIK).HasColumnName("BIC").HasMaxLength(10);
-                bankBuilder.Property(p => p.BankName).HasColumnName("BNAME");
+                bankBuilder.Property(p => p.BIK).HasColumnName("BIC").HasMaxLength(10).IsRequired(false); ;
+                bankBuilder.Property(p => p.BankName).HasColumnName("BNAME").IsRequired(false); ;
                 bankBuilder.Property(p => p.SettlementAccount).HasColumnName("BR_SCH").HasMaxLength(10).IsRequired(false);
-                bankBuilder.Property(p => p.CorrespondentAccount).HasColumnName("BCOR_SCH");
+                bankBuilder.Property(p => p.CorrespondentAccount).HasColumnName("BCOR_SCH").IsRequired(false); ;
                 bankBuilder.Property(p => p.BankINN).HasColumnName("BINN").IsRequired(false);
                 bankBuilder.Property(p => p.Department).HasColumnName("BDEPART").IsRequired(false);
-                bankBuilder.Property(p => p.CustomerAccount).HasColumnName("R_S").HasMaxLength(21);
+                bankBuilder.Property(p => p.CustomerAccount).HasColumnName("R_S").HasMaxLength(21).IsRequired(false); ;
                 // не факт
-                bankBuilder.Property(p => p.TaxBenefits).HasColumnName("TYP_PERS");
+                bankBuilder.Property(p => p.TaxBenefits).HasColumnName("TYP_PERS").IsRequired(false); ;
                 bankBuilder.Property(p => p.Country).HasColumnName("FOREIGN_BCOUNTRY").IsRequired(false);
             });
             // Конфигурация VO PaymentRecipient
@@ -109,9 +115,13 @@ namespace EmitterPersonalAccount.DataAccess.Configurations
                 recBuilder.Property(p => p.Name).HasColumnName("RECNAME").IsRequired(false);
                 recBuilder.Property(p => p.INN).HasColumnName("RECINN").HasMaxLength(14).IsRequired(false);
                 recBuilder.Property(p => p.Assignment).HasColumnName("RECGIVEN").HasMaxLength(60).IsRequired(false);
+
+
+
+                //recBuilder.IsRequired(false);
             });
 
-            builder.Property(p => p.FieldOfActivity).HasColumnName("TYP_KLS").IsRequired();
+            builder.Property(p => p.FieldOfActivity).HasColumnName("TYP_KLS").IsRequired(false); ;
             builder.Property(p => p.AdditionalInformation).HasColumnName("INFO").IsRequired(false);
         }
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Core.Domain.Models.Rabbit
 {
-    public class SendResultToClientEvent
+    public sealed class SendResultToClientEvent
     {
         public required MethodResultSending MethodForResultSending { get; set; }
         public required string ContentJSON { get; set; }

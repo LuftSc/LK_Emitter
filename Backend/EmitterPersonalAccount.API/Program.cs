@@ -9,6 +9,7 @@ using EmitterPersonalAccount.Application.Infrastructure.RabbitMq;
 using EmitterPersonalAccount.Application.Infrastructure.Rpc;
 using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Configuration;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
@@ -17,8 +18,12 @@ using EmitterPersonalAccount.DataAccess;
 using EmitterPersonalAccount.DataAccess.Repositories;
 using MassTransit;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.EntityFrameworkCore;
+
+using AuthorizationOptions = EmitterPersonalAccount.Core.Domain.Models.Configuration.AuthorizationOptions;
 
 namespace EmitterPersonalAccount.API
 {
@@ -38,11 +43,20 @@ namespace EmitterPersonalAccount.API
             builder.Services.Configure<JwtOptions>
                 (builder.Configuration.GetSection(nameof(JwtOptions)));
 
+            builder.Services.Configure<AuthorizationOptions>
+                (builder.Configuration.GetSection(nameof(AuthorizationOptions)));
+
             builder.Services.AddDbContext<EmitterPersonalAccountDbContext>(options =>
                 options.UseNpgsql(builder.Configuration
                     .GetConnectionString(nameof(EmitterPersonalAccountDbContext))
             ));
 
+            builder.Services.AddDataProtection()
+                .PersistKeysToDbContext<EmitterPersonalAccountDbContext>()
+                .SetApplicationName("Edge.API");
+
+            builder.Services.AddScoped<IProtectDataService, ProtectDataService>();
+            
             /*builder.Services.AddMassTransit(x =>
             {
                 x.AddBus(provider =>
@@ -86,7 +100,14 @@ namespace EmitterPersonalAccount.API
             builder.Services.RegisterRepository<IUserRepository, UsersRepository>();
             builder.Services.RegisterRepository<IEmittersRepository, EmittersRepository>();
             builder.Services.RegisterRepository<IRegistratorRepository, RegistratorRepository>();
-            
+
+            builder.Services.AddScoped<IOutboxMessagesRepository, OutboxMessagesRepository>();
+
+            builder.Services.AddScoped<IOutboxService, OutboxService>();
+
+            builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+
+            builder.Services.AddScoped<IUsersService, UsersService>();
 
             builder.Services.AddStackExchangeRedisCache(options =>
             {
@@ -96,8 +117,12 @@ namespace EmitterPersonalAccount.API
 
             builder.Services.AddHostedService<MigrationHostedService>();
 
+            
+
             builder.Services.AddHostedService<RabbitMqInitializer>();
             builder.Services.AddHostedService<RpcClientInitializer>();
+
+            //builder.Services.AddHostedService<OutboxPublisherService>();
 
             /*builder.Services.AddHostedService<ConsumerRunService>(provider => new ConsumerRunService(
                 builder.Configuration,

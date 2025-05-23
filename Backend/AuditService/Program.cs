@@ -17,16 +17,21 @@ namespace AuditService
             builder.Configuration.AddJsonFile
                 ("appsettings.Audit.json", optional: false, reloadOnChange: true);
 
+            builder.Configuration.AddEnvironmentVariables();
+
             builder.Services.AddDbContext<AuditServiceDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString(nameof(AuditServiceDbContext))),
                 contextLifetime: ServiceLifetime.Scoped);
 
             builder.Services.AddSingleton<IAuditLogService, AuditLogService>();
             builder.Services.RegisterRepository<IAuditRepository, AuditRepository>();
+            builder.Services.RegisterRepository<IUsersRepository, UsersRepository>();
+            builder.Services.RegisterRepository<IEmittersRepository, EmittersRepository>();
 
             // Add services to the container.
             builder.Services.AddAuthorization();
 
+            builder.Services.AddHostedService<MigrationHostedService>();
             
             builder.Services.AddHostedService<MainService>(provider =>
                 new MainService(builder.Configuration, provider));

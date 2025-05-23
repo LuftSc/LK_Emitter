@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.EmitterVO
@@ -13,6 +14,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitte
         {
             
         }
+
+        [JsonConstructor]
         private EmitterInfo(
             string fullName,
             string shortName,
@@ -21,19 +24,19 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitte
             OGRNInfo OGRN,
             RegistrationInfo registration)
         {
-            
             FullName = fullName;
             ShortName = shortName;
             INN = inn;
             Jurisdiction = jurisdiction;
+            this.OGRN = OGRN;
             Registration = registration;
         }
         public string FullName { get; private set; }
         public string ShortName { get; private set; }
         public string INN { get; private set; }
         public string Jurisdiction { get; private set; }
-        public OGRNInfo OGRN { get; private set; }
-        public RegistrationInfo Registration { get; private set; }
+        public OGRNInfo OGRN { get; private set; } = OGRNInfo.Empty;
+        public RegistrationInfo Registration { get; private set; } = RegistrationInfo.Empty;
         public static Result<EmitterInfo> Create(
             string fullName,
             string shortName,

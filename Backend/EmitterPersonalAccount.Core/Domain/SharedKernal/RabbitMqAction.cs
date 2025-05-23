@@ -36,6 +36,8 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
         /*public static readonly RabbitMqAction ResultDownloadReportOrder =
             new("orderReports_exchange", "orderReports.result_download", "result_download_report_order_queue");*/
 
+        public static readonly RabbitMqAction SendOutboxMessage = new("", "outbox", "outbox");
+
 
         public string ExchangeName { get; }
         public string RoutingKey { get; }

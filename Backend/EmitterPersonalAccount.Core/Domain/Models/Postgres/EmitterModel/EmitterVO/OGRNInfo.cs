@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.EmitterVO
@@ -15,6 +16,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitte
         {
             
         }
+
+        [JsonConstructor]
         private OGRNInfo(string number,
             DateOnly dateOfAssignment, string issuer)
         {
@@ -22,6 +25,7 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Emitte
             DateOfAssignment = dateOfAssignment;
             Issuer = issuer;
         }
+        public static readonly OGRNInfo Empty = new();
         public string Number { get; private set; }
         public DateOnly DateOfAssignment { get; private set; }
         public string Issuer { get; private set; }

@@ -5,13 +5,34 @@ import { InputAdmin } from "./inputAdmin"
 import SelectForUserRoles from "./selectForUserRoles"
 import ListOfEmitents from "./listOfEmitents"
 import { Button } from "antd"
+import { registerUser, RegisterUserRequest, Role } from "@/app/services/usersService"
+import SelectSearchEmitters from "./selectSearchEmitters"
 
 export default function MainContentNewUser() {
 
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
-    const [role, setNewRole] = useState<string>('')
+    const [role, setNewRole] = useState<Role>(Role.User)
+    const [selectedEmittersGuids, setSelectedEmittersGuids] = useState<string[]>([]);
     const [fcs, setFcs] = useState<string>('')
+    const [phoneNumber, setPhoneNumber] = useState<string>('')
+
+    const onUserRegistration = async () => {
+        const request = {
+            email: email,
+            password: password,
+            emittersGuids: selectedEmittersGuids,
+            role: role,
+            fullName: fcs,
+            phone: phoneNumber
+        } as RegisterUserRequest
+
+        console.log(request)
+
+        const response = await registerUser(request)
+
+        
+    }
 
     return (
         <div className="w-full flex flex-col items-center space-y-[20px]">
@@ -44,9 +65,18 @@ export default function MainContentNewUser() {
                     />
                 </div>
                 <div className="w-[260px]"><SelectForUserRoles setNewRole={setNewRole} /></div>
+                <div className="w-[260px]">
+                <InputAdmin
+                    placeholder="Введите номер телефона"
+                    setState={setPhoneNumber}
+                    errorText="Некорректный номер"
+                    validation={/^[0-9]*$/} 
+                />
             </div>
-            <ListOfEmitents newRole={role}/>
-            <Button>Создать</Button>
+            </div>
+            {/*<ListOfEmitents newRole={role}/> */}
+            <SelectSearchEmitters setSelectedEmittersGuid={setSelectedEmittersGuids} role={role}/>
+            <Button onClick={onUserRegistration}>Создать</Button>
         </div>
     )
 }

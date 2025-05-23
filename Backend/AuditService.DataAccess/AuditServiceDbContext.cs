@@ -1,4 +1,5 @@
 ﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres.PartialModels;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,6 +17,9 @@ namespace AuditService.DataAccess
         {
             
         }
+        public DbSet<UserEmitter> UserEmitter { get; set; }
+        public DbSet<EmitterProjection> Emitters { get; set; }
+        public DbSet<UserProjection> Users { get; set; }
         public DbSet<UserActionLog> Actions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,6 +27,9 @@ namespace AuditService.DataAccess
             {
                 actionBuilder.HasKey(a => a.Id);
             });
+
+            modelBuilder
+                .ApplyConfigurationsFromAssembly(typeof(AuditServiceDbContext).Assembly);
 
             base.OnModelCreating(modelBuilder);
         }

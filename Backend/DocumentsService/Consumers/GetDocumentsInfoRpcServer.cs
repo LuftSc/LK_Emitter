@@ -1,7 +1,6 @@
 ﻿using BaseMicroservice;
 using DocumentsService.DataAccess.Repositories;
 using DocumentsService.Services;
-using EmitterPersonalAccount.Application.Features.Documents;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
@@ -27,7 +26,7 @@ namespace DocumentsService.Consumers
             OnMessageProcessingAsync(string message)
         {
             var query = JsonSerializer
-                .Deserialize<GetDocumentsInfoQuery>(message);
+                .Deserialize<GetDocumentsEvent>(message);
 
             Result<DocumentPaginationList> serviceResult;
 
@@ -42,25 +41,17 @@ namespace DocumentsService.Consumers
                 {
                     var paginationList = new DocumentPaginationList(result.Value.Item1,
                         result.Value.Item2
-                            .Select(d => new DocumentDTO(d.Id, d.Title, d.Type, 
-                            d.UploadDate, d.GetSize(), d.IsEmitterSended))
+                            .Select(d => new DocumentDTO(
+                                 d.Id, 
+                                 d.SenderRole,
+                                 d.Title, 
+                                 d.Type, 
+                                 d.UploadDate, 
+                                 d.GetSize()))
                             .ToList());
                     return Result<DocumentPaginationList>.Success(paginationList);
                 }
-                /*var documentsService = scope.ServiceProvider
-                    .GetRequiredService<IDocumentsService>();
-                serviceResult = await documentsService
-                    .GetDocumentsInfoByEmitterId(query.IssuerId);*/
             }
-            /*if (result.IsSuccessfull)
-            {
-                var documents = serviceResult.Value
-                    .Select(d => new DocumentInfoResponse
-                        (d.Id, d.Title, d.Type, d.UploadDate, d.GetSize(), d.IsEmitterSended))
-                    .ToList();
-
-                return Result<DocumentPaginationList>.Success(documents);
-            }*/
 
             return Result<DocumentPaginationList>.Error(new GettingDocumentError());
         }

@@ -20,11 +20,18 @@ export const UploadDocumentArea = ({withUploadAction}: Props) => {
   const [uploading, setUploading] = useState(false);
   const [willSign, setWillSign] = useState(false);
 
+  const { connection } = useSignalR();
+  const { startConnection } = useSignalR();
+
 /*const [emitterInfo, setEmitterInfo] = useState<{
     Id: string, 
     Name: string, 
     AuthPerson: string}>
     ({Id: "", Name: "", AuthPerson: ""}) */
+  const joinToEmitterGroup = async (emitterData: any) => {
+    const currentConnection = connection ? connection : await startConnection()
+    await currentConnection?.invoke('EmitterSelected', emitterData.Id)
+  }
 
   const handleUpload = async () => {
 
@@ -46,6 +53,8 @@ export const UploadDocumentArea = ({withUploadAction}: Props) => {
 
     setUploading(true);
     withUploadAction();
+
+    await joinToEmitterGroup(emitterData)
     const response = await uploadDocuments(formData)
 
     if (response?.ok) {

@@ -57,6 +57,14 @@ namespace EmitterPersonalAccount.Application.Infrastructure.RabbitMq
                         autoDelete: false,
                         arguments: null
                     );
+
+            await channel.QueueDeclareAsync(
+                        queue: "outbox",
+                        durable: true,
+                        exclusive: false,
+                        autoDelete: false,
+                        arguments: null
+                    );
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

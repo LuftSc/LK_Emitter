@@ -11,6 +11,7 @@ namespace DocumentsService.Services
         private SendDocumentConsumer sendDocsConsumer;
         private DownloadDocumentRpcServer downloadDocRpcServer;
         private DeleteDocumentConsumer deleteDocConsumer;
+
         public MainService(IConfiguration configuration, IServiceProvider provider)
         {
             var rabbitUri = configuration.GetConnectionString("RabbitMqUri");

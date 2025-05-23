@@ -1,7 +1,11 @@
 ﻿//using AuthService.Authentification;
 //using Microsoft.AspNetCore.Authentication.JwtBearer;
 using EmitterPersonalAccount.Application.Features.Authentification;
+using EmitterPersonalAccount.Application.Services;
+using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -46,7 +50,20 @@ namespace EmitterPersonalAccount.API.Extensions
                     };
                 });
 
+            services.AddScoped<IPermissionService, PermissionService>();
+            services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
             services.AddAuthorization();
+        }
+
+        public static IEndpointConventionBuilder RequirePermission<TBuilder>(
+            this TBuilder builder, params Permission[] permissions)
+            where TBuilder : IEndpointConventionBuilder
+        {
+            return builder.RequireAuthorization(policy =>
+            {
+                policy.AddRequirements(new PermissionRequirement(permissions));
+            });
         }
     }
 }

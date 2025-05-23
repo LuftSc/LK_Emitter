@@ -1,5 +1,6 @@
 ﻿using EmitterPersonalAccount.Application.Infrastructure.Cqs;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
@@ -17,6 +18,7 @@ namespace EmitterPersonalAccount.Application.Features.Documents
     public sealed class SendDocumentsCommand : Command
     {
         public Guid SenderId { get; set; } = Guid.Empty;
+        public Role Role { get; set; } = Role.User;
         public int IssuerId { get; set; }
         public List<IFormFile> Files { get; set; } = [];
         public bool WithDigitalSignature { get; set; } = false;
@@ -52,10 +54,11 @@ namespace EmitterPersonalAccount.Application.Features.Documents
                 });
             }
 
-            var sendingEvent = new SendDocumentEvent 
-            { 
+            var sendingEvent = new SendDocumentEvent
+            {
                 SenderId = request.SenderId,
                 IssuerId = request.IssuerId,
+                Role = request.Role,
                 Documents = documents,
                 WithDigitalSignature = request.WithDigitalSignature
             };

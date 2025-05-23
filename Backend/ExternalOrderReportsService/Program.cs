@@ -5,6 +5,7 @@ using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using ExternalOrderReportService.DataAccess;
 using ExternalOrderReportService.DataAccess.Repositories;
+using ExternalOrderReportsService.Configurations;
 using ExternalOrderReportsService.Publishers;
 using ExternalOrderReportsService.Services;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,9 @@ namespace ExternalOrderReportsService
             builder.Services.AddAuthorization();
 
             builder.Configuration.AddEnvironmentVariables();
+
+            builder.Services.Configure<RegistratorEndpointOptions>
+                (builder.Configuration.GetSection(nameof(RegistratorEndpointOptions)));
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -52,6 +56,8 @@ namespace ExternalOrderReportsService
 
                 options.UseNpgsql(npgsqlBuilder.Build());
             });
+
+            builder.Services.AddHostedService<MigrationHostedService>();
 
             
             var app = builder.Build();

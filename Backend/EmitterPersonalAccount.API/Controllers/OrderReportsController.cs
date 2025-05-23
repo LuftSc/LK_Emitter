@@ -1,7 +1,9 @@
 ﻿//using EmitterPersonalAccount.Application.Features.Documents;
 using EmitterPersonalAccount.API.Contracts;
+using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Application.Features.OrderReports;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Repositories;
@@ -21,12 +23,14 @@ namespace EmitterPersonalAccount.API.Controllers
     {
         private readonly IMediator mediator;
         private readonly IRabbitMqPublisher publisher;
+        private readonly IRpcClient rpcClient;
 
         public OrderReportsController(IMediator mediator, 
-            IRabbitMqPublisher publisher)
+            IRabbitMqPublisher publisher, IRpcClient rpcClient)
         {
             this.mediator = mediator;
             this.publisher = publisher;
+            this.rpcClient = rpcClient;
         }
 
        /* [Authorize]
@@ -45,7 +49,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok(response);  
         }*/
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpGet("get-report-orders/{issuerId:int}/")]
         public async Task<ActionResult> GetReportOrdersByPage
             (int issuerId, [FromQuery] PaginationInfo pagination)
@@ -60,18 +64,19 @@ namespace EmitterPersonalAccount.API.Controllers
                 PageSize = pagination.PageSize
             };
 
-            var isSuccesfull = await publisher
-                .SendMessageAsync(
-                    JsonSerializer.Serialize(getReportsEvent), 
-                    RabbitMqAction.GetOrderReports, 
+            var result = await rpcClient
+                .CallAsync<OrderReportPaginationList>
+                    (JsonSerializer.Serialize(getReportsEvent),
+                    RabbitMqAction.GetOrderReports,
                     default);
 
-            if (!isSuccesfull) return BadRequest();
+            if (!result.IsSuccessfull)
+                return BadRequest(result.GetErrors());
 
-            return Ok(isSuccesfull);
+            return Ok(result.Value);
         }
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpPost("list-of-shareholders")]
         public async Task<ActionResult> RequestListOfShareholdersReport(
             [FromBody] RequestListOfShareholdersCommand request)
@@ -91,7 +96,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpPost("ree-rep")]
         public async Task<ActionResult> RequestReeRepReport(
             [FromBody] RequestReeRepCommand request)
@@ -110,7 +115,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpPost("dividend-list")]
         public async Task<ActionResult> RequestDividendListReport(
             [FromBody] RequestDividendListCommand request)
@@ -129,7 +134,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpGet("download-report-order/{reportOrderId:guid}")]
         public async Task<ActionResult> DownloadReportOrder(Guid reportOrderId)
         {

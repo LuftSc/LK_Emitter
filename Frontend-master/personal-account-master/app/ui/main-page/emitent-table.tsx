@@ -90,7 +90,7 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
                         record.id === selectedRowId ? 'active-row' : ''
                     }
                     pagination={{
-                        pageSize: 5, // Количество строк на странице
+                        pageSize: 15, // Количество строк на странице
                         //showSizeChanger: true, // Показывать выбор количества строк
                         //pageSizeOptions: ['10', '20', '50', '100'], // Варианты выбора
                       }}

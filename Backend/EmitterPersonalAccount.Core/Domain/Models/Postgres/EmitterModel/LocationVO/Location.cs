@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.LocationVO
 {
-    [Owned]
     public class Location : ValueObject
     {
         private Location()
@@ -23,6 +22,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.Locati
             Region = region;
             Address = address;
         }
+
+        public static readonly Location Empty = new();
         public string Country { get; private set; }
         public int Index { get; private set; } = 0;
         public string Region { get; private set; }

@@ -17,10 +17,10 @@ namespace DocumentsService.DataAccess.Configurations
         {
             builder.ToTable("Documents").HasKey(d => d.Id);
 
-            builder
+            /*builder
                 .HasOne<Emitter>()
                 .WithMany(e => e.Documents)
-                .HasForeignKey(d => d.IssuerId);
+                .HasForeignKey(d => d.IssuerId);*/
         }
     }
 }

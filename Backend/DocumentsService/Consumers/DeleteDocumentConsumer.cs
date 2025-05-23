@@ -1,5 +1,4 @@
 ﻿using BaseMicroservice;
-using EmitterPersonalAccount.Application.Features.Documents;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using RabbitMQ.Client.Events;
@@ -17,7 +16,7 @@ namespace DocumentsService.Consumers
         }
         public override async Task<Result> Handler(object model, BasicDeliverEventArgs args)
         {
-            var command = EventDeserializer<DeleteDocumentCommand>
+            var documentId = EventDeserializer<Guid>
                 .Deserialize(args);
 
             Result serviceResult;
@@ -28,7 +27,7 @@ namespace DocumentsService.Consumers
                     .GetRequiredService<IDocumentsService>();
 
                 serviceResult = await documentService
-                    .DeleteDocumentById(command.DocumentId, default);
+                    .DeleteDocumentById(documentId, default);
             }
 
             return serviceResult;

@@ -9,7 +9,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["EmitterPersonalAccount.API/EmitterPersonalAccount.API.csproj", "EmitterPersonalAccount.API/"]
-#COPY ["EmitterPersonalAccount.API.csproj", "EmitterPersonalAccount.API/"]
+#RUN dotnet nuget add source http://lk_emitter-nexus-1:8081/repository/nuget-hosted/
 
 RUN dotnet restore "EmitterPersonalAccount.API/EmitterPersonalAccount.API.csproj"
 COPY . .

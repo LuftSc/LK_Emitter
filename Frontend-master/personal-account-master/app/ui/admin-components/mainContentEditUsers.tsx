@@ -4,18 +4,48 @@ import { useState } from "react"
 import CardForUserInfo from "./cardForUserInfo"
 import ListOfEmitents from "./listOfEmitents"
 import SearchForUsers from "./searchForUsers"
+import { UserWithEmitters } from "@/app/models/UserWithEmitters"
+import { Role } from "@/app/services/usersService"
+import SelectSearchUsers from "./selectSearchUsers"
+import { Emitter } from "@/app/models/Emitter"
 
 export default function MainContentEditUsers() {
 
+    const defaultUserValues = {
+        id: '',
+        fullName: '',
+        email: '',
+        phone: '',
+        role: Role.User,
+        emitters: []
+    } as UserWithEmitters
+
     const [userName, setUserName] = useState<string>('')
+    const [role, setRole] = useState<Role>(Role.User)
     const [newRole, setNewRole] = useState<string>('')
+    const [selectedUser, setSelectedUser] = useState<UserWithEmitters>(defaultUserValues)
+    
+    const addEmitters = (newEmitters: Emitter[]) => {
+        setSelectedUser(prev => ({
+            ...prev,
+            emitters: [...prev.emitters, ...newEmitters]
+        }));
+    };
+
+    const deleteEmitter = (emitterGuid: string) => {
+        setSelectedUser(prev => ({
+            ...prev,
+            emitters: prev.emitters.filter(e => e.id !== emitterGuid)
+        }))
+    }
 
     return (
         <div className="w-full flex flex-col items-center">
             <p className="text-[24px] mb-[20px]">Редактирование информации существующих пользователей</p>
-            <SearchForUsers setUserName={setUserName}/>
-            <CardForUserInfo userName={userName} setNewRole={setNewRole}/>
-            <ListOfEmitents newRole={newRole}/>
+            <SelectSearchUsers user={selectedUser} setSelectedUser={setSelectedUser}/>
+            {/* <SearchForUsers setUserName={setUserName}/> */}
+            <CardForUserInfo user={selectedUser} handleAddEmitters={addEmitters} handleDeleteEmitter={deleteEmitter}/>
+            {/* <ListOfEmitents newRole={newRole}/> */}
         </div>
     )
 }

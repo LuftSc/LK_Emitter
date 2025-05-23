@@ -1,6 +1,9 @@
 ﻿using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.API.Swagger;
+using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Application.Features.Documents;
+using EmitterPersonalAccount.Application.Services;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
@@ -21,6 +24,7 @@ namespace EmitterPersonalAccount.API.Controllers
             this.mediator = mediator;
         }
 
+        [Permission(Permission.DocumentsActions)]
         [FileUploadOperation.FileContentType]
         [HttpPost("send-documents")]
         public async Task<ActionResult> SendDocument([FromForm] SendDocumentsCommand request)
@@ -28,20 +32,20 @@ namespace EmitterPersonalAccount.API.Controllers
             // ФЛАГ: С подписью\ без подписи
             if (request == null || request.Files.Count == 0) 
                 return BadRequest("List files null or empty!");
+            
+            var userIdGettingResult = ClaimService.Get(HttpContext, CustomClaims.UserId);
+            var roleGettingResult = ClaimService.Get(HttpContext, CustomClaims.Role);
 
-            var isUserIdExist = HttpContext.User.HasClaim(c => c.Type == CustomClaims.UserId);
+            if (!userIdGettingResult.IsSuccessfull 
+                || !roleGettingResult.IsSuccessfull)
+                return BadRequest
+                    (Result.Error(new InvdlidJWTTokenError()));
 
-            if (!isUserIdExist)
-            {
-                var resultError = Result.Error(new UserNonAuthentificatedError());
-                return BadRequest(resultError.GetErrors());
-            }
+            var userId = Guid.Parse(userIdGettingResult.Value);
+            var role = (Role)Enum.Parse(typeof(Role), roleGettingResult.Value);
 
-            var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
-
-            Guid.TryParse(userId, out Guid userGuid);
-
-            request.SenderId = userGuid;
+            request.SenderId = userId;
+            request.Role = role;
 
             var result = await mediator.Send(request);
 
@@ -50,23 +54,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        /*[HttpGet("get-documents-info/{emitterId:guid}")]
-        public async Task<ActionResult<List<DocumentInfoResponse>>> 
-            GetDocumentsInfo(Guid emitterId)
-        {// Достаёт информацию по документам из БД
-            if (emitterId == Guid.Empty)
-                return BadRequest("Id can not be empty or null!");
-
-            var getDocsInfoQuery = new GetDocumentsInfoQuery() { IssuerId = emitterId };
-
-            var result = await mediator.Send(getDocsInfoQuery);
-
-            if (!result.IsSuccessfull)
-                return BadRequest(result.GetErrors());
-
-            return Ok(result.Value.OrderByDescending(d => d.UploadDate).ToList());    
-        }*/
-
+        [Permission(Permission.DocumentsActions)]
         [HttpGet("get-documents-info/{issuerId:int}")]
         public async Task<ActionResult<DocumentPaginationList>> GetDocumentsByPage
             (int issuerId, [FromQuery] PaginationInfo pagination)
@@ -82,6 +70,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok(result.Value);
         }
 
+        [Permission(Permission.DocumentsActions)]
         [HttpGet("download/{documentId:guid}")]
         public async Task<ActionResult> GetDownloadLink(Guid documentId)
         {
@@ -101,12 +90,7 @@ namespace EmitterPersonalAccount.API.Controllers
                 result.Value.FileName);
         }
 
-        /* public async Task<ActionResult> VerifyDocumentSignature()
-         {// Принимает документ и считает его хэш-сумму
-             // а потом сравнивает с той, которая есть в свойствах
-             return await Task.FromResult(Ok());
-         } */
-
+        [Permission(Permission.DocumentsActions)]
         [HttpDelete("delete-document/{documentId:guid}")]
         public async Task<ActionResult> DeleteDocument(Guid documentId)
         {// Удаляет документ
@@ -123,5 +107,10 @@ namespace EmitterPersonalAccount.API.Controllers
 
             return Ok();
         }
+    }
+
+    public class InvdlidJWTTokenError : Error
+    {
+        public override string Type => nameof(InvdlidJWTTokenError);
     }
 }

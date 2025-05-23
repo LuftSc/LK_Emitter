@@ -2,20 +2,56 @@
 
 import { useState } from "react"
 import { InputAdmin } from "./inputAdmin"
-import { Button } from "antd"
+import { Button, Input } from "antd"
 import Calendar from "../forms/calendar-new"
+import { registerEmitter, RegisterEmitterRequest } from "@/app/services/emitterService"
+import { EmitterInfo } from "@/app/models/EmitterInfo"
 
 export default function MainContentNewEmitent() {
 
     const [fullName, setFullName] = useState<string>('')
+    const [shortName, setShortName] = useState<string>('')
     const [innNumber, setInnNumber] = useState<string>('')
     const [jurisdiction, setJurisdiction] = useState<string>('')
+    const [issuerId, setIssuerId] = useState<string>('')
     const [ogrnBy, setOgrnBy] = useState<string>('')
     const [ogrnDate, setOgrnDate] = useState<string>('')
     const [ogrnNumber, setOgrnNumber] = useState<string>('')
     const [regBy, setRegBy] = useState<string>('')
     const [regNumber, setRegNumber] = useState<string>('')
     const [regDate, setRegDate] = useState<string>('')
+
+    const onEmitterRegistration = async () => {
+
+        const request = {
+            emitterInfo: {
+                fullName: fullName,
+                shortName: shortName,
+                inn: innNumber,
+                jurisdiction: jurisdiction,
+                ogrn: {
+                    number: ogrnNumber,
+                    dateOfAssignment: ogrnDate,
+                    issuer: ogrnBy
+                },
+                registration: {
+                    number: regNumber,
+                    registrationDate: regDate,
+                    issuer: regBy
+                }
+            } as EmitterInfo,
+            // Так плохо, надо сделать числовой инпут
+            issuerId: Number(issuerId)
+        } as RegisterEmitterRequest
+
+        console.log(request)
+
+        const response = await registerEmitter(request);
+
+        console.log(response)
+    }
+
+    
 
     return (
         <div className="w-full flex flex-col items-center space-y-[20px]">
@@ -27,6 +63,14 @@ export default function MainContentNewEmitent() {
                         <InputAdmin
                             placeholder="Полное название организации"
                             setState={setFullName}
+                            errorText="Может принимать только текстовые значения"
+                            validation={/^[а-яА-Я ]*$/}
+                        />
+                    </div>
+                    <div className="w-[240px]">
+                        <InputAdmin
+                            placeholder="Короткое название организации"
+                            setState={setShortName}
                             errorText="Может принимать только текстовые значения"
                             validation={/^[а-яА-Я ]*$/}
                         />
@@ -47,6 +91,15 @@ export default function MainContentNewEmitent() {
                             validation={/./}
                         />
                     </div>
+                    
+                </div>
+                <p className="mt-[15px]">Код эмитента (поле EMIT_ID в вашей системе)</p>
+                <div className="w-[190px]">
+                    <Input
+                        onChange={(e) => setIssuerId(e.target.value)}
+                        placeholder={'Введите ID эмитента'}
+                        classNames={{ input: 'h-[31px] w-full text-[14px]/[18px] placeholder:text-[#C4C4C4] pl-[12px] pb-[5px]' }}
+                    ></Input>
                 </div>
             </div>
             <div>
@@ -97,7 +150,8 @@ export default function MainContentNewEmitent() {
                     </div>
                 </div>
             </div>
-            <Button>Добавить</Button>
+
+            <Button onClick={onEmitterRegistration}>Добавить</Button>
         </div>
     )
 }

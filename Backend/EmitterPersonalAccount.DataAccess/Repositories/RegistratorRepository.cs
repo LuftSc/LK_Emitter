@@ -23,7 +23,7 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
             this.context = context;
         }
 
-        public async Task<Result> BindUser(Guid registratorId, Guid userId)
+       /* public async Task<Result> BindUser(Guid registratorId, Guid userId)
         {
             var user = await context.Users
                 .Include(u => u.Registrator)
@@ -45,7 +45,7 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
             await context.SaveChangesAsync();
 
             return Result.Success();
-        }
+        }*/
     }
 
     public class RegistratorNotFoundError : Error

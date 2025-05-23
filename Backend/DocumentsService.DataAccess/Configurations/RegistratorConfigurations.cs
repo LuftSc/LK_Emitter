@@ -10,14 +10,14 @@ using System.Threading.Tasks;
 
 namespace DocumentsService.DataAccess.Configurations
 {
-    public class RegistratorConfigurations : IEntityTypeConfiguration<Registrator>
+    /*public class RegistratorConfigurations : IEntityTypeConfiguration<Registrator>
     {
         public void Configure(EntityTypeBuilder<Registrator> builder)
         {
             builder.ToTable("Registrator").HasKey(p => p.Id);
             builder.Property(p => p.Id).HasColumnName("REGISTRATOR_ID");
 
-            builder.HasMany(r => r.Users).WithOne(u => u.Registrator);
+            //builder.HasMany(r => r.Users).WithOne(u => u.Registrator);
             //builder.HasMany(r => r.Emitters).WithOne(e => e.Registrator);
 
             builder.ComplexProperty(property => property.OGRN, ogrnBuilder =>
@@ -39,5 +39,5 @@ namespace DocumentsService.DataAccess.Configurations
                     ).HasMaxLength(110);
             });
         }
-    }
+    }*/
 }

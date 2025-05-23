@@ -8,6 +8,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["EmailSender/EmailSender.csproj", "EmailSender/"]
+#RUN dotnet nuget add source http://lk_emitter-nexus-1:8081/repository/nuget-hosted/
+
 RUN dotnet restore "EmailSender/EmailSender.csproj"
 COPY . .
 WORKDIR "/src/EmailSender"

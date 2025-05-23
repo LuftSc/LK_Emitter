@@ -14,7 +14,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BaseMicroservice\BaseMicroservice.csproj" />
-    <ProjectReference Include="..\EmitterPersonalAccount.API\EmitterPersonalAccount.API.csproj" />
   </ItemGroup>
 
 </Project>

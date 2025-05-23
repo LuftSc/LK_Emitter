@@ -2,10 +2,9 @@
 
 namespace EmitterPersonalAccount.API.Contracts
 {
-    public record UserDTO(
-        Guid Id,
-        string Email,
-        List<EmitterInfo> Emitters
+    public record ShortlyEmitterDTO(
+        EmitterInfoRecord EmitterInfo,
+        int IssuerId
         )
     {
     }

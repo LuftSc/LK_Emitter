@@ -1,11 +1,9 @@
 ﻿
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using Registrator.API.Endpoints;
 using Registrator.DataAccess.Repositories;
 using System.Reflection;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Registrator.API.Services
 {
@@ -57,8 +55,8 @@ namespace Registrator.API.Services
             double lineHeight = 20; // Высота строки
 
             // Создаем шрифт
-            var fontBold = new XFont("Arial", lineHeight, XFontStyleEx.Bold);
-            var fontRegular = new XFont("Arial", lineHeight, XFontStyleEx.Regular);
+            var fontBold = new XFont("SegoeWPBold", lineHeight, XFontStyleEx.Bold);
+            var fontRegular = new XFont("SegoeWP", lineHeight);
             // Перебираем свойства и выводим их названия и значения
             foreach (var property in properties)
             {
@@ -89,7 +87,7 @@ namespace Registrator.API.Services
 
             // Добавляем текст на страницу
             gfx.DrawString(documentName,
-                new XFont("Arial", 20, XFontStyleEx.Bold), XBrushes.Black, new XPoint(50, 50));
+                new XFont("SegoeWP", 20), XBrushes.Black, new XPoint(50, 50));
 
             WriteAllRecordFieldsInPDF(data, gfx, document, page);
 

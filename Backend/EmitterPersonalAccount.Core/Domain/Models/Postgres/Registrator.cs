@@ -23,8 +23,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         }
         public OGRNInfo OGRN { get; private set; }
         public Location Location { get; private set; }
-        public List<User> Users { get; private set; } = [];
-        public List<Emitter> Emitters { get; private set; } = [];
+        //public List<User> Users { get; private set; } = [];
+        //public List<Emitter> Emitters { get; private set; } = [];
         public static Result<Registrator> Create(OGRNInfo ogrn, Location location)
         {
             return Result<Registrator>.Success(new Registrator(ogrn, location));
