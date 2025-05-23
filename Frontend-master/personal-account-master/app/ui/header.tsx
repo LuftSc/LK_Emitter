@@ -1,3 +1,4 @@
+import Breadcrumbs from "./breadcrumbs";
 import NavLinks from "./nav-links";
 import SettingsBtn from "./settings-btn";
 import LogoSvg from "./svg-icons/logo";
@@ -18,7 +19,7 @@ export default function Header() {
                 < NavLinks />
             </div>
             <div className="flex bg-[#F1F1F1] h-[50px] items-center pl-[220px]">
-                <p className="text-[#333333] text-base/[20px]">Путь пользователя</p>
+                <Breadcrumbs />
             </div>
         </>
     );

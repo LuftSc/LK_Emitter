@@ -2,15 +2,15 @@
 
 import { Button, Pagination, Table } from "antd/es";
 //import { useSimpleStorage } from "../hooks/useLocalStorage";
-import DocumentsTable from "../ui/documents-page/documents-table";
+import DocumentsTable from "../../ui/documents-page/documents-table";
 import { ColumnsType } from "antd/es/table";
-import { Document } from "../models/Document";
-import { DocumentDownloadLink } from "../ui/documents-page/download-btn";
+import { Document } from "../../models/Document";
+import { DocumentDownloadLink } from "../../ui/documents-page/download-btn";
 import { useEffect, useState } from "react";
-import { getDocumentsByPageByIssuerId } from "../services/documentsService";
-import { errorMessages } from "../services/errorMessages";
-import { UploadDocumentArea } from "../ui/documents-page/upload-area";
-import { useSignalR } from "../signalR/SignalRContext";
+import { getDocumentsByPageByIssuerId } from "../../services/documentsService";
+import { errorMessages } from "../../services/errorMessages";
+import { UploadDocumentArea } from "../../ui/documents-page/upload-area";
+import { useSignalR } from "../../signalR/SignalRContext";
 
 export default function Page() {
     const [documents, setDocuments] = useState<Document[]>([])
