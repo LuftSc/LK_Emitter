@@ -331,6 +331,7 @@ namespace EmitterPersonalAccount.API.Controllers
 
             return Ok();
         }*/
+        [Permission(Permission.ProfileActions)]
         [HttpPut("update")]
         public async Task<ActionResult> Update(
             [FromBody] UserDataDTO request)
@@ -384,6 +385,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
+        [Permission(Permission.ProfileActions)]
         [HttpPost("restore-password")]
         public async Task<ActionResult> RestorePassword([FromBody] RestorePasswordCommand request)
         {

@@ -1,7 +1,9 @@
 ﻿//using EmitterPersonalAccount.Application.Features.Documents;
 using EmitterPersonalAccount.API.Contracts;
+using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Application.Features.OrderReports;
 using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Repositories;
@@ -47,7 +49,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok(response);  
         }*/
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpGet("get-report-orders/{issuerId:int}/")]
         public async Task<ActionResult> GetReportOrdersByPage
             (int issuerId, [FromQuery] PaginationInfo pagination)
@@ -74,7 +76,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok(result.Value);
         }
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpPost("list-of-shareholders")]
         public async Task<ActionResult> RequestListOfShareholdersReport(
             [FromBody] RequestListOfShareholdersCommand request)
@@ -94,7 +96,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpPost("ree-rep")]
         public async Task<ActionResult> RequestReeRepReport(
             [FromBody] RequestReeRepCommand request)
@@ -113,7 +115,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpPost("dividend-list")]
         public async Task<ActionResult> RequestDividendListReport(
             [FromBody] RequestDividendListCommand request)
@@ -132,7 +134,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
-        [Authorize]
+        [Permission(Permission.OrderReportsActions)]
         [HttpGet("download-report-order/{reportOrderId:guid}")]
         public async Task<ActionResult> DownloadReportOrder(Guid reportOrderId)
         {

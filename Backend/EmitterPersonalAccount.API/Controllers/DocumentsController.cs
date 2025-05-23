@@ -54,6 +54,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }
 
+        [Permission(Permission.DocumentsActions)]
         [HttpGet("get-documents-info/{issuerId:int}")]
         public async Task<ActionResult<DocumentPaginationList>> GetDocumentsByPage
             (int issuerId, [FromQuery] PaginationInfo pagination)
@@ -69,6 +70,7 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok(result.Value);
         }
 
+        [Permission(Permission.DocumentsActions)]
         [HttpGet("download/{documentId:guid}")]
         public async Task<ActionResult> GetDownloadLink(Guid documentId)
         {
@@ -88,6 +90,7 @@ namespace EmitterPersonalAccount.API.Controllers
                 result.Value.FileName);
         }
 
+        [Permission(Permission.DocumentsActions)]
         [HttpDelete("delete-document/{documentId:guid}")]
         public async Task<ActionResult> DeleteDocument(Guid documentId)
         {// Удаляет документ
