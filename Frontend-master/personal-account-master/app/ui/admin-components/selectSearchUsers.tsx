@@ -6,7 +6,6 @@ import { Select, Spin } from "antd";
 import { useEffect, useState } from "react";
 
 interface Props {
-    //setFullName: React.Dispatch<React.SetStateAction<string>>
     user?: UserWithEmitters
     setSelectedUser: React.Dispatch<React.SetStateAction<UserWithEmitters>>
 

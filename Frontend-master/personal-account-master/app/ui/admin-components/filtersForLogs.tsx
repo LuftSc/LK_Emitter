@@ -4,8 +4,8 @@ import { useState } from "react";
 import UserSearchFilters from "./userSearchFilters";
 import Calendar from "../forms/calendar-new";
 import { Button } from "antd";
-import { RadioGroup } from "../forms/radioGroup";
 import SelectForUserRoles from "./selectForUserRoles";
+import { Role } from "@/app/services/usersService";
 
 
 export default function FiltersForLogs() {
@@ -13,7 +13,7 @@ export default function FiltersForLogs() {
     const [userName, setUserName] = useState<string>('')
     const [startDate, setStartDate] = useState<string>('')
     const [endDate, setEndDate] = useState<string>('')
-    const [role, setRole] = useState<string>('')
+    const [role, setRole] = useState<Role>(1)
 
     return (
         <div className="w-full flex flex-col items-center border-[0.5px] rounded-[10px] py-[20px] space-y-[20px]">

@@ -69,13 +69,13 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
                 {selectedRowId === record.id ? 'Выбрано' : 'Выбрать'}
               </Button>
             ),
-            width: 100
+            width: '10%'
         },
         {
             title: 'Название эмитента',
             dataIndex: ['emitterInfo', 'fullName'],
             key: 'fullName',
-            width: 700
+            width: '90%'
         },
     ]
 
@@ -83,6 +83,7 @@ export default function EmitentTable ({userId, emitters, setEmitterName, isTable
         <div>
             {
                 isTableVisible && (<Table<Emitter>
+                    style={{width: '900px'}}
                     columns={columns}
                     dataSource={emitters}
                     rowKey="id"

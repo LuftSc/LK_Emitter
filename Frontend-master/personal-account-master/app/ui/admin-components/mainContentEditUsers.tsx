@@ -16,13 +16,12 @@ export default function MainContentEditUsers() {
         fullName: '',
         email: '',
         phone: '',
+        birthDate: '',
+        passport: {series: '', number: '', dateOfIssuer: '', issuer: '', unitCode: ''},
         role: Role.User,
         emitters: []
     } as UserWithEmitters
-
-    const [userName, setUserName] = useState<string>('')
-    const [role, setRole] = useState<Role>(Role.User)
-    const [newRole, setNewRole] = useState<string>('')
+    
     const [selectedUser, setSelectedUser] = useState<UserWithEmitters>(defaultUserValues)
     
     const addEmitters = (newEmitters: Emitter[]) => {
@@ -40,8 +39,8 @@ export default function MainContentEditUsers() {
     }
 
     return (
-        <div className="w-full flex flex-col items-center">
-            <p className="text-[24px] mb-[20px]">Редактирование информации существующих пользователей</p>
+        <div className="w-full flex flex-col items-center space-y-[30px]">
+            <p className="text-[24px]">Редактирование информации существующих пользователей</p>
             <SelectSearchUsers user={selectedUser} setSelectedUser={setSelectedUser}/>
             {/* <SearchForUsers setUserName={setUserName}/> */}
             <CardForUserInfo user={selectedUser} handleAddEmitters={addEmitters} handleDeleteEmitter={deleteEmitter}/>

@@ -3,7 +3,6 @@
 import { useState } from "react"
 import { InputAdmin } from "./inputAdmin"
 import SelectForUserRoles from "./selectForUserRoles"
-import ListOfEmitents from "./listOfEmitents"
 import { Button } from "antd"
 import { registerUser, RegisterUserRequest, Role } from "@/app/services/usersService"
 import SelectSearchEmitters from "./selectSearchEmitters"
@@ -48,32 +47,33 @@ export default function MainContentNewUser() {
                 </div>
                 <div className="w-[260px]">
                     <InputAdmin
+                        placeholder="Введите ФИО"
+                        setState={setFcs}
+                        errorText="Может принимать только текстовые значения"
+                        validation={/^[а-яА-Я ]*$/} 
+                    />
+        
+                </div>
+            </div>
+            <div className="flex w-[550px] space-x-[30px]">
+                <div className="w-[260px]">
+                    <InputAdmin
                         placeholder="Введите пароль"
                         setState={setPassword}
                         errorText="Поле обязательно для заполнения"
                         validation={/./}
                     />
                 </div>
-            </div>
-            <div className="flex w-[550px] space-x-[30px]">
                 <div className="w-[260px]">
                     <InputAdmin
-                        placeholder="Введите ФИО"
-                        setState={setFcs}
-                        errorText="Может принимать только текстовые значения"
-                        validation={/^[а-яА-Я ]*$/} 
+                        placeholder="Введите номер телефона"
+                        setState={setPhoneNumber}
+                        errorText="Некорректный номер"
+                        validation={/^[0-9]*$/} 
                     />
                 </div>
-                <div className="w-[260px]"><SelectForUserRoles setNewRole={setNewRole} /></div>
-                <div className="w-[260px]">
-                <InputAdmin
-                    placeholder="Введите номер телефона"
-                    setState={setPhoneNumber}
-                    errorText="Некорректный номер"
-                    validation={/^[0-9]*$/} 
-                />
             </div>
-            </div>
+            <div className="w-[260px]"><SelectForUserRoles setNewRole={setNewRole} /></div>
             {/*<ListOfEmitents newRole={role}/> */}
             <SelectSearchEmitters setSelectedEmittersGuid={setSelectedEmittersGuids} role={role}/>
             <Button onClick={onUserRegistration}>Создать</Button>

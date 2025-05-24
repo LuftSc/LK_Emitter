@@ -5,9 +5,10 @@ import { Select } from 'antd';
 
 interface Props {
     setNewRole: React.Dispatch<React.SetStateAction<Role>>
+    placeholder?: string
 }
 
-export default function SelectForUserRoles({setNewRole}: Props) {
+export default function SelectForUserRoles({setNewRole, placeholder}: Props) {
 
     const onChange = (value: Role) => {
         setNewRole(value)
@@ -20,7 +21,7 @@ export default function SelectForUserRoles({setNewRole}: Props) {
             onChange={onChange}
             // defaultValue={defaultValue}
             className='w-full'
-            placeholder="Выберите роль пользователя"
+            placeholder={placeholder || "Выберите роль пользователя"}
             filterOption={(input, option) =>
                 (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
             }

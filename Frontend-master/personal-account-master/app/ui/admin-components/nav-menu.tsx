@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react';
-import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
 import { redirect } from 'next/navigation';
@@ -15,7 +14,7 @@ const items: MenuItem[] = [
 
   },
   {
-    key: 'group',
+    key: 'group1',
     label: 'Действия над пользователями',
     children: [
       {
@@ -23,12 +22,22 @@ const items: MenuItem[] = [
         label: 'Добавление пользователя'
       },
       {
+        key: '/admin/third',
+        label: 'Редактирование пользователей'
+      },
+    ]
+  },
+  {
+    key: 'group2',
+    label: 'Действия над эмитентами',
+    children: [
+            {
         key: '/admin/second',
         label: 'Добавление эмитента'
       },
       {
-        key: '/admin/third',
-        label: 'Редактирование пользователей'
+        key: '/admin/fourth',
+        label: 'Редактирование эмитентов'
       },
     ]
   },

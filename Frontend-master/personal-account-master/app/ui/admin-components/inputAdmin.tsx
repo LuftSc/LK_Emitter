@@ -31,7 +31,6 @@ export const InputAdmin = ({
             setError(true)
             setShow(true)
         }
-        console.log(value + error)
     }
 
     return (

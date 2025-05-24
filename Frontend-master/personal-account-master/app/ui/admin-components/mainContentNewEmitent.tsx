@@ -40,7 +40,6 @@ export default function MainContentNewEmitent() {
                     issuer: regBy
                 }
             } as EmitterInfo,
-            // Так плохо, надо сделать числовой инпут
             issuerId: Number(issuerId)
         } as RegisterEmitterRequest
 

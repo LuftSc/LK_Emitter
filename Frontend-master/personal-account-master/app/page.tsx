@@ -71,11 +71,11 @@ export default function Home() {
 
   return (
     <main>
-      <div className="px-[168px] pb-[55px]">
-        <h1 className="text-4xl mt-[40px] ml-[54px]">
+      <div className="px-[168px] py-[50px]">
+        <h1 className="text-4xl  ml-[54px]">
           Личный кабинет Эмитента
         </h1>
-        <div className="flex flex-col items-center max-w-[1104px] h-[1500px] border-[0.5px] border-black rounded-[28px] bg-[#F1F1F1] mt-[23px] p-[27px]">
+        <div className="flex flex-col items-center ">
           <ConfirmationForm email={email} visCon={visCon} setVisCon={setVisCon} onLoginSuccess={onAuthSucces}/>
           {/*<LogInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} visLog={visLog} setVisLog={setVisLog} setVisCon={setVisCon}/> */}
           <LogInForm email={email} setEmail={setEmail} password={password} setPassword={setPassword} visLog={visLog} setVisLog={setVisLog} setVisCon={setVisCon} onLoginSuccess={onAuthSucces}/>
