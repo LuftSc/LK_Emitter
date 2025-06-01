@@ -120,12 +120,14 @@ namespace EmitterPersonalAccount.API
                 options.Configuration = connection;
             });
 
-            builder.Services.AddHostedService<MigrationHostedService>();
+            
 
             
 
             builder.Services.AddHostedService<RabbitMqInitializer>();
             builder.Services.AddHostedService<RpcClientInitializer>();
+
+            builder.Services.AddHostedService<MigrationHostedService>();
 
             //builder.Services.AddHostedService<OutboxPublisherService>();
 
