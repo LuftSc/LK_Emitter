@@ -21,6 +21,7 @@ namespace AuditService.DataAccess
         public DbSet<EmitterProjection> Emitters { get; set; }
         public DbSet<UserProjection> Users { get; set; }
         public DbSet<UserActionLog> Actions { get; set; }
+        public DbSet<ActionsReport> ActionsReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserActionLog>(actionBuilder =>

@@ -35,7 +35,8 @@ namespace ExternalOrderReportsService.Services
                     report.FileName,
                     CompletionStatus.Processing,
                     report.RequestDate,
-                    userId
+                    userId,
+                    report.Type
                     ))
             };
 
@@ -64,7 +65,8 @@ namespace ExternalOrderReportsService.Services
                     report.FileName,
                     CompletionStatus.Successfull,
                     report.RequestDate,
-                    userId
+                    userId,
+                    report.Type
                     ))
             };
 
@@ -93,7 +95,8 @@ namespace ExternalOrderReportsService.Services
                     report.FileName,
                     CompletionStatus.Failed,
                     report.RequestDate,
-                    userId
+                    userId,
+                    report.Type
                 ))
                 
             };

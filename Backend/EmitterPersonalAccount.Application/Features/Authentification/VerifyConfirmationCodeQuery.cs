@@ -59,13 +59,13 @@ namespace EmitterPersonalAccount.Application.Features.Authentification
             var claimsData = JsonSerializer
                 .Deserialize<UserClaimsData>(claimsDataString);
 
-            var loggingActionEvent = new UserActionLogEvent
-                (claimsData.UserId.ToString(), ActionLogType.LoginToSystem.Type, request.IpAddress);
+            /*var loggingActionEvent = new UserActionLogEvent
+                (claimsData.UserId, ActionLogType.LoginToSystem.Type, request.IpAddress);
 
             var deliveryResult = await publisher.SendMessageAsync(
                 JsonSerializer.Serialize(loggingActionEvent),
                 RabbitMqAction.Audit,
-                default);
+                default);*/
 
             var token = jwtProvider.GenerateToken(claimsData.UserId.ToString(), claimsData.Role);
 

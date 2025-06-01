@@ -9,6 +9,6 @@ namespace EmitterPersonalAccount.Application.Infrastructure.RabbitMq
     public class QueueOptions
     {
         public string Name { get; set; } = string.Empty;
-        public string RoutingKey { get; set; } = string.Empty;
+        public string[] RoutingKeys { get; set; } = [];
     }
 }

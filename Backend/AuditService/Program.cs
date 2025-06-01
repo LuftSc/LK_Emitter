@@ -1,6 +1,8 @@
+using AuditService.Consumers;
 using AuditService.DataAccess;
 using AuditService.DataAccess.Repositories;
 using AuditService.Services;
+using BaseMicroservice;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Storage;
 using Microsoft.EntityFrameworkCore;
@@ -28,13 +30,25 @@ namespace AuditService
             builder.Services.RegisterRepository<IUsersRepository, UsersRepository>();
             builder.Services.RegisterRepository<IEmittersRepository, EmittersRepository>();
 
+            builder.Services.AddScoped<IExcelService, ExcelService>();
+            builder.Services.AddScoped<IRabbitMqPublisher, RabbitMqPublisher>();
+
+            var rabbitUri = builder.Configuration.GetConnectionString("RabbitMqUri");
+            ArgumentNullException.ThrowIfNull(rabbitUri, "Rabbit URI can not be null!");
+            builder.Services.AddSingleton<IRpcClient>(_ => new AuditRpcClient(rabbitUri));
+
             // Add services to the container.
             builder.Services.AddAuthorization();
 
             builder.Services.AddHostedService<MigrationHostedService>();
             
             builder.Services.AddHostedService<MainService>(provider =>
-                new MainService(builder.Configuration, provider));
+                new MainService(
+                    builder.Configuration, 
+                    provider, 
+                    provider.GetRequiredService<IRpcClient>()));
+
+            
 
             var app = builder.Build();
 

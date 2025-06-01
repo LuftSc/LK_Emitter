@@ -283,7 +283,7 @@ export interface RequestReeRep_OLD {
 }
 
 export const downloadReportOrder = async (request: ReportOrder) => {
-    return await fetch(`http://localhost:5000/OrderReports/download-report-order/${request.idForDownload}`, {
+    return await fetch(`http://localhost:5000/OrderReports/download-report-order/${request.idForDownload}?type=${request.type}`, {
         method: "GET",
         credentials: 'include'
     })

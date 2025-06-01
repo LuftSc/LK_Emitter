@@ -28,7 +28,7 @@ namespace EmitterPersonalAccount.Application.Infrastructure.RabbitMq
             {
                 await channel.ExchangeDeclareAsync(
                     exchange: exchange.Name,
-                    type: ExchangeType.Direct,
+                    type: exchange.Type,
                     durable: true,
                     autoDelete: false,
                     arguments: null);
@@ -41,13 +41,16 @@ namespace EmitterPersonalAccount.Application.Infrastructure.RabbitMq
                         autoDelete: false,
                         arguments: null
                     );
-                    // Привязка очереди к обменнику
-                    await channel.QueueBindAsync(
-                        queue: queue.Name,
-                        exchange: exchange.Name,
-                        routingKey: queue.RoutingKey,
-                        arguments: null
-                    );
+
+                    foreach (var key in queue.RoutingKeys)
+                    {
+                        await channel.QueueBindAsync(
+                            queue: queue.Name,
+                            exchange: exchange.Name,
+                            routingKey: key,
+                            arguments: null
+                        );
+                    }
                 }
             }
             await channel.QueueDeclareAsync(

@@ -32,7 +32,12 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
         public static readonly RabbitMqAction SendResultToClient =
             new("result_exchange", "send_result", "send_results_queue");
 
-        public static readonly RabbitMqAction Audit = new("log_exchange", "log", "log_queue");
+        public static readonly RabbitMqAction WriteUsersLogs = new("log_exchange", "logs.write", "write_logs_queue");
+        public static readonly RabbitMqAction CollectUserLogs = new("log_exchange", "logs.collect", "get_logs_queue");
+        public static readonly RabbitMqAction GetUserPersonalInfoForLogs = new("log_exchange", "logs.decrypt", "get_logs_queue");
+        public static readonly RabbitMqAction GetActionsReports = new("log_exchange", "logs.get", "get_logs_queue");
+        public static readonly RabbitMqAction DownloadActionsReport = new("log_exchange", "logs.download", "get_logs_queue");
+        //public static readonly RabbitMqAction GetActionsReports = new("log_exchange", "logs.get", "get_logs_queue");
         /*public static readonly RabbitMqAction ResultDownloadReportOrder =
             new("orderReports_exchange", "orderReports.result_download", "result_download_report_order_queue");*/
 

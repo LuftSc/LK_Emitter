@@ -13,6 +13,7 @@ export interface ReportOrder {
     status: number,
     requestDate: string,
     userId: string
+    type: ReportOrderType
 }
 
 
@@ -20,6 +21,12 @@ export enum ReportOrderStatus {
     Successfull = 1,
     Processing = 2,
     Failed = 3
+}
+
+export enum ReportOrderType {
+    ListOfShareholders = 1,
+    ReeRepNotSign,
+    DividendList
 }
 /*Guid Id,
 string FileName,

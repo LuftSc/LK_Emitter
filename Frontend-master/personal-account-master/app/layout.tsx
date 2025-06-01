@@ -5,6 +5,7 @@ import { sans } from "./ui/fonts";
 import '@/app/ui/global.css'
 import Header from "./ui/header";
 import { SignalRProvider } from './signalR/SignalRContext';
+import { UnloadListener } from './unload/unloadListener';
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,6 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${sans.className} antialiased bg-white text-black items-center`}>
         <SignalRProvider>
           <Header />
+          <UnloadListener />
           {children}
         </SignalRProvider>
       </body>

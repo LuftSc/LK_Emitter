@@ -8,7 +8,7 @@ export interface RegisterEmitterRequest {
 
 
 export const registerEmitter = async (request: RegisterEmitterRequest) => {
-    return await fetch('http://localhost:5000/Emitters/register', {
+    return await fetch('http://localhost:5000/emitters/register', {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -20,7 +20,7 @@ export const registerEmitter = async (request: RegisterEmitterRequest) => {
 }
 
 export const searchEmitters = async (searchTerm: string) => {
-    return await fetch(`http://localhost:5000/Users/search-emitters?searchTerm=${encodeURIComponent(searchTerm)}`, {
+    return await fetch(`http://localhost:5000/emitters/search?searchTerm=${encodeURIComponent(searchTerm)}`, {
             credentials: 'include'
         })
         .catch(error => console.error(error))

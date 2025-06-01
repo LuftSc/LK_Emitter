@@ -9,6 +9,8 @@ using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres.EmitterModel.EmitterVO;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Logs;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
@@ -21,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 //using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Linq;
 
 //using Org.BouncyCastle.Asn1.Ocsp;
@@ -46,6 +49,9 @@ namespace EmitterPersonalAccount.API.Controllers
         private readonly IRabbitMqPublisher publisher;
         private readonly IOutboxService outboxService;
         private readonly IUsersService usersService;
+        private readonly IMemoryCacheService memoryCache;
+        private readonly IUserExitService userExitService;
+        private readonly IRpcClient rpcClient;
 
         public UsersController(IMediator mediator, 
             IDistributedCache distributedCache, 
@@ -56,7 +62,10 @@ namespace EmitterPersonalAccount.API.Controllers
             IPasswordHasher passwordHasher, 
             IRabbitMqPublisher publisher, 
             IOutboxService outboxService, 
-            IUsersService usersService)
+            IUsersService usersService, 
+            IMemoryCacheService memoryCache,
+            IUserExitService userExitService,
+            IRpcClient rpcClient)
         {
             this.mediator = mediator;
             this.distributedCache = distributedCache;
@@ -68,9 +77,14 @@ namespace EmitterPersonalAccount.API.Controllers
             this.publisher = publisher;
             this.outboxService = outboxService;
             this.usersService = usersService;
+            this.memoryCache = memoryCache;
+            this.userExitService = userExitService;
+            this.rpcClient = rpcClient;
         }
-
+        
         [HttpGet("get-current-user")]
+        [SwaggerOperation(Summary = "Получить текущего пользователя", 
+            Description = "Возвращает Guid текущего пользователя")]
         public async Task<ActionResult<Guid>> GetCurrentUserId()
         {
             var userIdResult = ClaimService.Get(HttpContext, CustomClaims.UserId);
@@ -80,11 +94,15 @@ namespace EmitterPersonalAccount.API.Controllers
             
             Guid.TryParse(userIdResult.Value, out Guid userGuid);
 
+            userExitService.OnReload(userGuid, default);
+
             return Ok(JsonSerializer.Serialize(userGuid));
         }
 
         [Permission(Permission.ProfileActions)]
         [HttpGet("get-personal-data-current")]
+        [SwaggerOperation(Summary = "Получить персональные данные текущего пользователя",
+            Description = "Возвращает объект с данными о текущем пользователе")]
         public async Task<ActionResult<UserDataDTO>> GetPersonalDataCurrentUser
             (CancellationToken cancellation)
         {
@@ -127,7 +145,228 @@ namespace EmitterPersonalAccount.API.Controllers
             );
         }
 
+        //[Permission(Permission.ProfileActions)]
+        //[HttpPost("user-logged")]
+        //[SwaggerOperation(Summary = "Сообщить системе о входе пользователя",
+        //    Description = "Записывает в логи событие [вход пользователя]")]
+        //public async Task<ActionResult> Logged(CancellationToken cancellation)
+        //{
+        //    var userId = ClaimService.Get(HttpContext, CustomClaims.UserId);
+
+        //    if (!userId.IsSuccessfull) 
+        //        return BadRequest(userId.GetErrors());
+
+        //    var ev = new UserActionLogEvent(
+        //        Guid.Parse(userId.Value),
+        //        ActionLogType.LoginToSystem.Type,
+        //        DateTime.Now.ToUniversalTime().AddHours(5));
+
+        //    var deliveryResult = await publisher
+        //        .SendMessageAsync(
+        //            JsonSerializer.Serialize(ev), 
+        //            RabbitMqAction.WriteUsersLogs, 
+        //            cancellation);
+
+        //    if (!deliveryResult) return BadRequest();
+
+        //    return Ok();
+        //}
+
+        //[Permission(Permission.ProfileActions)]
+        //[HttpPost("user-logout")]
+        //[SwaggerOperation(Summary = "Сообщить системе о выходе пользователя",
+        //    Description = "Записывает в логи событие [выход пользователя]")]
+        //public ActionResult Logout(
+        //    CancellationToken cancellation)
+        //{
+        //    var userId = ClaimService.Get(HttpContext, CustomClaims.UserId);
+
+        //    if (!userId.IsSuccessfull)
+        //        return BadRequest(userId.GetErrors());
+
+        //    var logoutResult = userExitService
+        //        .OnLogout(Guid.Parse(userId.Value), cancellation);
+
+        //    if (!logoutResult.IsSuccessfull)
+        //        return BadRequest(logoutResult.GetErrors());
+
+        //    /*if (refreshFlag)
+        //    var cacheSetResult = memoryCache
+        //        .SetValue(userId.Value, "maybeRefresh");
+
+        //    var ev = new UserActionLogEvent(
+        //        Guid.Parse(userId.Value),
+        //        ActionLogType.LogoutOfSystem.Type,
+        //        DateTime.Now.ToUniversalTime().AddHours(5));
+
+        //    var deliveryResult = await publisher
+        //        .SendMessageAsync(
+        //            JsonSerializer.Serialize(ev),
+        //            RabbitMqAction.Audit,
+        //            cancellation);
+
+        //    if (!deliveryResult) return BadRequest();*/
+
+        //    return Ok();
+        //}
+
+        //[HttpPost("actions-report")]
+        //public async Task<ActionResult> GenerateActionsReport(
+        //    [FromBody] GenerateActionsReportFilters filters,
+        //    CancellationToken cancellationToken)
+        //{
+        //    var userIdGettingResult = ClaimService.Get(HttpContext, CustomClaims.UserId);
+
+        //    if (!userIdGettingResult.IsSuccessfull) 
+        //        return BadRequest(userIdGettingResult.GetErrors());
+
+        //    var getLogsEvent = new GetUsersLogsEvent(
+        //        userIdGettingResult.Value,
+        //        filters.UserId,
+        //        filters.StartDate,
+        //        filters.EndDate
+        //    );
+
+        //    var message = JsonSerializer.Serialize(getLogsEvent);
+
+        //    var deliveryResult = await publisher
+        //        .SendMessageAsync(message, RabbitMqAction.CollectUserLogs, cancellationToken);
+        //    Console.WriteLine("Отправили запрос в рэббит на генерацию отчёта");
+
+        //    if (!deliveryResult) 
+        //        return BadRequest("Ошибка при доставке сообщения в RabbitMQ");
+
+        //    return Ok();
+        //}
+
+        //[HttpGet("actions-report")]
+        //public async Task<ActionResult<List<ActionsReportDTO>>> GetListActionsReports(CancellationToken cancellationToken)
+        //{
+        //    var ev = JsonSerializer.Serialize(DateTime.Now);
+
+        //    var actionsReportsGettingResult = await rpcClient
+        //        .CallAsync<List<ActionsReportDTO>>(
+        //            ev, 
+        //            RabbitMqAction.GetActionsReports, 
+        //            cancellationToken);
+
+        //    Console.WriteLine("Отправили запрос в рэббит на получение списка отчётов");
+
+        //    if (!actionsReportsGettingResult.IsSuccessfull)
+        //        return BadRequest(actionsReportsGettingResult.GetErrors());
+
+        //    return Ok(actionsReportsGettingResult.Value);
+        //}
+
+        //[HttpGet("actions-report/{reportId:guid}")]
+        //public async Task<ActionResult> DownloadActionReport(Guid reportId, CancellationToken cancellation)
+        //{
+        //    var message = JsonSerializer.Serialize(reportId);
+
+        //    var actionsReportDownloadResult = await rpcClient
+        //        .CallAsync<DocumentInfo>(
+        //            message, 
+        //            RabbitMqAction.DownloadActionsReport, 
+        //            cancellation);
+
+        //    if (!actionsReportDownloadResult.IsSuccessfull)
+        //        return BadRequest(actionsReportDownloadResult.GetErrors());
+
+        //    var file = actionsReportDownloadResult.Value;
+
+        //    return File(file.Content, file.ContentType, file.FileName);
+        //}
+
+       /* [HttpGet("get-logs")]
+        [SwaggerOperation(Summary = "Получить список действий пользователя",
+            Description = "Возвращает список действий пользователя в виде Excel")]
+        public async Task<ActionResult> GetLogs(CancellationToken cancellationToken)
+        {
+            var getLogsEvent = new GetUsersLogsEvent();
+
+            var message = JsonSerializer.Serialize(getLogsEvent);
+
+            var gettingLogsResult = await rpcClient.CallAsync<List<UserActionLogEvent>>(
+                message,
+                RabbitMqAction.CollectUserLogs,
+                cancellationToken);
+
+            if (!gettingLogsResult.IsSuccessfull)
+                return BadRequest(gettingLogsResult.GetErrors());
+
+            var result = new List<ActionDTO>();
+            var logs = gettingLogsResult.Value;
+
+            var uniqueGuids = logs
+                .Select(log => log.UserId)
+                .Distinct()
+                .ToList();
+
+            var fullNamesGettingResult = await usersService
+                .GetListUsesFullName(uniqueGuids, cancellationToken);
+
+            if (!fullNamesGettingResult.IsSuccessfull)
+                return BadRequest(fullNamesGettingResult.GetErrors());
+
+            var fullNames = fullNamesGettingResult.Value;
+
+            foreach (var log in logs)
+            {
+                var isFullNameFound = fullNames.TryGetValue(log.UserId, out var fullName);
+
+                var name = string.Empty;
+                var surname = string.Empty;
+                var patronymic = string.Empty;
+
+                if (isFullNameFound) 
+                {
+                    var splittedFullName = fullName.Split(' ');
+
+                    if (splittedFullName.Length == 3)
+                    {
+                        surname = splittedFullName[0];
+                        name = splittedFullName[1];
+                        patronymic = splittedFullName[2];
+                    }
+                    else if (splittedFullName.Length == 2)
+                    {
+                        surname = splittedFullName[0];
+                        name = splittedFullName[1];
+                    }
+                    else if (splittedFullName.Length == 1)
+                    {
+                        name = splittedFullName[0];
+                    }
+                }
+
+                var actionDTO = new ActionDTO
+                (
+                    name,
+                    surname,
+                    patronymic,
+                    log.Type,
+                    log.TimeStamp,
+                    log.IpAddress,
+                    log.AdditionalDataJSON
+                );
+
+                result.Add(actionDTO);
+            }
+
+            var createExcelResult = await excelService
+                .WriteLogsToExcelFile(result);
+
+            if (!createExcelResult.IsSuccessfull)
+                return BadRequest(createExcelResult.GetErrors());
+
+            var excelFile = createExcelResult.Value;
+
+            return File(excelFile.Content, excelFile.ContentType, excelFile.FileName);
+        }*/
+
         [HttpPost("login-user")]
+        [SwaggerOperation(Summary = "Войти в систему",
+            Description = "Попытка входа в систему путём ввода логина и пароля")]
         public async Task<ActionResult> Login([FromBody] LoginUserQuery request)
         {
             var loginResult = await mediator.Send(request);
@@ -189,6 +428,8 @@ namespace EmitterPersonalAccount.API.Controllers
         }*/
 
         [HttpPost("register")]
+        [SwaggerOperation(Summary = "Зарегистрировать нового пользователя",
+            Description = "Создание нового пользователя")]
         public async Task<ActionResult> RegisterNewUser(
             [FromBody] RegisterUserRequest request, 
             CancellationToken cancellation)
@@ -215,6 +456,8 @@ namespace EmitterPersonalAccount.API.Controllers
         }
 
         [HttpGet("search-users")]
+        [SwaggerOperation(Summary = "Найти пользователя по части ФИО",
+            Description = "Возвращает список пользователей, соответствующих описанию")]
         public async Task<ActionResult<List<UserWithEmittersDTO>>> SearchUsersByName(string searchTerm, int page = 1, int pageSize = 20)
         {
             var gettingResult = await usersService
@@ -244,6 +487,8 @@ namespace EmitterPersonalAccount.API.Controllers
         }
 
         [HttpPost("add-new-role/{userId:guid}")]
+        [SwaggerOperation(Summary = "Выдать пользователю новую роль",
+            Description = "Добавляет выбранному пользователю новую роль")]
         public async Task<ActionResult> AddNewRole(
             Guid userId, 
             Role role, 
@@ -259,6 +504,8 @@ namespace EmitterPersonalAccount.API.Controllers
         }
 
         [HttpDelete("unbind-from-emitter")]
+        [SwaggerOperation(Summary = "Открепить от эмитента",
+            Description = "Удаляет пользователя из списка уполномоченных представителей эмитента")]
         public async Task<ActionResult> UnbindFromEmitter(
             Guid userId, 
             Guid emitterId, 
@@ -274,6 +521,8 @@ namespace EmitterPersonalAccount.API.Controllers
         }
 
         [HttpPost("bind-to-emitters")]
+        [SwaggerOperation(Summary = "Прикрепить к эмитенту",
+            Description = "Добавляет пользователя в список уполномоченных представителей эмитента")]
         public async Task<ActionResult> BindToEmitters(
             [FromBody] BindToEmittersDTO request,
             CancellationToken cancellation
@@ -333,6 +582,8 @@ namespace EmitterPersonalAccount.API.Controllers
         }*/
         [Permission(Permission.ProfileActions)]
         [HttpPut("update")]
+        [SwaggerOperation(Summary = "Изменить данные пользователя",
+            Description = "Обновляет данные пользователя")]
         public async Task<ActionResult> Update(
             [FromBody] UserDataDTO request)
         {
@@ -369,6 +620,8 @@ namespace EmitterPersonalAccount.API.Controllers
         }
 
         [HttpPost("verify-code")]
+        [SwaggerOperation(Summary = "Проверить код подтверждения",
+            Description = "Проверяет код и если он верный - выдёт JWT-токен")]
         public async Task<ActionResult> VerifyCode([FromBody] VerifyConfirmationCodeQuery request)
         {
             request.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
@@ -387,6 +640,8 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.ProfileActions)]
         [HttpPost("restore-password")]
+        [SwaggerOperation(Summary = "Изменить пароль пользователя",
+            Description = "Заменяет текущий пароль пользователя на новый")]
         public async Task<ActionResult> RestorePassword([FromBody] RestorePasswordCommand request)
         {
             var restoreResult = await mediator.Send(request);
@@ -441,19 +696,21 @@ namespace EmitterPersonalAccount.API.Controllers
             return Ok();
         }*/
 
-        [HttpGet("search-emitters")]
-        public async Task<ActionResult<List<EmitterInfoDTO>>> SearchEmitters(string searchTerm, int page = 1, int pageSize = 20)
-        {
-            var result = await emittersRepository.SearchEmitter(searchTerm, page, pageSize);
+        //[HttpGet("search-emitters")]
+        //[SwaggerOperation(Summary = "Найти эмитента по названию",
+        //    Description = "Возвращает список эмитентов, удовлетворяющих частичному названию")]
+        //public async Task<ActionResult<List<EmitterInfoDTO>>> SearchEmitters(string searchTerm, int page = 1, int pageSize = 20)
+        //{
+        //    var result = await emittersRepository.SearchEmitter(searchTerm, page, pageSize);
 
-            if (result is null) return BadRequest();
+        //    if (result is null) return BadRequest();
 
-            var response = result
-                .Select(t => new EmitterInfoDTO(t.Item1, t.Item2, t.Item3))
-                .ToList();
+        //    var response = result
+        //        .Select(t => new EmitterInfoDTO(t.Item1, t.Item2, t.Item3))
+        //        .ToList();
 
-            return Ok(response);
-        }
+        //    return Ok(response);
+        //}
 
         //[Authorize]
         /*[Permission(Permission.ChoiceOfEmitters)]
@@ -480,6 +737,8 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.ChoiceOfEmitters)]
         [HttpGet("get-binding-emitters")]
+        [SwaggerOperation(Summary = "Получить список прикреплённых эмитентов",
+            Description = "Возвращает список эмитентов, уполномоченным представителем которых является текущий пользователь")]
         public async Task<ActionResult<List<EmitterInfoDTO>>> GetBindingToUserEmitters
             (
             int page = 1,

@@ -3,6 +3,7 @@ using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using RabbitMQ.Client.Events;
 using System.Text.Json;
 
 namespace DocumentsService.Consumers
@@ -18,7 +19,7 @@ namespace DocumentsService.Consumers
             this.provider = provider;
         }
         public override async Task<Result<DocumentInfo>> 
-            OnMessageProcessingAsync(string message)
+            OnMessageProcessingAsync(string message, BasicDeliverEventArgs args)
         {
             var documentId = JsonSerializer
                 .Deserialize<Guid>(message);
@@ -73,11 +74,7 @@ namespace DocumentsService.Consumers
             return Result<DocumentInfo>.Error(new DownloadDocumentError());
         }
 
-        public override Task<Result<DocumentInfo>> 
-            OnMessageProcessingFailureAsync(Exception exception)
-        {
-            return Task.FromResult(Result<DocumentInfo>.Error(new DownloadDocumentError()));
-        }
+     
 
         public class DownloadDocumentError : Error
         {

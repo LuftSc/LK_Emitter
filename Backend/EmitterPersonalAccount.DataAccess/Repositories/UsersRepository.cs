@@ -26,7 +26,17 @@ namespace EmitterPersonalAccount.DataAccess.Repositories
             this.context = context;
         }
 
-        
+        public async Task<Result<List<User>>> GetByListGuids(
+            List<Guid> usersGuidList, 
+            CancellationToken cancellation)
+        {
+            var users = await context.Users
+                .AsNoTracking()
+                .Where(u => usersGuidList.Contains(u.Id))
+                .ToListAsync(cancellation);
+
+            return Result<List<User>>.Success(users);
+        }
         public async Task<Result> AddWithRole
             (User user, Role role, List<Guid>? emittersIdList, CancellationToken cancellation)
         {

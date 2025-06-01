@@ -14,6 +14,10 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
         public static readonly ActionLogType RequestListOSA = new("Запрос распоряжения: список участников собрания акционеров");
         public static readonly ActionLogType RequestReeRep = new("Запрос распоряжения: предоставление информации из реестра");
         public static readonly ActionLogType SendDocuments = new("Отправка документов");
+
+        public static readonly ActionLogType DownloadDividendList = new("Загрузка отчёта: дивидендный список");
+        public static readonly ActionLogType DownloadListOSA = new("Загрузка отчёта: список участников собрания акционеров");
+        public static readonly ActionLogType DownloadReeRep = new ("Загрузка отчёта: предоставление информации из реестра");
         private ActionLogType(string type)
         {
             Type = type;

@@ -8,6 +8,7 @@ using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using RabbitMQ.Client.Events;
 using System.Collections.Generic;
 using System.Text.Json;
 
@@ -23,7 +24,7 @@ namespace DocumentsService.Consumers
             this.provider = provider;
         }
         public override async Task<Result<DocumentPaginationList>>
-            OnMessageProcessingAsync(string message)
+            OnMessageProcessingAsync(string message, BasicDeliverEventArgs args)
         {
             var query = JsonSerializer
                 .Deserialize<GetDocumentsEvent>(message);
@@ -56,11 +57,6 @@ namespace DocumentsService.Consumers
             return Result<DocumentPaginationList>.Error(new GettingDocumentError());
         }
 
-        public override Task<Result<DocumentPaginationList>> 
-            OnMessageProcessingFailureAsync(Exception exception)
-        {
-            return Task.FromResult
-                (Result<DocumentPaginationList>.Error(new GettingDocumentError()));
-        }
+       
     }
 }

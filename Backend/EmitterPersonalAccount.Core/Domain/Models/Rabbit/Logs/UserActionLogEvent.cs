@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 namespace EmitterPersonalAccount.Core.Domain.Models.Rabbit.Logs
 {
     public record UserActionLogEvent(
-        string UserId,
+        Guid UserId,
         string Type,
-        string IpAddress,
+        DateTime TimeStamp,
+        string IpAddress = "",
         string AdditionalDataJSON = ""
         )
     {

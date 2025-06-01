@@ -1,7 +1,9 @@
 ﻿using BaseMicroservice;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
+using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using ExternalOrderReportsService.Services;
+using RabbitMQ.Client.Events;
 using System.Text.Json;
 
 namespace ExternalOrderReportsService.Consumers
@@ -16,13 +18,15 @@ namespace ExternalOrderReportsService.Consumers
         {
             this.provider = provider;
         }
-        public override async Task<Result<DocumentInfo>> OnMessageProcessingAsync(string message)
+        public override async Task<Result<DocumentInfo>> OnMessageProcessingAsync
+            (string message, BasicDeliverEventArgs args)
         {
-            var isCorrectParsing = Guid.TryParse(message, out var reportOrderId);
+            var downloadInfo = JsonSerializer
+                .Deserialize<Tuple<Guid, Guid, ReportType>>(message);
 
-            if (!isCorrectParsing) 
+            /*if (!isCorrectParsing) 
                 return Result<DocumentInfo>
-                    .Error(new StringToGuidParsingError());
+                    .Error(new StringToGuidParsingError());*/
 
             using (var scope = provider.CreateScope())
             {
@@ -30,7 +34,7 @@ namespace ExternalOrderReportsService.Consumers
                     .GetRequiredService<IOrderReportsService>();
 
                 var response = await orderReportsService
-                    .DownloadReport(reportOrderId);
+                    .DownloadReport(downloadInfo.Item1, downloadInfo.Item2, downloadInfo.Item3);
 
                 if (!response.IsSuccessfull) return response;
 
@@ -38,13 +42,7 @@ namespace ExternalOrderReportsService.Consumers
             }
         }
 
-        public override Task<Result<DocumentInfo>> OnMessageProcessingFailureAsync
-            (Exception exception)
-        {
-            return Task.FromResult
-                (Result<DocumentInfo>
-                .Error(new DownloadingProccessError()));
-        }
+      
     }
 
     public class DownloadingProccessError : Error

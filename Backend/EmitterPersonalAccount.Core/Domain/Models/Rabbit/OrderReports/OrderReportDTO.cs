@@ -13,7 +13,8 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports
         string FileName,
         CompletionStatus Status,
         DateTime RequestDate,
-        string UserId
+        string UserId,
+        ReportType Type
         )
     {
     }

@@ -5,7 +5,7 @@ import ConfirmationForm from "./ui/logIn/confirmation-popup";
 import LogInForm from "./ui/logIn/login-popup";
 import EmitentTable from "./ui/main-page/emitent-table";
 import { Emitter } from "./models/Emitter";
-import { getCurrentUser, getUserEmitters } from "./services/usersService";
+import { getCurrentUser, getUserEmitters, logUserLogIn } from "./services/usersService";
 import { errorMessages } from "./services/errorMessages";
 import { tree } from "next/dist/build/templates/app-page";
 // import { useSimpleStorage } from "./hooks/useLocalStorage";
@@ -51,6 +51,13 @@ export default function Home() {
   }, [])
 
   const onAuthSucces = async () => {
+    // const sessionInfo = sessionStorage.getItem('activeSession')
+    // if (!sessionInfo) {
+    //   console.log('зашли')
+    //   //await logUserLogIn()
+    //   sessionStorage.setItem('activeSession', 'active')
+    // }
+
     const emittersResponse = await getUserEmitters(1, 15)
       console.log(emittersResponse)
 

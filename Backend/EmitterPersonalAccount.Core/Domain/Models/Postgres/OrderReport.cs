@@ -25,7 +25,7 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
             RequestDate = requestDate;
             IssuerId = issuerId;
         }
-        private OrderReport(string fileName, DateTime requestDate, int issuerId, Guid id)
+        private OrderReport(string fileName, DateTime requestDate, int issuerId, Guid id, ReportType reportType)
             : base(id)
         {
             ExternalStorageId = Guid.Empty;
@@ -33,6 +33,7 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
             Status = CompletionStatus.Processing;
             RequestDate = requestDate;
             IssuerId = issuerId;
+            Type = reportType;
         }
         public Guid ExternalStorageId { get; private set; }
         public string FileName { get; private set; }
@@ -40,15 +41,16 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         public DateTime RequestDate { get; private set; }
         //public Emitter Emitter { get; private set; } = null!;
         public int IssuerId { get; private set; }
+        public ReportType Type { get; private set; }
         public static Result<OrderReport> Create(string fileName, DateTime requestDate, int issuerId)
         {
             return Result<OrderReport>
                 .Success(new OrderReport(fileName, requestDate, issuerId));
         }
-        public static Result<OrderReport> Create(string fileName, DateTime requestDate, int issuerId, Guid id)
+        public static Result<OrderReport> Create(string fileName, DateTime requestDate, int issuerId, Guid id, ReportType type)
         {
             return Result<OrderReport>
-                .Success(new OrderReport(fileName, requestDate, issuerId, id));
+                .Success(new OrderReport(fileName, requestDate, issuerId, id, type));
         }
     }
 }

@@ -2,6 +2,7 @@
 using EmitterPersonalAccount.API.Contracts;
 using EmitterPersonalAccount.Application.Features.Authentification;
 using EmitterPersonalAccount.Application.Features.OrderReports;
+using EmitterPersonalAccount.Application.Services;
 using EmitterPersonalAccount.Core.Abstractions;
 using EmitterPersonalAccount.Core.Domain.Enums;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit;
@@ -11,6 +12,7 @@ using EmitterPersonalAccount.Core.Domain.SharedKernal;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -51,7 +53,9 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.OrderReportsActions)]
         [HttpGet("get-report-orders/{issuerId:int}/")]
-        public async Task<ActionResult> GetReportOrdersByPage
+        [SwaggerOperation(Summary = "Получить список запрошенных отчётов",
+            Description = "Возвращает список отчётов выбранного эмитента")]
+        public async Task<ActionResult<OrderReportPaginationList>> GetReportOrdersByPage
             (int issuerId, [FromQuery] PaginationInfo pagination)
         {
             var userId = HttpContext.User.FindFirst(CustomClaims.UserId).Value;
@@ -78,6 +82,8 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.OrderReportsActions)]
         [HttpPost("list-of-shareholders")]
+        [SwaggerOperation(Summary = "Запросить список участников собрания акционером",
+            Description = "Отправляет на генерацию отчёт типа [список участников собрания акционеров]")]
         public async Task<ActionResult> RequestListOfShareholdersReport(
             [FromBody] RequestListOfShareholdersCommand request)
         {
@@ -98,6 +104,8 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.OrderReportsActions)]
         [HttpPost("ree-rep")]
+        [SwaggerOperation(Summary = "Запросить информацию из реестра",
+            Description = "Отправляет на генерацию отчёт типа [запрос информации из реестра]")]
         public async Task<ActionResult> RequestReeRepReport(
             [FromBody] RequestReeRepCommand request)
         {
@@ -117,6 +125,8 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.OrderReportsActions)]
         [HttpPost("dividend-list")]
+        [SwaggerOperation(Summary = "Запросить дивидендный список",
+            Description = "Отправляет на генерацию отчёт типа [дивидендный список]")]
         public async Task<ActionResult> RequestDividendListReport(
             [FromBody] RequestDividendListCommand request)
         {
@@ -136,13 +146,24 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.OrderReportsActions)]
         [HttpGet("download-report-order/{reportOrderId:guid}")]
-        public async Task<ActionResult> DownloadReportOrder(Guid reportOrderId)
+        [SwaggerOperation(Summary = "Скачать отчёт",
+            Description = "Загружает выбранный отчёт")]
+        public async Task<ActionResult> DownloadReportOrder(Guid reportOrderId, ReportType type)
         {
             if (reportOrderId == Guid.Empty)
                 return BadRequest("Document id can not be empty!");
 
-            var downloadDocumentQuery = new DownloadReportOrderQuery() 
-                {  ReportOrderId = reportOrderId, };
+            var userIdGettingResult = ClaimService.Get(HttpContext, CustomClaims.UserId);
+
+            if (!userIdGettingResult.IsSuccessfull)
+                return BadRequest(userIdGettingResult.GetErrors());
+
+            var downloadDocumentQuery = new DownloadReportOrderQuery()
+            {
+                UserId = Guid.Parse(userIdGettingResult.Value),
+                ReportOrderId = reportOrderId,
+                ReportType = type
+            };
 
             var result = await mediator.Send(downloadDocumentQuery);
 

@@ -1,5 +1,7 @@
-﻿using EmitterPersonalAccount.Core.Domain.Models.Postgres;
+﻿using EmitterPersonalAccount.Core.Abstractions;
+using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
+using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Logs;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
@@ -19,18 +21,49 @@ namespace ExternalOrderReportsService.Services
         private readonly IReportStatusChangeService statusChangeService;
         private readonly IRequestSender requestSender;
         private readonly IOrderReportsRepository orderReportsRepository;
+        private readonly IRabbitMqPublisher publisher;
 
         public OrderReportsService(IReportStatusChangeService changeStatusService,
             IRequestSender requestSender, 
-            IOrderReportsRepository orderReportsRepository)
+            IOrderReportsRepository orderReportsRepository,
+            IRabbitMqPublisher publisher)
         {
             this.statusChangeService = changeStatusService;
             this.requestSender = requestSender;
             this.orderReportsRepository = orderReportsRepository;
+            this.publisher = publisher;
         }
-        public async Task<Result<DocumentInfo>> DownloadReport(Guid reportOrderId)
+        public async Task<Result<DocumentInfo>> DownloadReport
+            (Guid userId, Guid reportOrderId, ReportType reportType)
         {
-            return await requestSender.SendDownloadReportRequest(reportOrderId);
+            var downloadResult = await requestSender
+                .SendDownloadReportRequest(reportOrderId);
+
+            if (!downloadResult.IsSuccessfull)
+                return downloadResult;
+
+            var reportLogType = reportType switch
+            {
+                ReportType.ListOfShareholders => ActionLogType.DownloadListOSA.Type,
+                ReportType.ReeRepNotSign => ActionLogType.DownloadReeRep.Type,
+                ReportType.DividendList => ActionLogType.DownloadDividendList.Type,
+                _ => "Загрузка отчёта: тип не определён",
+            };
+
+            var logEvent = new UserActionLogEvent
+            (
+                userId,
+                reportLogType,
+                DateTime.Now.ToUniversalTime().AddHours(5)
+            );
+
+            await publisher
+                .SendMessageAsync(
+                    JsonSerializer.Serialize(logEvent), 
+                    RabbitMqAction.WriteUsersLogs, 
+                    default);
+
+            return Result<DocumentInfo>.Success(downloadResult.Value);
         }
         public async Task<Result> RequestReport(GenerateListOSARequest requestData, DateTime sendingDate, string userId)
         {
@@ -52,7 +85,9 @@ namespace ExternalOrderReportsService.Services
                 issuerId,
                 userId,
                 internalId,
-                requestSender.SendListOfShareholdersReportRequest);
+                requestSender.SendListOfShareholdersReportRequest,
+                ActionLogType.RequestListOSA,
+                ReportType.ListOfShareholders);
 
             return result;
         }
@@ -76,7 +111,9 @@ namespace ExternalOrderReportsService.Services
                 issuerId,
                 userId,
                 internalId,
-                requestSender.SendReeRepReportRequest);
+                requestSender.SendReeRepReportRequest,
+                ActionLogType.RequestReeRep,
+                ReportType.ReeRepNotSign);
 
             return result;
         }
@@ -100,7 +137,9 @@ namespace ExternalOrderReportsService.Services
                 issuerId,
                 userId,
                 internalId,
-                requestSender.SendDividendListReportRequest);
+                requestSender.SendDividendListReportRequest,
+                ActionLogType.RequestDividendList,
+                ReportType.DividendList);
 
             return result;
         }
@@ -112,11 +151,13 @@ namespace ExternalOrderReportsService.Services
             int issuerId,
             string userId,
             Guid internalId,
-            Func<DateTime, TRequestData, Task<Result<Guid>>> sendRequestMethod
+            Func<DateTime, TRequestData, Task<Result<Guid>>> sendRequestMethod,
+            ActionLogType logType,
+            ReportType reportType
             )
             where TRequestData : class
         {
-            var orderReportCreatingResult = OrderReport.Create(fileName, sendingDate, issuerId, internalId);
+            var orderReportCreatingResult = OrderReport.Create(fileName, sendingDate, issuerId, internalId, reportType);
 
             if (!orderReportCreatingResult.IsSuccessfull) return orderReportCreatingResult;
 
@@ -131,6 +172,17 @@ namespace ExternalOrderReportsService.Services
                     .SetFailedStatus(userId, orderReportCreatingResult.Value, methodSendingResult);
                 return setProcessingResult;
             }
+
+            var logEvent = new UserActionLogEvent(
+                Guid.Parse(userId),
+                logType.Type,
+                sendingDate);
+
+            await publisher
+                .SendMessageAsync(
+                    JsonSerializer.Serialize(logEvent), 
+                    RabbitMqAction.WriteUsersLogs, 
+                    default);
 
             var generatingResult = await sendRequestMethod(sendingDate, requestData);
 

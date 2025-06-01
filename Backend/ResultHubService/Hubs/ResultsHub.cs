@@ -3,6 +3,7 @@ using EmitterPersonalAccount.Core.Domain.Models.Postgres;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
@@ -18,6 +19,7 @@ namespace ResultHubService.Hubs
         public Task ReceiveReports(OrderReportPaginationList orderReports);
         public Task ReceiveReport(OrderReportDTO orderReport);
         public Task ReceiveDocuments(List<DocumentDTO> documents);
+        public Task ReceiveActionsReport(ActionsReportDTO actionsReport);
     }
     public class ResultsHub : Hub<IResultClient>
     {

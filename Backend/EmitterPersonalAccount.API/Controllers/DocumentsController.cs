@@ -10,6 +10,7 @@ using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace EmitterPersonalAccount.API.Controllers
 {
@@ -27,6 +28,8 @@ namespace EmitterPersonalAccount.API.Controllers
         [Permission(Permission.DocumentsActions)]
         [FileUploadOperation.FileContentType]
         [HttpPost("send-documents")]
+        [SwaggerOperation(Summary = "Отправить документы",
+            Description = "Отправляет документы в хранилище выбранного эмитента")]
         public async Task<ActionResult> SendDocument([FromForm] SendDocumentsCommand request)
         {// Сохраняет документ в БД и отправляет его получателю
             // ФЛАГ: С подписью\ без подписи
@@ -56,6 +59,8 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.DocumentsActions)]
         [HttpGet("get-documents-info/{issuerId:int}")]
+        [SwaggerOperation(Summary = "Получить список документов по эмитенту",
+            Description = "Возвращает список документов в рамках выбранного эмитента")]
         public async Task<ActionResult<DocumentPaginationList>> GetDocumentsByPage
             (int issuerId, [FromQuery] PaginationInfo pagination)
         {
@@ -72,6 +77,8 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.DocumentsActions)]
         [HttpGet("download/{documentId:guid}")]
+        [SwaggerOperation(Summary = "Скачать документ",
+            Description = "Загружает выбранный документ")]
         public async Task<ActionResult> GetDownloadLink(Guid documentId)
         {
             if (documentId == Guid.Empty)
@@ -92,6 +99,8 @@ namespace EmitterPersonalAccount.API.Controllers
 
         [Permission(Permission.DocumentsActions)]
         [HttpDelete("delete-document/{documentId:guid}")]
+        [SwaggerOperation(Summary = "Удалить документ",
+            Description = "Удаляет выбранный документ")]
         public async Task<ActionResult> DeleteDocument(Guid documentId)
         {// Удаляет документ
             if (documentId == Guid.Empty)

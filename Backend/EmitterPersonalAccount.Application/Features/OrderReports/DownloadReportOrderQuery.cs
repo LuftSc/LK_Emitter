@@ -14,7 +14,9 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
 {
     public sealed class DownloadReportOrderQuery : Query<DocumentInfo>
     {
+        public Guid UserId { get; set; }  
         public Guid ReportOrderId { get; set; }
+        public ReportType ReportType { get; set; }
     }
 
     public sealed class DownloadReportOrderQueryHandler
@@ -30,7 +32,11 @@ namespace EmitterPersonalAccount.Application.Features.OrderReports
             (DownloadReportOrderQuery request, 
             CancellationToken cancellationToken)
         {
-            var message = request.ReportOrderId.ToString();
+            var message = JsonSerializer
+                .Serialize(Tuple.Create(
+                    request.UserId, 
+                    request.ReportOrderId, 
+                    request.ReportType));
 
             var result = await rpcClient.CallAsync<DocumentInfo>(message,
                 RabbitMqAction.DownloadReportOrder, cancellationToken);

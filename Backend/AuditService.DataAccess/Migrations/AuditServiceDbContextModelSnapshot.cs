@@ -23,6 +23,28 @@ namespace AuditService.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.ActionsReport", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<byte[]>("Content")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<DateTime>("DateOfGeneration")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActionsReports");
+                });
+
             modelBuilder.Entity("EmitterPersonalAccount.Core.Domain.Models.Postgres.PartialModels.EmitterProjection", b =>
                 {
                     b.Property<Guid>("Id")

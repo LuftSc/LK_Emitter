@@ -25,7 +25,7 @@ namespace ExternalOrderReportsService.Consumers
             var ev = EventDeserializer<GetOrderReportsEvent>
                 .Deserialize(args);
 
-            using(var scope = provider.CreateScope())
+            /*using(var scope = provider.CreateScope())
             {
                 var orderReportsRepository = scope.ServiceProvider
                     .GetRequiredService<IOrderReportsRepository>();
@@ -60,7 +60,7 @@ namespace ExternalOrderReportsService.Consumers
                         JsonSerializer.Serialize(sendClientEvent), 
                         RabbitMqAction.SendResultToClient, 
                         default);
-            }
+            }*/
 
             return Result.Success();
         }

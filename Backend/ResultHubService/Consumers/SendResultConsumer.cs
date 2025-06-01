@@ -4,6 +4,7 @@ using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareholders;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
 using RabbitMQ.Client.Events;
 using ResultHubService.Services;
@@ -45,6 +46,11 @@ namespace ResultHubService.Consumers
                         await resultService.SendDocumentsToClient(
                             JsonSerializer.Deserialize<DocumentsContent>(ev.ContentJSON));
                     break;
+                    case MethodResultSending.ReceiveActionsReport:
+                        await resultService
+                            .SendActionsReportToClient(
+                                JsonSerializer.Deserialize<ActionsReportDTO>(ev.ContentJSON));
+                        break;
                     default:
                         return await Task.FromResult
                             (Result.Error(new IncorrectMethodNameForSendingResult()));

@@ -24,7 +24,7 @@ namespace AuditService.Consumers
                 .Deserialize(args);
 
             var logCreatingResult = UserActionLog.Create
-                (Guid.Parse(ev.UserId), ev.Type, ev.IpAddress, ev.AdditionalDataJSON);
+                (ev.UserId, ev.Type, ev.TimeStamp, ev.IpAddress, ev.AdditionalDataJSON);
 
             if (logCreatingResult.IsSuccessfull)
                 await auditLogService.AddLogAsync(logCreatingResult.Value);

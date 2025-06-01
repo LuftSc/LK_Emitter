@@ -4,6 +4,7 @@ using EmitterPersonalAccount.Core.Domain.Models.Rabbit.Documents;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports.ListOfShareholders;
 using EmitterPersonalAccount.Core.Domain.SharedKernal;
+using EmitterPersonalAccount.Core.Domain.SharedKernal.DTO;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
 using ResultHubService.Hubs;
@@ -55,6 +56,17 @@ namespace ResultHubService.Services
                 await hubContext.Clients
                     .Group(connInfoResult.Value.CurrentEmitterId)
                     .ReceiveDocuments(content.Documents);
+            }
+        }
+        public async Task SendActionsReportToClient(ActionsReportDTO report)
+        {
+            var connInfoResult = memoryCache.GetValue<Hubs.ConnectionInfo>(report.SenderId);
+
+            if (connInfoResult.IsSuccessfull)
+            {
+                await hubContext.Clients
+                    .Client(connInfoResult.Value.ConnectionId)
+                    .ReceiveActionsReport(report);
             }
         }
     }

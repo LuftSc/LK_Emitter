@@ -165,6 +165,30 @@ namespace EmitterPersonalAccount.Application.Services
             return Result.Success();
         }
 
+        public async Task<Result<Dictionary<Guid, string>>> GetListUsesFullName(
+            List<Guid> usersGuidList, 
+            CancellationToken cancellationToken)
+        {
+            var users = await userRepository
+                .ListAsync(u => usersGuidList.Contains(u.Id), cancellationToken);
+
+            var fullNames = users
+                .Select(user => textInfo.ToTitleCase
+                    (protectService.Decrypt(user.EncryptedFullName, "User.FullName.Deterministic")))
+                .ToList();
+
+            var result = usersGuidList
+                .Zip(fullNames, (id, fullName) =>
+                    new 
+                    {
+                        Id = id,
+                        FullName = fullName
+                    })
+                .ToDictionary(x => x.Id, x => x.FullName);
+
+            return Result<Dictionary<Guid, string>>.Success(result);
+        }
+
         public async Task<Result<DecryptedUser>> GetUserPersonalData(
             Guid userId, 
             CancellationToken cancellation)

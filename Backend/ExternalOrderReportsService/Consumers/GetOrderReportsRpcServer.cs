@@ -2,6 +2,7 @@
 using EmitterPersonalAccount.Core.Domain.Models.Rabbit.OrderReports;
 using EmitterPersonalAccount.Core.Domain.Repositories;
 using EmitterPersonalAccount.Core.Domain.SharedKernal.Result;
+using RabbitMQ.Client.Events;
 using System.Text.Json;
 
 namespace ExternalOrderReportsService.Consumers
@@ -18,7 +19,7 @@ namespace ExternalOrderReportsService.Consumers
         }
 
         public override async Task<Result<OrderReportPaginationList>>
-            OnMessageProcessingAsync(string message)
+            OnMessageProcessingAsync(string message, BasicDeliverEventArgs args)
         {
             var ev = JsonSerializer.Deserialize<GetOrderReportsEvent>(message);
 
@@ -39,7 +40,7 @@ namespace ExternalOrderReportsService.Consumers
                     getReportsResult.Value.Item2
                         .Select(o => new OrderReportDTO
                             (o.ExternalStorageId, o.Id, o.FileName, o.Status,
-                            o.RequestDate, ev.UserId)
+                            o.RequestDate, ev.UserId, o.Type)
                             )
                         .ToList()
                     );
@@ -48,12 +49,7 @@ namespace ExternalOrderReportsService.Consumers
             }
         }
 
-        public override Task<Result<OrderReportPaginationList>> 
-            OnMessageProcessingFailureAsync(Exception exception)
-        {
-            return Task.FromResult(Result<OrderReportPaginationList>
-                .Error(new OrderReportProcessingError()));
-        }
+      
     }
 
     public class OrderReportProcessingError : Error

@@ -7,130 +7,132 @@ import { DocumentDownloadLink } from "../documents-page/download-btn";
 import { useEffect, useState } from "react";
 import { getDocumentsByPageByIssuerId } from "@/app/services/documentsService";
 import { useSignalR } from "@/app/signalR/SignalRContext";
+import { ActionsReport } from "@/app/models/ActionsReport";
+import { ActionsReportDownloadButton } from "./actionsReportDownloadBtn";
 
 interface Props {
     logsTableVis: boolean
+    actionsReports: ActionsReport[]
+    loading: boolean
 }
 
-export default function TableForUserLogs({logsTableVis}: Props) {
+export default function TableForUserLogs({logsTableVis, actionsReports, loading}: Props) {
 
-    const [documents, setDocuments] = useState<Document[]>([])
+    // const [paginationDocuments, setPaginationDocuments] = useState<{
+    //     totalSize: number,
+    //     documents: Document[]
+    // }>({ totalSize: 0, documents: [] })
 
-    const [paginationDocuments, setPaginationDocuments] = useState<{
-        totalSize: number,
-        documents: Document[]
-    }>({ totalSize: 0, documents: [] })
+    // const [emitterInfo, setEmitterInfo] = useState<{
+    //     Id: string,
+    //     Name: string,
+    //     AuthPerson: string,
+    //     IssuerId: number
+    // }>
+    //     ({ Id: "", Name: "", AuthPerson: "", IssuerId: 0 })
 
-    const [emitterInfo, setEmitterInfo] = useState<{
-        Id: string,
-        Name: string,
-        AuthPerson: string,
-        IssuerId: number
-    }>
-        ({ Id: "", Name: "", AuthPerson: "", IssuerId: 0 })
+    // const [pagination, setPagination] = useState({
+    //     current: 1,
+    //     pageSize: 10
+    // })
 
-    const [pagination, setPagination] = useState({
-        current: 1,
-        pageSize: 10
-    })
+    // const [loading, setLoading] = useState<boolean>(false)
 
-    const [loading, setLoading] = useState<boolean>(false)
+    // const { connection } = useSignalR();
+    // const { startConnection } = useSignalR();
 
-    const { connection } = useSignalR();
-    const { startConnection } = useSignalR();
+    // useEffect(() => {
+    //     const emitter = localStorage.getItem('emitter')
+    //     const emitterData = emitter ? JSON.parse(emitter) : null
 
-    useEffect(() => {
-        const emitter = localStorage.getItem('emitter')
-        const emitterData = emitter ? JSON.parse(emitter) : null
+    //     if (emitterData) {
+    //         setPaginationDocuments(prev => ({
+    //             ...prev, documents: []
+    //         }))
+    //         setEmitterInfo(emitterData)
 
-        if (emitterData) {
-            setPaginationDocuments(prev => ({
-                ...prev, documents: []
-            }))
-            setEmitterInfo(emitterData)
+    //         console.log("кидаем запрос на отчёты по id: " + emitterData.IssuerId)
+    //         getDocumentsByPage(emitterData.IssuerId, pagination)
 
-            console.log("кидаем запрос на отчёты по id: " + emitterData.IssuerId)
-            getDocumentsByPage(emitterData.IssuerId, pagination)
+    //         subscribeOnReceiveDocuments()
+    //     }
 
-            subscribeOnReceiveDocuments()
-        }
+    //     return () => {
+    //         subscribeOnReceiveDocuments(true)
+    //     };
+    // }, [])
 
-        return () => {
-            subscribeOnReceiveDocuments(true)
-        };
-    }, [])
-
-    useEffect(() => {
-        setPagination(prev => ({ ...prev, total: paginationDocuments.totalSize }))
-    }, [paginationDocuments])
+    // useEffect(() => {
+    //     setPagination(prev => ({ ...prev, total: paginationDocuments.totalSize }))
+    // }, [paginationDocuments])
 
 
-    const addDocuments = (
-        receivedDocuments: Document[]) => {
-        setPaginationDocuments(prev => {
-            console.log("Received documents:", receivedDocuments);
-            // Если мы на первой странице
-            if (pagination.current === 1) {
-                const newDocuments = [...receivedDocuments, ...prev.documents];
+    // const addDocuments = (
+    //     receivedDocuments: Document[]) => {
+    //     setPaginationDocuments(prev => {
+    //         console.log("Received documents:", receivedDocuments);
+    //         // Если мы на первой странице
+    //         if (pagination.current === 1) {
+    //             const newDocuments = [...receivedDocuments, ...prev.documents];
 
-                // Обрезаем массив, если превысили pageSize
-                if (newDocuments.length > pagination.pageSize) {
-                    newDocuments.pop();
-                }
+    //             // Обрезаем массив, если превысили pageSize
+    //             if (newDocuments.length > pagination.pageSize) {
+    //                 newDocuments.pop();
+    //             }
 
-                return {
-                    totalSize: prev.totalSize + receivedDocuments.length,
-                    documents: newDocuments
-                };
-            }
-            return {
-                ...prev,
-                totalSize: prev.totalSize + receivedDocuments.length
-            };
-        });
-    }
+    //             return {
+    //                 totalSize: prev.totalSize + receivedDocuments.length,
+    //                 documents: newDocuments
+    //             };
+    //         }
+    //         return {
+    //             ...prev,
+    //             totalSize: prev.totalSize + receivedDocuments.length
+    //         };
+    //     });
+    // }
 
-    const withDocumentsUploadAction = async () => {
-        const currentConnection = connection ? connection : await startConnection()
+    // const withDocumentsUploadAction = async () => {
+    //     const currentConnection = connection ? connection : await startConnection()
 
-        currentConnection?.off('ReceiveDocuments')
+    //     currentConnection?.off('ReceiveDocuments')
 
-        await subscribeOnReceiveDocuments()
-    }
+    //     await subscribeOnReceiveDocuments()
+    // }
 
-    const subscribeOnReceiveDocuments = async (unSubscribe: boolean = false) => {
-        const currentConnection = connection ? connection : await startConnection()
+    // const subscribeOnReceiveDocuments = async (unSubscribe: boolean = false) => {
+    //     const currentConnection = connection ? connection : await startConnection()
 
-        if (unSubscribe) {
-            currentConnection?.off('ReceiveDocuments')
-        }
-        else {
-            currentConnection?.on("ReceiveDocuments", (documents: Document[]) => {
-                console.log('получили доки по подписке')
-                addDocuments(documents)
-            });
-        }
-    }
+    //     if (unSubscribe) {
+    //         currentConnection?.off('ReceiveDocuments')
+    //     }
+    //     else {
+    //         currentConnection?.on("ReceiveDocuments", (documents: Document[]) => {
+    //             console.log('получили доки по подписке')
+    //             addDocuments(documents)
+    //         });
+    //     }
+    // }
 
-    const getDocumentsByPage = async (issuerId: number, pagination: any) => {
-        setLoading(true)
-        setPagination(pagination)
+    // const getDocumentsByPage = async (issuerId: number, pagination: any) => {
+    //     setLoading(true)
+    //     setPagination(pagination)
 
 
-        const documentsResponse = await
-            getDocumentsByPageByIssuerId(issuerId, pagination.current, pagination.pageSize)
+    //     const documentsResponse = await
+    //         getDocumentsByPageByIssuerId(issuerId, pagination.current, pagination.pageSize)
 
-        if (documentsResponse?.ok) {
-            const docs = await documentsResponse.json();
-            setPaginationDocuments(docs);
-            setLoading(false)
-            console.log(docs)
-        } else if (documentsResponse?.status === 400) {
-            console.error('контролируемая ошибка')
-        } else {
-            console.error('НЕконтролируемая ошибка')
-        }
-    }
+    //     if (documentsResponse?.ok) {
+    //         const docs = await documentsResponse.json();
+    //         setPaginationDocuments(docs);
+    //         setLoading(false)
+    //         console.log(docs)
+    //     } else if (documentsResponse?.status === 400) {
+    //         console.error('контролируемая ошибка')
+    //     } else {
+    //         console.error('НЕконтролируемая ошибка')
+    //     }
+    // }
 
     const formatDate = (dateTime: string): string => {
         const splitDate = dateTime.split('T');
@@ -141,7 +143,7 @@ export default function TableForUserLogs({logsTableVis}: Props) {
         return `${time} ${date}`
     }
 
-    const columns: ColumnsType<Document> = [
+    const columns: ColumnsType<ActionsReport> = [
         {
             title: 'Название',
             dataIndex: 'title',
@@ -150,20 +152,14 @@ export default function TableForUserLogs({logsTableVis}: Props) {
             render: (value) => value.slice(0, 30) + '...'
         },
         {
-            title: 'Тип файла',
-            dataIndex: 'fileExtnsion',
-            key: 'fileExtnsion',
-            width: '20%',
-        },
-        {
-            title: 'Дата загрузки',
-            dataIndex: 'uploadDate',
-            key: 'uploadDate',
+            title: 'Дата составления',
+            dataIndex: 'dateOfGeneration',
+            key: 'dateOfGeneration',
             width: '20%',
             sorter: (a, b) => {
                 // Преобразуем даты в timestamp и сравниваем
-                const dateA = new Date(a.uploadDate).getTime();
-                const dateB = new Date(b.uploadDate).getTime();
+                const dateA = new Date(a.dateOfGeneration).getTime();
+                const dateB = new Date(b.dateOfGeneration).getTime();
                 return dateA - dateB;
             },
             sortDirections: ['descend', 'ascend'],
@@ -179,7 +175,7 @@ export default function TableForUserLogs({logsTableVis}: Props) {
             title: "Скачать",
             key: "download",
             render: (_, record) => (
-                <DocumentDownloadLink documentInfo={record} />
+                <ActionsReportDownloadButton actionsReport={record}  />
             ),
         },
     ]
@@ -187,12 +183,12 @@ export default function TableForUserLogs({logsTableVis}: Props) {
         <Table
             className={logsTableVis == true ? "w-full": "hidden"}
             rowKey="id"
-            dataSource={paginationDocuments.documents}
+            dataSource={actionsReports}
             columns={columns}
             loading={loading}
-            pagination={pagination}
+            //pagination={pagination}
 
-            onChange={(newPagination, filters, sorter) => getDocumentsByPage(emitterInfo.IssuerId, newPagination)}
+            //onChange={(newPagination, filters, sorter) => getDocumentsByPage(emitterInfo.IssuerId, newPagination)}
         />
 
     )

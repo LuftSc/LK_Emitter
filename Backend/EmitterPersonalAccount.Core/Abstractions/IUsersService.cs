@@ -21,6 +21,9 @@ namespace EmitterPersonalAccount.Core.Abstractions
             string phone = ""
             );
 
+        Task<Result<Dictionary<Guid, string>>> GetListUsesFullName(
+            List<Guid> usersGuidList,
+            CancellationToken cancellationToken);
         Task<Result<DecryptedUser>> GetUserPersonalData(
             Guid userId,
             CancellationToken cancellation);

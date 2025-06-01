@@ -17,13 +17,14 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         }
         private UserActionLog(
             Guid userId, 
-            string action, 
+            string action,
+            DateTime timeStamp,
             string ipAddress,
             string additionalDataJSON) : base(Guid.NewGuid())
         {
             UserId = userId;
             ActionType = action;
-            Timestamp = DateTime.Now.ToUniversalTime().AddHours(5);
+            Timestamp = timeStamp;
             IpAddress = ipAddress;
             AdditionalDataJSON = additionalDataJSON;
         }
@@ -36,11 +37,12 @@ namespace EmitterPersonalAccount.Core.Domain.Models.Postgres
         public static Result<UserActionLog> Create(
             Guid userId,
             string action,
-            string ipAddress,
+            DateTime timeStamp,
+            string ipAddress = "",
             string additionalDataJSON = "")
         {
             return Result<UserActionLog>
-                .Success(new UserActionLog(userId, action, ipAddress, additionalDataJSON));
+                .Success(new UserActionLog(userId, action, timeStamp, ipAddress, additionalDataJSON));
         }
     }
 }

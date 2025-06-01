@@ -105,6 +105,9 @@ namespace ExternalOrderReportService.DataAccess.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.ToTable("OrderReports", (string)null);

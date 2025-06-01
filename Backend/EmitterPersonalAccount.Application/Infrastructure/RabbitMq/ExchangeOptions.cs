@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RabbitMQ.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ namespace EmitterPersonalAccount.Application.Infrastructure.RabbitMq
     public class ExchangeOptions
     {
         public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
         public List<QueueOptions> Queues { get; set; } = [];
     }
 }

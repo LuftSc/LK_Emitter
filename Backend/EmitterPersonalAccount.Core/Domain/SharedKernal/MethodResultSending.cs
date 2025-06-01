@@ -10,6 +10,7 @@ namespace EmitterPersonalAccount.Core.Domain.SharedKernal
     {
         ReceiveReports,
         ReceiveGeneratedReport,
-        ReceiveDocuments
+        ReceiveDocuments,
+        ReceiveActionsReport
     }
 }
