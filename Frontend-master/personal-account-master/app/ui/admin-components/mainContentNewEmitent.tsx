@@ -63,7 +63,7 @@ export default function MainContentNewEmitent() {
                             placeholder="Полное название организации"
                             setState={setFullName}
                             errorText="Может принимать только текстовые значения"
-                            validation={/^[а-яА-Я ]*$/}
+                            validation={/^[а-яА-Я "]*$/}
                         />
                     </div>
                     <div className="w-[240px]">
@@ -71,7 +71,7 @@ export default function MainContentNewEmitent() {
                             placeholder="Короткое название организации"
                             setState={setShortName}
                             errorText="Может принимать только текстовые значения"
-                            validation={/^[а-яА-Я ]*$/}
+                            validation={/^[а-яА-Я "]*$/}
                         />
                     </div>
                     <div className="w-[140px]">

@@ -69,7 +69,7 @@ export default function MainContentNewUser() {
                         placeholder="Введите номер телефона"
                         setState={setPhoneNumber}
                         errorText="Некорректный номер"
-                        validation={/^[0-9]*$/} 
+                        validation={/^[0-9+]*$/} 
                     />
                 </div>
             </div>

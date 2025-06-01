@@ -1,9 +1,9 @@
-import MainContentEditUsers from "@/app/ui/admin-components/mainContentEditUsers";
+import MainContentEditEmitents from "@/app/ui/admin-components/mainContentEditEmitents";
 
 export default function Page() {
     return (
         <div className="">
-            <MainContentEditUsers />
+            <MainContentEditEmitents />
         </div>
     )
 }
